@@ -26,8 +26,9 @@ class Builder {
         // have 10 points
         bool hasWon();
         // return the number of resource of the specified string or int
-        int getResource(std::string);
-        int getResource(int);
+        // if string, first toLower the string
+        int getResource(std::string resourceName);
+        int getResource(int resourceCode);
 };
 
 
