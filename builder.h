@@ -36,6 +36,8 @@ class Builder {
         //  and clears vertices and edges
         void reset();
 
+        string getColour();
+
         // return the number of resource of the specified string or int
         // if string, first toLower the string
         int getResource(std::string resourceName);
