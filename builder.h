@@ -36,6 +36,9 @@ class Builder {
         int getResource(std::string resourceName);
         int getResource(int resourceCode);
 
+        int setResource(std::string resourceName, int num);
+        int setResource(int resourceCode, int num);
+
         friend ostream &operator<<(ostream &out, const Builder &builder);
 };
 
