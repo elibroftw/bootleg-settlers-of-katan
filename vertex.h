@@ -6,11 +6,16 @@ class Vertex {
     int owner;
     int number;
     // the x and y coordinates will be used for text display
+    // left side of vertex number starts at xCoord
+    // e.g. a number like 12 would overflow
+    // but a number like 6 would become " 6"
     int xCoord;
+    // yCoord is the "row" of the textDisplay
     int yCoord;
     std::string improvement;
     public:
-        Vertex(int number, int xCoord, int yCoord);
+        // default ctor for when vector is being resized
+        Vertex(int number=-1, int xCoord=-1, int yCoord=-1);
         // turns a vertex into a basement,
         // gives the owner one building point.
         void addBasement();
@@ -23,6 +28,9 @@ class Vertex {
 
         // resets owner to -1 and improvement to ""
         void reset();
+
+        // returns whether the vertex has valid number, xCoord, and yCoord
+        bool realVertex();
 };
 
 #endif

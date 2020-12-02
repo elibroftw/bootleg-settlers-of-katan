@@ -5,11 +5,12 @@
 #include <vector>
 
 #include "builder.h"
-#include "edge.h"
-#include "resource.h"
+#include "textdisplay.h"
+// #include "edge.h"
+// #include "resource.h"
 #include "vertex.h"
 
-using std::shared_pointer;
+using std::shared_ptr;
 using std::string;
 using std::vector;
 
@@ -17,14 +18,20 @@ class InvalidLayoutFile{};
 
 class InvalidSaveFile{};
 
+class InvalidArgument{};
+
 class Game {
-  vector<shared_pointer<Builder>> builders;
   int curBuilder;
-  vector<shared_pointer<Tile>> tiles;
-  vector<shared_pointer<Vertex>> vertices;
-  vector<shared_pointer<Edge>> edges;
-  TextDisplay textDisplay;
   int geeseLocation;
+  TextDisplay textDisplay;
+  vector<shared_ptr<Builder>> builders;
+  vector<shared_ptr<Tile>> tiles;
+  vector<shared_ptr<Vertex>> vertices;
+  vector<vector<shared_ptr<Vertex>>> verticesMap;
+  vector<vector<shared_ptr<Vertex>>> edgesMap;
+  vector<shared_ptr<Edge>> edges;
+
+  bool validVertex(Vertex &vertex);
 
  public:
   Game();

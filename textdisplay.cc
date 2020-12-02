@@ -2,7 +2,7 @@
 
 using std::ostream;
 
-TextDisplay::TextDisplay() : {
+TextDisplay::TextDisplay() {
     // add default chars to board here?
 }
 

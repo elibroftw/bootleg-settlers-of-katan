@@ -18,6 +18,12 @@ class Builder {
     // store number of points the builder has
     int buildPoints;
     public:
+        // TODO (in builder / vertex) for building basements,
+        // after verifying that the vertex does not have any adjacent buildings,
+        // for each road builder has built,
+        // check for (yCoordE == yCoordV && xCoordV - 5 <= xCoordE <= xCoordV + 5) OR
+        // check for (xCoordE == xCoordV && yCoordV - 2 <= xCoordE <= xCoordV + 2)
+
         Builder(string colour);
         // When a seven is rolled, current builder moves the geese
         // to any tile. Any builder with 10 or more resources will
