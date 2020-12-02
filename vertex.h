@@ -10,6 +10,7 @@ class Vertex {
     int yCoord;
     std::string improvement;
     public:
+        Vertex(int number, int xCoord, int yCoord);
         // turns a vertex into a basement,
         // gives the owner one building point.
         void addBasement();
@@ -17,8 +18,11 @@ class Vertex {
         // If the current residence is a house, upgrades to a tower.
         // Otherwise cannot upgrade the residence (must at least be a basement
         // and at most a tower).
-        // Increases building point by one each time it is called. 
+        // Increases building point by one each time it is called.
         void upgradeResidence();
+
+        // resets owner to -1 and improvement to ""
+        void reset();
 };
 
 #endif
