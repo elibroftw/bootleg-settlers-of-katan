@@ -31,6 +31,11 @@ class Builder {
         // check if builder won the game, which occurs when they
         // have 10 points
         bool hasWon();
+
+        // resets builder resources, buildPoints to 0
+        //  and clears vertices and edges
+        void reset();
+
         // return the number of resource of the specified string or int
         // if string, first toLower the string
         int getResource(std::string resourceName);
@@ -38,6 +43,9 @@ class Builder {
 
         int setResource(std::string resourceName, int num);
         int setResource(int resourceCode, int num);
+
+        int getBuilderPoints();
+        void setBuilderPoints(int value);
 
         friend ostream &operator<<(ostream &out, const Builder &builder);
 };
