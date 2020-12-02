@@ -2,17 +2,23 @@
 #define __BUILDER_H__
 #include <string>
 #include <vector>
+#include <iostream>
+
+
+using std::string;
+using std::ostream;
+using std::vector;
 
 class Builder {
     // indicate colour: red, blue, orange, yellow
-    std::string colour;
+    string colour;
     // store the resources the builder has: brick, energy, glass,
     // heat, wifi
-    std::vector<int> resources;
+    vector<int> resources;
     // store number of points the builder has
     int buildPoints;
     public:
-        Builder(std::string colour);
+        Builder(string colour);
         // When a seven is rolled, current builder moves the geese
         // to any tile. Any builder with 10 or more resources will
         // automatically lose half their resources. Resources lost
@@ -29,7 +35,10 @@ class Builder {
         // if string, first toLower the string
         int getResource(std::string resourceName);
         int getResource(int resourceCode);
+
+        friend ostream &operator<<(ostream &out, const Builder &builder);
 };
 
+ostream &operator<<(ostream &out, const Builder &builder);
 
 #endif
