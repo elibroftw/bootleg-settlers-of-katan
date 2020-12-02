@@ -25,6 +25,9 @@ class Builder {
         // check if builder won the game, which occurs when they
         // have 10 points
         bool hasWon();
+        // return the number of resource of the specified string or int
+        int getResource(std::string);
+        int getResource(int);
 };
 
 
