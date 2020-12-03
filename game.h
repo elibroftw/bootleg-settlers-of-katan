@@ -6,8 +6,8 @@
 
 #include "builder.h"
 #include "textdisplay.h"
-// #include "edge.h"
-// #include "resource.h"
+#include "edge.h"
+#include "resource.h"
 #include "vertex.h"
 
 using std::shared_ptr;
