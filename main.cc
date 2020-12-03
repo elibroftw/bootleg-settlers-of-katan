@@ -1,4 +1,7 @@
 #include "game.h"
+#include <iostream>
+
+using std::ios;
 
 int main(int argc, char const *argv[]) {
   /* command line parsing */

@@ -181,7 +181,12 @@ void Game::createBoard(string filename) {
 
 void Game::moveGeese(int to) {
   if (geeseLocation != to) {
-
+    if (geeseLocation != -1) {
+      textDisplay.removeGeese(geeseLocation);
+      textDisplay.setGeese(to);
+      geeseLocation = to;
+      // more
+    }
   } else {
     throw InvalidArgument();
   }
