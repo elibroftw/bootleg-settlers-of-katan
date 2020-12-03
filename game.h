@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "builder.h"
+#include "tile.h"
 #include "textdisplay.h"
 #include "edge.h"
 #include "resource.h"
