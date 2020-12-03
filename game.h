@@ -28,7 +28,7 @@ class Game {
   vector<shared_ptr<Tile>> tiles;
   vector<shared_ptr<Vertex>> vertices;
   vector<vector<shared_ptr<Vertex>>> verticesMap;
-  vector<vector<shared_ptr<Vertex>>> edgesMap;
+  vector<vector<shared_ptr<Edge>>> edgesMap;
   vector<shared_ptr<Edge>> edges;
 
   bool validVertex(Vertex &vertex);

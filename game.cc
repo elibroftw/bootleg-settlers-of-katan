@@ -185,6 +185,7 @@ void Game::moveGeese(int to) {
       textDisplay.removeGeese(geeseLocation);
       textDisplay.setGeese(to);
       geeseLocation = to;
+      // more
     }
   } else {
     throw InvalidArgument();
