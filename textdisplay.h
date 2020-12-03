@@ -1,17 +1,23 @@
 #ifndef __TEXT_DISPLAY_H__
 #define __TEXT_DISPLAY_H__
-#include <vector>
 #include <iostream>
+#include <vector>
 
-using std::vector;
 using std::ostream;
+using std::string;
+using std::vector;
 
 class TextDisplay {
     vector<vector<char>> board;
 
-    public:
-        TextDisplay();
-        void setChar(int x, int y, char c);
+   public:
+    // create the outlines of the board
+    TextDisplay();
+    void setChar(int x, int y, char c);
+    void setString(int x, int y, string c);
+    void setInt(int x, int y, int v);
+    // todo: update tile resource, geese, value, number
+    // maybe each tile has an x and y coordinate equal to top-left?
     friend ostream &operator<<(ostream &out, const TextDisplay &td);
 };
 
