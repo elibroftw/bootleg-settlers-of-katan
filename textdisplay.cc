@@ -150,6 +150,12 @@ void TextDisplay::setGeese(int tileNumber) {
 
 void TextDisplay::removeGeese(int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
+    int xCoord = tileCoords.first + 3;
+    int yCoord = tileCoords.second + 3;
+    string geese = "GEESE";
+    for (size_t i = 0; i < geese.size(); i++) {
+        board[xCoord][yCoord + i] = ' ';
+    }
 }
 
 ostream &operator<<(ostream &out, const TextDisplay &td) {

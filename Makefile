@@ -11,9 +11,12 @@ TEST_DEPENDS=${TEST_OBJECTS:.o=.d}
 TEST_EXEC=test_harness
 
 ifeq ($(OS),Windows_NT)
-    RUN_EXE := ${TEST_EXEC}
+	RUN_EXE := ${EXEC}.exe
+    TEST_EXE := ${TEST_EXEC}.exe
 else
-    RUN_EXE := ./$(TEST_EXEC)
+	RUN_EXE := ./${EXEC}
+    TEST_EXE := ./$(TEST_EXEC)
+
 endif
 
 # First target in the makefile is the default target.
@@ -22,7 +25,7 @@ $(EXEC): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXEC)
 
 ${TEST_EXEC} test: ${TEST_OBJECTS}
-	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC) && ${RUN_EXE}
+	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC) && ${TEST_EXE}
 
 
 %.o: %.cc
@@ -32,4 +35,4 @@ ${TEST_EXEC} test: ${TEST_OBJECTS}
 
 .PHONY: clean
 clean:
-	rm -f $(OBJECTS) $(DEPENDS) $(EXEC)
+	rm -f $(OBJECTS) ${TEST_OBJECTS} $(TEST_DEPENDS) $(DEPENDS) $(RUN_EXE) ${TEST_EXE}
