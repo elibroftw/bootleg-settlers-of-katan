@@ -21,9 +21,9 @@ TextDisplay::TextDisplay() {
     }
 
     // add pipes (|) and dashes (-)
-    for (size_t i = 0; i < 10; i++) {
+    for (size_t i = 0; i < 11; i++) {
         int top = i * 4;
-        for (size_t j = 0; j < 5; j++) {
+        for (size_t j = 0; j < 6; j++) {
             // set vertex pipes given conditions
             if ((i >= 2 && i <= 8) || j == 2 || j == 3 || ((i == 1 || i == 9) && (j == 1 || j == 4))) {
                 board[top][j * 10] = '|';
@@ -32,11 +32,13 @@ TextDisplay::TextDisplay() {
                 if (j % 2 == i % 2) {
                     board[top][j * 10 + 4] = '-';
                     board[top][j * 10 + 5] = '-';
+                    board[top][j * 10 + 8] = '-';
+                    board[top][j * 10 + 9] = '-';
                 }
                 // add bottom pipes
-                if (top != 40) {
-                    board[top + 1][j * 10] = '|';
-                    board[top + 3][j * 10] = '|';
+                if (top != 40 && (top != 36 || j == 2 || j == 3) && (top != 32 || (j >= 1 && j <= 4))) {
+                    board[top + 1][j * 10 + 2] = '|';
+                    board[top + 3][j * 10 + 2] = '|';
                 }
             }
         }
@@ -69,7 +71,7 @@ void TextDisplay::setInt(int x, int y, int v) {
         int_as_str = to_string(v);
     }
     // for char in string, set it to board starting from (x, y)
-    for (size_t i = 0; i < int_as_str.size(); i++, x++) {
+    for (size_t i = 0; i < int_as_str.size(); i++, y++) {
         board[x][y] = int_as_str[i];
     }
 }
@@ -122,11 +124,10 @@ void TextDisplay::setResourceName(int tileNumber, string resource) {
     }
 }
 
-
 void TextDisplay::setTileNumber(int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int xCoord = tileCoords.first + 2;
-    int yCoord = tileCoords.second + 4;
+    int yCoord = tileCoords.second + 6;
     setInt(xCoord, yCoord, tileNumber);
 }
 
