@@ -11,6 +11,10 @@ class Edge {
 
    public:
     Edge(int number = -1, int xCoord = -1, int yCoord = -1);
+
+    int getX();
+    int getY();
+    int getNum();
     // Used to build a road at an edge. Each edge is limited
     // to one road, and costs the builder one heat and wifi resource.
     // A road can be built by a builder if an adjacent road or

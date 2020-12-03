@@ -1,19 +1,25 @@
 #include "game.h"
 #include <iostream>
 
-using std::ios;
+using std::cin;
+using std::cout;
 
 int main(int argc, char const *argv[]) {
   /* command line parsing */
 
-
   Game game = Game();
-  try {
-    while (true) {
-        // read input from user
+  // game.createBoard();
+  // game.beginGame();
+  while(true) {
+
+    if (game.isGameOver()) {
+      // if user says new game
+      bool newGameSelected = false;
+      if (newGameSelected) {
+        game.resetGame();
+        game.beginGame();
+      }
     }
-  } catch (ios::failure &) {
-      game.saveGame("backup.sv");
   }
   return 0;
 }

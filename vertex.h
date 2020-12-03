@@ -18,9 +18,14 @@ class Vertex {
    public:
     // default ctor for when vector is being resized
     Vertex(int number = -1, int xCoord = -1, int yCoord = -1);
+
+    int getX();
+    int getY();
+    int getNum();
+    int getOwner();
     // turns a vertex into a basement,
     // gives the owner one building point.
-    void addBasement(Builder builder);
+    void addBasement(shared_ptr<Builder> builder, bool checkResources=true);
     // If the current residence is a basement, upgrades to a house.
     // If the current residence is a house, upgrades to a tower.
     // Otherwise cannot upgrade the residence (must at least be a basement

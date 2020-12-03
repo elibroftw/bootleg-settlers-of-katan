@@ -32,7 +32,7 @@ class Game {
   vector<vector<shared_ptr<Edge>>> edgesMap;
   vector<shared_ptr<Edge>> edges;
 
-  bool validVertex(Vertex &vertex);
+  bool isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges=true);
 
  public:
   Game();
@@ -41,11 +41,11 @@ class Game {
   void moveGeese(int to);
   void saveGame(string filename);
   void loadGame(string filename);
-  void newGame();
+  void beginGame();
   void printBoard();
   void nextTurn();
   void tradeWith(Builder &builder, Resource resource1, Resource resource2);
-  void endGame();
+  void resetGame();
   void stealFrom(Builder &builder, Resource resource);
   bool isGameOver();
   void marketTrade(Resource resource1, Resource resource2);

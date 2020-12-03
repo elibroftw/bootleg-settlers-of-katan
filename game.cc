@@ -8,6 +8,10 @@
 
 #include "builder.h"
 
+// VM = verticiesMap
+#define VM_WIDTH 6
+#define VM_HEIGHT 11
+
 using std::cin;
 using std::cout;
 using std::ifstream;
@@ -15,7 +19,7 @@ using std::invalid_argument;
 using std::ofstream;
 using std::string;
 
-Game::Game() : curBuilder{0}, geeseLocation{-1} {
+Game::Game() : curBuilder{-1}, geeseLocation{-1} {
     // make a constructor with optional layout and optional import
     for (size_t i = 0; i < 4; i++) {
         string colour;
@@ -178,7 +182,7 @@ void Game::createBoard() {
     try {
         createBoard("layout.txt");
     } catch (InvalidLayoutFile &e) {
-        // random board????
+        // TODO: random board
     }
 }
 
@@ -312,44 +316,55 @@ void Game::loadGame(string filename) {
     file >> geeseLocation;
 }
 
-bool Game::validVertex(Vertex &vertex) {
-    // returns whether a basement can be built in here
-}
+bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
+    int xCoord = vertex.get()->getX() / 10;
+    int yCoord = vertex.get()->getY() / 4;
+    // check if adjacent verticies in the map have no owners
 
-void Game::newGame() {
-    int vertex;
-    bool validVertex = false;
-    for (int i = 0; i < 2; i++) {
-        for (size_t j = 0; j < 4; j++) {
-            // account for reverse order
-            while (!validVertex) {
-                auto builder = i == 0 ? builders[j] : builders[4 - j];
-                cout << "Builder " << builder.get()->getColour()
-                     << ", where do you want to build a basement?" << std::endl
-                     << "> ";
-                cin >> vertex;
-                if (vertex >= 0) {
-                    // thoughts on vertex map
-                    // have a vectoro of vectors filled with nullptrs/invalid vertex's
-                    // e.g. 6x6
-                    // some columns can't go left/right
-                    // or manually create an algorithm to get adjacent verticices.
-
-                    // 0 1
-                    // 2 3 4 5
-                    // 6 7 8 9 10 11
-                    // 12 13 14 15 16 17
-                    // 17 19 20 21 22 23
-                    // 24 25 26 27 28 29
-                    // 30 31 32 33 34 35
-                    // 36 37 38 39 40 41
-                    // 42 43 44 46 46 47
+    for (size_t i = xCoord - 1; i < xCoord + 1; i++) {
+        for (size_t j = yCoord - 1; j < yCoord + 1; j++) {
+            if (i >= 0 && j >= 0 && i <= VM_HEIGHT && j <= VM_WIDTH && i != xCoord && j != yCoord) {
+                if (verticesMap[i][j].get()->getOwner() != -1) {
+                    // vertex is invalid since an adjacent vertex has an owner
+                    return false;
                 }
             }
         }
     }
 
-    // either run beginning mode now or after newGame() is called
+    if (considerEdges) {
+    }
+
+    return true;
+}
+
+void Game::beginGame() {
+    int vertexIn;
+    bool validVertex = false;
+    for (int i = 0; i < 2; i++) {
+        for (size_t j = 0; j < 4; j++) {
+            while (!validVertex) {
+                // accounts for reverse order
+                auto builder = i == 0 ? builders[j] : builders[4 - j];
+                cout << "Builder " << builder.get()->getColour()
+                     << ", where do you want to build a basement?" << std::endl
+                     << "> ";
+                if (cin >> vertexIn) {
+                    if (vertexIn >= 0 && vertexIn <= 53) {
+                        auto vertex = vertices[vertexIn];
+                        // build the basement
+                        validVertex = isValidVertex(vertex, false);
+                        vertex.get()->addBasement(builder, false);
+                    }
+                } else {
+                    saveGame("backup.sv");
+                    return;
+                }
+            }
+        }
+    }
+    // set curBuilder to Blue after "beginning of game"
+    curBuilder = 0;
 }
 
 void Game::printBoard() { cout << textDisplay << std::endl; }
@@ -359,25 +374,31 @@ void Game::nextTurn() {}
 void Game::tradeWith(Builder &builder, Resource resource1, Resource resource2) {
 }
 
-void Game::endGame() {
-    curBuilder = 0;
+void Game::resetGame() {
+    curBuilder = -1;
     if (geeseLocation != -1) {
         tiles[geeseLocation].get()->removeGeese();
+        textDisplay.removeGeese(geeseLocation);
     }
 
     for (size_t i = 0; i < 4; i++) {
         builders[i].get()->reset();
     }
     for (size_t i = 0; i < vertices.size(); i++) {
-        vertices[i].get()->reset();
+        auto vertex = vertices[i].get();
+        vertex->reset();
+        textDisplay.setInt(vertex->getX(), vertex->getY(), vertex->getNum());
     }
 
     for (size_t i = 0; i < edges.size(); i++) {
-        edges[i].get()->reset();
+        auto edge = edges[i].get();
+        edge->reset();
+        textDisplay.setInt(edge->getX(), edge->getY(), edge->getNum());
     }
+
     geeseLocation = -1;
-    // reset textDisplay
 }
+
 void Game::stealFrom(Builder &builder, Resource resource) {}
 bool Game::isGameOver() {}
 void Game::marketTrade(Resource resource1, Resource resource2) {}
