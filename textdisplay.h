@@ -21,6 +21,8 @@ class TextDisplay {
     // tile helper methods
     // returns the location of the top left "|" of the tileNumber
     pair<int, int> getTopLeftCoord(int tileNumber);
+    void setTileNumber(int tileNumber);
+    void setTileValue(int tileNumber, int tileValue);
     void setResourceName(int tileNumber, string resource);
     void setGoose(int tileNumber);
     void removeGoose(int tileNumber);

@@ -10,13 +10,20 @@ TEST_OBJECTS=${TEST_SOURCES:.cc=.o}
 TEST_DEPENDS=${TEST_OBJECTS:.o=.d}
 TEST_EXEC=test_harness
 
+ifeq ($(OS),Windows_NT)
+    RUN_EXE := ${TEST_EXEC}
+else
+    RUN_EXE := ./$(TEST_EXEC)
+endif
+
 # First target in the makefile is the default target.
 # Note that the LIBFLAGS must come last in the command
 $(EXEC): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXEC)
 
 ${TEST_EXEC} test: ${TEST_OBJECTS}
-	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC)
+	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC) && ${RUN_EXE}
+
 
 %.o: %.cc
 	$(CXX) -c -o $@ $< $(CXXFLAGS)

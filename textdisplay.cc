@@ -19,6 +19,8 @@ TextDisplay::TextDisplay() {
         }
         board.push_back(tempRow);
     }
+
+    // add pipes (|) and dashes (-)
     for (size_t i = 0; i < 10; i++) {
         int top = i * 4;
         for (size_t j = 0; j < 5; j++) {
@@ -39,6 +41,12 @@ TextDisplay::TextDisplay() {
             }
         }
     }
+
+    // add tile numbers
+    for (size_t i = 0; i < 19; i++) {
+        setTileNumber(i);
+    }
+
 }
 
 void TextDisplay::setChar(int x, int y, char c) {
@@ -114,8 +122,29 @@ void TextDisplay::setResourceName(int tileNumber, string resource) {
     }
 }
 
+
+void TextDisplay::setTileNumber(int tileNumber) {
+    auto tileCoords = getTopLeftCoord(tileNumber);
+    int xCoord = tileCoords.first + 2;
+    int yCoord = tileCoords.second + 4;
+    setInt(xCoord, yCoord, tileNumber);
+}
+
+void TextDisplay::setTileValue(int tileNumber, int tileValue) {
+    auto tileCoords = getTopLeftCoord(tileNumber);
+    int xCoord = tileCoords.first + 4;
+    int yCoord = tileCoords.second + 4;
+    setInt(xCoord, yCoord, tileValue);
+}
+
 void TextDisplay::setGoose(int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
+    int xCoord = tileCoords.first + 3;
+    int yCoord = tileCoords.second + 3;
+    string geese = "GEESE";
+    for (size_t i = 0; i < geese.size(); i++) {
+        board[xCoord][yCoord + i] = geese[i];
+    }
 }
 
 void TextDisplay::removeGoose(int tileNumber) {
