@@ -1,15 +1,23 @@
 #ifndef __TILE__
 #define __TILE__
 #include <string>
-#include <map>
+#include <unordered_map>
+
+using std::string;
+using std::unordered_map;
 
 class Tile {
     unsigned int number;
     unsigned int value;
-    resource;
-    std::map<std::string, Vertex> vertices;
+    string resource;
+    unordered_map<std::string, Vertex> vertices;
     bool geese;
-    std::map<std::string, Edge> edges;
+    unordered_map<std::string, Edge> edges;
+    public:
+        string getResource();
+        string getValue();
+        void removeGeese();
+        void setGeese();
 };
 
 #endif

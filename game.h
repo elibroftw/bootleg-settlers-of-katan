@@ -1,5 +1,5 @@
-#ifndef __GAME_H__
-#define __GAME_H__
+#ifndef __GAME__
+#define __GAME__
 #include <memory>
 #include <string>
 #include <vector>

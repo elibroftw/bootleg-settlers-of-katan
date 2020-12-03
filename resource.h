@@ -1,1 +1,1 @@
-enum resources {Brick, Energy, Glass, Heat, Wifi, Park};
+enum Resource {Brick, Energy, Glass, Heat, Wifi, Park};

@@ -1,5 +1,5 @@
-#ifndef __BUILDER_H__
-#define __BUILDER_H__
+#ifndef __BUILDER__
+#define __BUILDER__
 #include <string>
 #include <vector>
 #include <iostream>
