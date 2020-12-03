@@ -24,8 +24,8 @@ class TextDisplay {
     void setTileNumber(int tileNumber);
     void setTileValue(int tileNumber, int tileValue);
     void setResourceName(int tileNumber, string resource);
-    void setGoose(int tileNumber);
-    void removeGoose(int tileNumber);
+    void setGeese(int tileNumber);
+    void removeGeese(int tileNumber);
     // todo: update tile resource, geese, value, number
     // maybe each tile has an x and y coordinate equal to top-left?
     friend ostream &operator<<(ostream &out, const TextDisplay &td);

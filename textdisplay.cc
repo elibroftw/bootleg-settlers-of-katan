@@ -138,7 +138,7 @@ void TextDisplay::setTileValue(int tileNumber, int tileValue) {
     setInt(xCoord, yCoord, tileValue);
 }
 
-void TextDisplay::setGoose(int tileNumber) {
+void TextDisplay::setGeese(int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int xCoord = tileCoords.first + 3;
     int yCoord = tileCoords.second + 3;
@@ -148,7 +148,7 @@ void TextDisplay::setGoose(int tileNumber) {
     }
 }
 
-void TextDisplay::removeGoose(int tileNumber) {
+void TextDisplay::removeGeese(int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
 }
 
