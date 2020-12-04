@@ -66,10 +66,13 @@ int main(int argc, char const *argv[]) {
     }
 
     while (true) {
+        // should game print stuff out???
         if (game.isGameOver()) {
-            // if user says new game
-            bool newGameSelected = false;
-            if (newGameSelected) {
+            // prompt user to play again
+            cout << "Would you like to play again?" << std::endl;
+            string isYes;
+            cin >> isYes;
+            if(isYes == "yes" || isYes == "y" || isYes == "YES") {
                 game.resetGame();
                 game.beginGame();
             } else {

@@ -25,7 +25,8 @@ class Game {
   int curBuilder;
   int geeseLocation;
   // this means that the game has passed the beginning stage
-  bool gameHasStarted;
+  bool gameStarted;
+  bool gameended;
   TextDisplay textDisplay;
   vector<shared_ptr<Builder>> builders;
   vector<shared_ptr<Tile>> tiles;
