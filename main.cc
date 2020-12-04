@@ -72,6 +72,8 @@ int main(int argc, char const *argv[]) {
             if (newGameSelected) {
                 game.resetGame();
                 game.beginGame();
+            } else {
+              return 0;
             }
         } else {
           game.nextTurn();
