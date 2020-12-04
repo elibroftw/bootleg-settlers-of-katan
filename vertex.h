@@ -1,7 +1,10 @@
 #ifndef __VERTEX__
 #define __VERTEX__
 #include <string>
+#include <memory>
 #include "builder.h"
+
+using std::shared_ptr;
 
 class Vertex {
     int owner;
