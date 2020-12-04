@@ -19,7 +19,7 @@ using std::invalid_argument;
 using std::ofstream;
 using std::string;
 
-Game::Game() : curBuilder{-1}, geeseLocation{-1} {
+Game::Game() : curBuilder{-1}, geeseLocation{-1}, gameHasStarted{false} {
     // make a constructor with optional layout and optional import
     for (size_t i = 0; i < 4; i++) {
         string colour;
@@ -177,19 +177,22 @@ Game::Game() : curBuilder{-1}, geeseLocation{-1} {
     }
 }
 
+
+bool Game::hasGameStarted() {
+    return gameHasStarted;
+}
+
 void Game::createBoard() {
-    // check if layout.txt exists
-    try {
-        createBoard("layout.txt");
-    } catch (InvalidLayoutFile &e) {
-        // TODO: random board
-    }
+    // TODO: random board
+
 }
 
 void Game::createBoard(string filename) {
     ifstream file{filename};
     if (!file) {
-        throw InvalidLayoutFile();
+        // if file exists or is invalid, create a random board
+        createBoard();
+        return;
     }
     int resource;
     int value;
@@ -314,6 +317,7 @@ void Game::loadGame(string filename) {
 
     // read geese location if present
     file >> geeseLocation;
+    gameHasStarted = false;
 }
 
 bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
@@ -363,6 +367,8 @@ void Game::beginGame() {
             }
         }
     }
+    //
+    gameHasStarted = true;
     // set curBuilder to Blue after "beginning of game"
     curBuilder = 0;
 }

@@ -1,25 +1,81 @@
-#include "game.h"
+#include <chrono>
 #include <iostream>
+#include <sstream>
+#include <string>
+
+#include "game.h"
 
 using std::cin;
 using std::cout;
+using std::istringstream;
+using std::string;
 
 int main(int argc, char const *argv[]) {
-  /* command line parsing */
+    /* command line parsing */
 
-  Game game = Game();
-  // game.createBoard();
-  // game.beginGame();
-  while(true) {
+    const string flagSeed = "-seed";
+    const string flagLoad = "-load";
+    const string flagBoard = "-board";
+    const string randomBoard = "-random-board";
 
-    if (game.isGameOver()) {
-      // if user says new game
-      bool newGameSelected = false;
-      if (newGameSelected) {
-        game.resetGame();
-        game.beginGame();
-      }
+    bool nextIsSeed = false;
+    bool nextIsSaveFile = false;
+    bool nextIsLayoutFile = false;
+    bool useRandomBoard = false;
+
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    string saveFile = "";
+    string layoutFile = "layout.txt";
+
+    for (int i = 1; i < argc; i++) {
+        if (nextIsSeed) {
+            nextIsSeed = false;
+            istringstream ss{argv[i]};
+            ss >> seed;
+            // print error if seed is negative???
+        } else if (nextIsSaveFile) {
+            nextIsSaveFile = false;
+            saveFile = argv[i];
+        } else if (argv[i] == nextIsLayoutFile) {
+            nextIsLayoutFile = false;
+            layoutFile = argv[i];
+        } else if (argv[i] == flagSeed) {
+            nextIsSeed = true;
+        } else if (argv[i] == flagLoad) {
+            nextIsSaveFile = true;
+        } else if (argv[i] == flagBoard) {
+            nextIsLayoutFile = true;
+        } else if (argv[i] == randomBoard) {
+            useRandomBoard = true;
+            layoutFile = "";
+        }
     }
-  }
-  return 0;
+
+    Game game = Game();
+    // TODO: functions should check if file exists / is valid
+    if (!saveFile.empty()) {
+      game.loadGame(saveFile);
+    } else if (!layoutFile.empty()) {
+      game.createBoard(layoutFile);
+    } else {
+      game.createBoard();
+    }
+
+    if (!game.hasGameStarted()) {
+      game.beginGame();
+    }
+
+    while (true) {
+        if (game.isGameOver()) {
+            // if user says new game
+            bool newGameSelected = false;
+            if (newGameSelected) {
+                game.resetGame();
+                game.beginGame();
+            }
+        } else {
+          game.nextTurn();
+        }
+    }
+    return 0;
 }

@@ -24,6 +24,8 @@ class InvalidArgument{};
 class Game {
   int curBuilder;
   int geeseLocation;
+  // this means that the game has passed the beginning stage
+  bool gameHasStarted;
   TextDisplay textDisplay;
   vector<shared_ptr<Builder>> builders;
   vector<shared_ptr<Tile>> tiles;
@@ -48,6 +50,7 @@ class Game {
   void resetGame();
   void stealFrom(Builder &builder, Resource resource);
   bool isGameOver();
+  bool hasGameStarted();
   void marketTrade(Resource resource1, Resource resource2);
 };
 
