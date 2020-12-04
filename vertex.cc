@@ -22,3 +22,6 @@ int Vertex::getOwner() {
     return owner;
 }
 
+void Vertex::addBasement(shared_ptr<Builder> builder, bool checkResources) {
+
+}
