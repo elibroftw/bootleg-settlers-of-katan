@@ -6,4 +6,19 @@ Vertex::Vertex(int number, int xCoord, int yCoord) {
     this->yCoord = yCoord;
 }
 
+int Vertex::getX() {
+    return xCoord;
+}
+
+int Vertex::getY() {
+    return yCoord;
+}
+
+int Vertex::getNum() {
+    return number;
+}
+
+int Vertex::getOwner() {
+    return owner;
+}
 
