@@ -25,7 +25,7 @@ int main(int argc, char const *argv[]) {
 
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     string saveFile = "";
-    string layoutFile = "layout.txt";
+    string layoutFile = "";
 
     for (int i = 1; i < argc; i++) {
         if (nextIsSeed) {
@@ -46,8 +46,7 @@ int main(int argc, char const *argv[]) {
         } else if (argv[i] == flagBoard) {
             nextIsLayoutFile = true;
         } else if (argv[i] == randomBoard) {
-            useRandomBoard = true;
-            layoutFile = "";
+            useRandomBoard = layoutFile.empty() ? false : true;
         }
     }
 
@@ -78,8 +77,10 @@ int main(int argc, char const *argv[]) {
             } else {
               return 0;
             }
-        } else {
-          game.nextTurn();
+        } else if (!game.nextTurn()) {
+          // if cin fails, save to backup.sv
+          game.saveGame("backup.sv");
+          return 0;
         }
     }
     return 0;

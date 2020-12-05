@@ -17,6 +17,7 @@ class Builder {
     vector<int> resources;
     // store number of points the builder has
     int buildPoints;
+    bool diceIsLoaded;
     public:
         // TODO (in builder / vertex) for building basements,
         // after verifying that the vertex does not have any adjacent buildings,
@@ -55,6 +56,10 @@ class Builder {
         int getBuilderPoints();
         // increase the builder's point by one
         void IncreaseBuilderPoints();
+
+        void useLoadedDice();
+        void useFairDice();
+        bool isDiceLoaded();
 
         friend ostream &operator<<(ostream &out, const Builder &builder);
 };
