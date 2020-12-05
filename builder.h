@@ -53,8 +53,9 @@ class Builder {
         int setResource(int resourceCode, int num);
 
         int getBuilderPoints();
-        // increase the builder's point by one
-        void IncreaseBuilderPoints();
+        void setBuilderPoints(int value);
+        // increases the builder's points by one (must upgrade residence)
+        void IncreasePoint();
 
         friend ostream &operator<<(ostream &out, const Builder &builder);
 };

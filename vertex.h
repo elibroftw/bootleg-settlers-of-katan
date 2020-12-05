@@ -16,6 +16,8 @@ class Vertex {
     int xCoord;
     // yCoord is the "row" of the textDisplay
     int yCoord;
+    // improvement can either be "" for nothing,
+    // "B" for basement, "H" for house, or "T" for tower
     std::string improvement;
 
    public:
@@ -26,12 +28,12 @@ class Vertex {
     int getY();
     int getNum();
     int getOwner();
-    // If the current residence is a basement, upgrades to a house.
-    // If the current residence is a house, upgrades to a tower.
+    // If the current residence is a basement, can upgrade to a house.
+    // If the current residence is a house, can upgrade to a tower.
     // Otherwise cannot upgrade the residence (must at least be a basement
     // and at most a tower).
     // Increases building point by one each time it is called.
-    void upgradeResidence(shared_ptr<Builder> builder, bool checkResources=true);
+    bool upgradeResidence(shared_ptr<Builder> builder, bool checkResources=true);
 
     // resets owner to -1 and improvement to ""
     void reset();
