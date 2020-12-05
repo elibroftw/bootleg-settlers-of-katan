@@ -78,7 +78,7 @@ int main(int argc, char const *argv[]) {
               return 0;
             }
         } else if (!game.nextTurn()) {
-          // if cin fails, save to backup.sv
+          // nextTurn was unsuccesful, so save and exit gracefully
           game.saveGame("backup.sv");
           return 0;
         }

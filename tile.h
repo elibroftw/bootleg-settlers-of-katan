@@ -15,7 +15,7 @@ class Tile {
     unordered_map<std::string, Edge> edges;
     public:
         string getResource();
-        string getValue();
+        int getValue();
         void removeGeese();
         void setGeese();
 };

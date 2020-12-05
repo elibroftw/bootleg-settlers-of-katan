@@ -1,38 +1,30 @@
+#include "dice.h"
+
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <string>
 
-#include "dice.h"
-
-unsigned int Dice::roll() {
-    srand((unsigned) time(0));
-    unsigned int die1 = (rand() % 6) + 1;
-    unsigned int die2 = (rand() % 6) + 1;
-    unsigned int sum = die1 + die2;
-    return sum;
-}
-
-unsigned int Dice::rollLoaded() {
-    bool valid = false;
+unsigned int Dice::roll(bool loaded) {
+    if (!loaded) {
+        srand((int)time(0));
+        int die1 = (rand() % 6) + 1;
+        int die2 = (rand() % 6) + 1;
+        return die1 + die2;
+    }
     int loadedDie;
-    while(!valid) {
+    while (true) {
         std::cout << "Input a roll between 2 and 12: ";
-        // TODO: raise an exception
-        if (std::cin >> loadedDie) {
 
-        }
-        if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(256,'\n');
+        if (!(std::cin >> loadedDie)) {
+            // input failed therefore return an invalid roll
+            return 0;
         }
 
         if (loadedDie >= 2 && loadedDie <= 12) {
-            valid = true;
-            continue;
+            return loadedDie;
         }
 
         std::cout << "Invalid roll." << std::endl;
     }
-    return loadedDie;
 }

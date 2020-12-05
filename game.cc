@@ -444,17 +444,35 @@ bool Game::nextTurn() {
             cout << "Please enter 'help' for a list of valid commands.";
         }
     }
-    int num;
-    if (builder->isDiceLoaded()) {
-        num = dice.rollLoaded();
-    } else {
-        num = dice.roll();
-    }
+    unsigned int diceVal = dice.roll(builder->isDiceLoaded());
     // if input failed
-    if (num <= 2) {
+    if (diceVal <= 2) {
         return false;
     }
-    // use num to give builders resources
+
+    // move geese
+    if (diceVal == 7) {
+        for (size_t i = 0; i < NUM_BUILDERS; i++) {
+        }
+        cout << "Choose where to place the GEESE." << endl;
+        unsigned int geeseLocation = 20;
+        while (geeseLocation > 19) {
+            if (!(cin >> geeseLocation)) {
+                return false;
+            }
+            auto tile = tiles[geeseLocation];
+            // TODO: get all vertices around the tile
+        }
+
+    } else {
+        // use num to give builders resources
+        vector<shared_ptr<Tile>> tilesWithValue;
+        for (size_t i = 0; i < tiles.size(); i++) {
+            auto tile = tiles[i];
+            if (tile.get()->getValue() == diceVal) {
+            }
+        }
+    }
 
     bool endTurn = false;
     while (!endTurn) {
@@ -462,7 +480,6 @@ bool Game::nextTurn() {
         if (!(cin >> temp)) {
             return false;
         } else if (temp == "help" || temp == "h") {
-
         }
     }
 
