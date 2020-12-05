@@ -576,8 +576,24 @@ bool Game::nextTurn() {
             cout << "~ help : prints out the list of commands." << endl;
         } else if (temp == "status") {
             printStatus();
-        }  else if (temp == "board" || temp == "print") {
+        } else if (temp == "board" || temp == "print") {
             printBoard();
+        } else if (temp == "residences") {
+            // TODO test
+            if (builder->getBuilderPoints()) {
+                bool firstPrint = true;
+                for (size_t i = 0; i < buildLocations.size(); i++) {
+                    // print out each location if vertex owner = curBuilder
+                    if (vertices[buildLocations[i]].get()->getOwner() == curBuilder) {
+                        if (!firstPrint) {
+                            cout << ", ";
+                            firstPrint = false;
+                        }
+                        cout << i;
+                    }
+                    cout << endl;
+                }
+            }
         }
     }
 
