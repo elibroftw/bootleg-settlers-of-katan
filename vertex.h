@@ -1,6 +1,5 @@
 #ifndef __VERTEX__
 #define __VERTEX__
-#include <string>
 #include <memory>
 #include "builder.h"
 
@@ -18,7 +17,7 @@ class Vertex {
     int yCoord;
     // improvement can either be "" for nothing,
     // "B" for basement, "H" for house, or "T" for tower
-    std::string improvement;
+    char improvement;
 
    public:
     // default ctor for when vector is being resized
@@ -40,6 +39,8 @@ class Vertex {
 
     // returns whether the vertex has valid number, xCoord, and yCoord
     bool realVertex();
+
+    int getBuildingPoints();
 };
 
 #endif

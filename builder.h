@@ -34,7 +34,8 @@ class Builder {
         // the current builder (who moved the geese), can steal
         // a random resources from one builder who has a residence
         // on the tile to where the geese are moved.
-        bool tryStealing();
+        // if not negative, steal was sucessful...
+        int tryStealing();
         // check if builder won the game, which occurs when they
         // have 10 points
         bool hasWon();
@@ -43,7 +44,7 @@ class Builder {
         //  and clears vertices and edges
         void reset();
 
-        string getColour();
+        string getColour(bool firstCharOnly=false);
 
         // return the number of resource of the specified string or int
         // if string, first toLower the string

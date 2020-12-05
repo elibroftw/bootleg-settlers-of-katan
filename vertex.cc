@@ -1,10 +1,6 @@
 #include "vertex.h"
 
-Vertex::Vertex(int number, int xCoord, int yCoord) {
-    this->number =  number;
-    this->xCoord = xCoord;
-    this->yCoord = yCoord;
-}
+Vertex::Vertex(int number, int xCoord, int yCoord) : number{number}, xCoord{xCoord}, yCoord{yCoord}, improvement{' '} {}
 
 int Vertex::getX() {
     return xCoord;
@@ -22,6 +18,19 @@ int Vertex::getOwner() {
     return owner;
 }
 
+int Vertex::getBuildingPoints() {
+    switch (improvement) {
+        case 'B':
+            return 1;
+        case 'H':
+            return 2;
+        case 'T':
+            return 3;
+        default:
+            return 0;
+    }
+}
+
 bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool checkResources) {
     std::string errorMsg = "You do not have enough resources.";
     int numBrick = builder->getResource("brick");
@@ -29,7 +38,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool checkResources) 
     int numGlass = builder->getResource("glass");
     int numHeat = builder->getResource("heat");
     int numWifi = builder->getResource("wifi");
-    if (improvement == "") {
+    if (improvement == ' ') {
         if (numBrick >= 1 && numEnergy >= 1 && numGlass >= 1 && numWifi >= 1) {
             builder->IncreasePoint();
             builder->setResource("brick", numBrick - 1);
@@ -41,7 +50,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool checkResources) 
             std::cout << errorMsg << std::endl;
             return false;
         }
-    } else if (improvement == "B") {
+    } else if (improvement == 'B') {
         if (numGlass >= 2 && numHeat >= 3) {
             builder->IncreasePoint();
             builder->setResource("glass", numGlass - 2);
@@ -51,7 +60,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool checkResources) 
             std::cout << errorMsg << std::endl;
             return false;
         }
-    } else if (improvement == "H") {
+    } else if (improvement == 'H') {
         if (numBrick >= 3 && numEnergy >= 2 && numGlass >= 2 && numWifi >= 1 && numHeat >= 2) {
             builder->IncreasePoint();
             builder->setResource("brick", numBrick - 3);
@@ -64,7 +73,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool checkResources) 
             std::cout << errorMsg << std::endl;
             return false;
         }
-    } else { //improvement is a tower
+    } else {  //improvement is a tower
         return false;
     }
 }

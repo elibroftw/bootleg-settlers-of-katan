@@ -3,8 +3,10 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <locale>
 #include <sstream>
 #include <string>
+#include <unordered_set>
 
 #include "builder.h"
 
@@ -18,8 +20,13 @@ using std::cout;
 using std::endl;
 using std::ifstream;
 using std::invalid_argument;
+using std::locale;
 using std::ofstream;
+using std::pair;
 using std::string;
+using std::tie;
+using std::toupper;
+using std::unordered_set;
 
 Game::Game() : curBuilder{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{false} {
     // create builders
@@ -58,8 +65,10 @@ Game::Game() : curBuilder{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{f
             yCoord = i / 6 * 4 + 4;
         }
         auto vertex = std::make_shared<Vertex>(i, xCoord, yCoord);
-        // if vertex is a new
-        verticesMap[xCoord / 10][yCoord / 4] = vertex;
+
+        int vertexX, vertexY;
+        tie(vertexX, vertexY) = getVertexFromCoords(xCoord, yCoord);
+        verticesMap[vertexX][vertexY] = vertex;
     }
 
     edgesMap.resize(21);
@@ -161,6 +170,10 @@ Game::Game() : curBuilder{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{f
         auto tile = std::make_shared<Tile>(i);
         tiles.push_back(tile);
     }
+}
+
+pair<int, int> getVertexFromCoords(int x, int y) {
+    return std::make_pair(x / 10, y / 4);
 }
 
 bool Game::hasGameStarted() {
@@ -395,6 +408,30 @@ void Game::beginGame() {
 
 void Game::printBoard() { cout << textDisplay << endl; }
 
+
+unordered_map<int, int> Game::getBuildersFromTile(int tileNumber) {
+    auto coords = textDisplay.getTopLeftCoord(tileNumber);
+    int xCoord = coords.first + 1;
+    int yCoord = coords.second;
+    unordered_map<int, int> buildersOnTile;
+    for (size_t x = 0; x < 2; x++) {
+        for (size_t y = 0; y < 3; j++) {
+            auto vertex = verticesMap[xCoord + x][yCoord + y];
+            int vertexOwner = vertex.get()->getOwner();
+            if (vertexOwner >= 0) {
+                int bp = vertex.get()->getBuildingPoints();
+
+                if (buildersOnTile.count(vertexOwner)) {
+                    buildersOnTile[vertexOwner] = bp;
+                } else {
+                    buildersOnTile[vertexOwner] += bp;
+                }
+            }
+        }
+    }
+    return buildersOnTile;
+}
+
 bool Game::nextTurn() {
     // whenever a builder builds, check if builder has 10+ points
     // if it does set gameEnded to true
@@ -453,6 +490,7 @@ bool Game::nextTurn() {
     // move geese
     if (diceVal == 7) {
         for (size_t i = 0; i < NUM_BUILDERS; i++) {
+            builders[i].get()->geeseAttack();
         }
         cout << "Choose where to place the GEESE." << endl;
         unsigned int geeseLocation = 20;
@@ -461,7 +499,43 @@ bool Game::nextTurn() {
                 return false;
             }
             auto tile = tiles[geeseLocation];
-            // TODO: get all vertices around the tile
+            unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
+            bool printMsg = false;
+            buildersOnTile.erase(curBuilder);
+            for (auto const & [b, bp]  : buildersOnTile) {
+                printMsg = true;
+                cout << "Builder " << builder->getColour() << " can choose to steal from "
+                     << builders[b].get()->getColour() << endl;
+            }
+            if (printMsg) {
+                cout << "Choose a builder to steal from." << endl;
+                locale loc;
+                bool askForInput = true;
+                while (askForInput) {
+                    string input;
+                    if (!(cin >> input)) {
+                        return false;
+                    }
+
+                    toupper(input[0], loc);  // capitalize first letter
+                    for (auto const & [b, bp] : buildersOnTile) {
+                        auto tempBuilder = builders[b].get();
+                        if (input[0] == tempBuilder->getColour()[0]) {
+                            // TODO: check if correct
+                            int stolenResource = tempBuilder->tryStealing();
+                            if (stolenResource >= 0) {
+                                cout << "Builder " << builder->getColour() << " stole "
+                                     << getResourceName(stolenResource) << " from " << tempBuilder->getColour() << endl;
+                                builder->setResource(stolenResource, builder->getResource(stolenResource) + 1);
+                            }
+                            askForInput = false;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                cout << "No builders to steal from" << endl;
+            }
         }
 
     } else {
@@ -470,6 +544,12 @@ bool Game::nextTurn() {
         for (size_t i = 0; i < tiles.size(); i++) {
             auto tile = tiles[i];
             if (tile.get()->getValue() == diceVal) {
+                unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
+                for (auto const & [b, bp] : buildersOnTile) {
+                    // TODO
+                }
+                // distribute resources for all vertices and shit... you know the drill
+                // get building points per builder in a map for the tile
             }
         }
     }
