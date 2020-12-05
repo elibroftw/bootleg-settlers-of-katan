@@ -408,14 +408,13 @@ void Game::beginGame() {
 
 void Game::printBoard() { cout << textDisplay << endl; }
 
-
 unordered_map<int, int> Game::getBuildersFromTile(int tileNumber) {
     auto coords = textDisplay.getTopLeftCoord(tileNumber);
     int xCoord = coords.first + 1;
     int yCoord = coords.second;
     unordered_map<int, int> buildersOnTile;
     for (size_t x = 0; x < 2; x++) {
-        for (size_t y = 0; y < 3; j++) {
+        for (size_t y = 0; y < 3; y++) {
             auto vertex = verticesMap[xCoord + x][yCoord + y];
             int vertexOwner = vertex.get()->getOwner();
             if (vertexOwner >= 0) {
@@ -430,6 +429,22 @@ unordered_map<int, int> Game::getBuildersFromTile(int tileNumber) {
         }
     }
     return buildersOnTile;
+}
+
+void Game::printStatus() {
+    for (size_t i = 0; i < 4; i++) {
+        auto b = builders[i].get();
+        string colour = b->getColour();
+        int padding = 6 - colour.size();
+        cout << "Builder " << colour << " ";
+        for (size_t x = 0; x < padding; x++) {
+            cout << " ";
+        }
+        cout << "has " << b->getBuilderPoints() << " building points";
+        for (size_t r = 0; r < 6; r++) {
+            cout << ", " << b->getResource(r) << getResourceName(r);
+        }
+    }
 }
 
 bool Game::nextTurn() {
@@ -457,21 +472,9 @@ bool Game::nextTurn() {
         } else if (temp == "roll" || temp == "r") {
             rollDice = true;
         } else if (temp == "status" || temp == "s") {
-            for (size_t i = 0; i < 4; i++) {
-                auto b = builders[i].get();
-                string colour = b->getColour();
-                int padding = 6 - colour.size();
-                cout << "Builder " << colour << " ";
-                for (size_t x = 0; x < padding; x++) {
-                    cout << " ";
-                }
-                cout << "has " << b->getBuilderPoints() << " building points";
-                for (size_t r = 0; r < 6; r++) {
-                    cout << ", " << b->getResource(r) << getResourceName(r);
-                }
-            }
+            printStatus();
         } else if (temp == "help" || temp == "h") {
-            cout << "load : changes current builder's dice type to 'loaded'" << endl;
+            cout << "~ load : changes current builder's dice type to 'loaded'" << endl;
             cout << "~ fair : changes current builder's dice type to 'fair'" << endl;
             cout << "~ roll : rolls the dice and distributes resources." << endl;
             cout << "~ status : prints the current status of all builders in order from builder 0 to 3." << endl;
@@ -502,7 +505,7 @@ bool Game::nextTurn() {
             unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
             bool printMsg = false;
             buildersOnTile.erase(curBuilder);
-            for (auto const & [b, bp]  : buildersOnTile) {
+            for (auto const &[b, bp] : buildersOnTile) {
                 printMsg = true;
                 cout << "Builder " << builder->getColour() << " can choose to steal from "
                      << builders[b].get()->getColour() << endl;
@@ -518,7 +521,7 @@ bool Game::nextTurn() {
                     }
 
                     toupper(input[0], loc);  // capitalize first letter
-                    for (auto const & [b, bp] : buildersOnTile) {
+                    for (auto const &[b, bp] : buildersOnTile) {
                         auto tempBuilder = builders[b].get();
                         if (input[0] == tempBuilder->getColour()[0]) {
                             // TODO: check if correct
@@ -545,7 +548,7 @@ bool Game::nextTurn() {
             auto tile = tiles[i];
             if (tile.get()->getValue() == diceVal) {
                 unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
-                for (auto const & [b, bp] : buildersOnTile) {
+                for (auto const &[b, bp] : buildersOnTile) {
                     // TODO
                 }
                 // distribute resources for all vertices and shit... you know the drill
@@ -554,12 +557,27 @@ bool Game::nextTurn() {
         }
     }
 
+    // post-roll menu for current player
     bool endTurn = false;
     while (!endTurn) {
         string temp;
         if (!(cin >> temp)) {
             return false;
         } else if (temp == "help" || temp == "h") {
+            cout << "~ board : prints the current board" << endl;
+            cout << "~ status : prints the current status of all builders ini order from builder 0 to 3" << endl;
+            cout << "~ residences : prints the residences the current buildere has completed" << endl;
+            cout << "~ build-road <road#> : attempts to build a road at <road#>" << endl;
+            cout << "~ build-res <housing#> : attempts to build a basement at <housing#>" << endl;
+            cout << "~ improve <housing#> : attempts to improve the residence at <housing#>" << endl;
+            cout << "~ trade <colour> <give> <take> : attempts to trade with builder <colour> giving one resource of type <give> and receving one resource of type <take>" << endl;
+            cout << "~ next : passes control onto the next builder in the game. This ends the \"During the Turn\" phase." << endl;
+            cout << "~ save <file> : saves the current game state to <file>" << endl;
+            cout << "~ help : prints out the list of commands." << endl;
+        } else if (temp == "status") {
+            printStatus();
+        }  else if (temp == "board" || temp == "print") {
+            printBoard();
         }
     }
 
@@ -570,9 +588,10 @@ bool Game::nextTurn() {
 void Game::tradeWith(Builder &builder, Resource resource1, Resource resource2) {
 }
 
-void Game::stealFrom(Builder &builder, Resource resource) {}
-
 void Game::marketTrade(Resource resource1, Resource resource2) {}
+
+// might be able to delete
+void Game::stealFrom(Builder &builder, Resource resource) {}
 
 void Game::resetGame() {
     curBuilder = -1;

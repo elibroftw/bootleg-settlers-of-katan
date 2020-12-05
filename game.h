@@ -62,6 +62,8 @@ class Game {
     bool isGameOver();
     bool hasGameStarted();
     void marketTrade(Resource resource1, Resource resource2);
+    // prints the current status of all builders in order from builder 0 to 3
+    void printStatus();
 };
 
 #endif

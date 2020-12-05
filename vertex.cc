@@ -80,7 +80,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool checkResources) 
 
 void Vertex::reset() {
     owner = -1;
-    improvement = "";
+    improvement = ' ';
 }
 
 bool Vertex::realVertex() {
