@@ -658,6 +658,8 @@ bool Game::nextTurn() {
                 return false;
             }
             saveGame(filename);
+        } else {
+            cout << "Invalid command." << endl;
         }
     }
 
