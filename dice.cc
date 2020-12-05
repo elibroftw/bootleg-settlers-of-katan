@@ -18,17 +18,20 @@ unsigned int Dice::rollLoaded() {
     int loadedDie;
     while(!valid) {
         std::cout << "Input a roll between 2 and 12: ";
-        std::cin >> loadedDie;
+        // TODO: raise an exception
+        if (std::cin >> loadedDie) {
+
+        }
         if (std::cin.fail()) {
             std::cin.clear();
             std::cin.ignore(256,'\n');
         }
-        
+
         if (loadedDie >= 2 && loadedDie <= 12) {
             valid = true;
             continue;
         }
-        
+
         std::cout << "Invalid roll." << std::endl;
     }
     return loadedDie;

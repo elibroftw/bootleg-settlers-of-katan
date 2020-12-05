@@ -11,39 +11,25 @@
 // VM = verticiesMap
 #define VM_WIDTH 6
 #define VM_HEIGHT 11
+#define NUM_BUILDERS 4
 
 using std::cin;
 using std::cout;
+using std::endl;
 using std::ifstream;
 using std::invalid_argument;
 using std::ofstream;
 using std::string;
 
-Game::Game() : curBuilder{-1}, geeseLocation{-1}, gameStarted{false}, gameEnded{false} {
-    // make a constructor with optional layout and optional import
-    for (size_t i = 0; i < 4; i++) {
-        string colour;
-        switch (i) {
-            case 0:
-                colour = "Blue";
-                break;
-            case 1:
-                colour = "Red";
-                break;
-            case 2:
-                colour = "Orange";
-                break;
-            default:
-                colour = "Yellow";
-                break;
-        }
-        auto builder = std::make_shared<Builder>(colour);
-        builders.push_back(builder);
-    }
+Game::Game() : curBuilder{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{false} {
+    // create builders
+    builders.push_back(std::make_shared<Builder>("Blue"));
+    builders.push_back(std::make_shared<Builder>("Red"));
+    builders.push_back(std::make_shared<Builder>("Orange"));
+    builders.push_back(std::make_shared<Builder>("Yellow"));
 
     verticesMap.resize(11);
     for (size_t row = 0; row < verticesMap.size(); row++) {
-        // might need a Vertex default ctor (-1, -1, -1)
         verticesMap[row].resize(6);
     }
 
@@ -177,14 +163,33 @@ Game::Game() : curBuilder{-1}, geeseLocation{-1}, gameStarted{false}, gameEnded{
     }
 }
 
-
 bool Game::hasGameStarted() {
     return gameStarted;
 }
 
+bool Game::isGameOver() {
+    return gameOver;
+}
+
+string getResourceName(int resourceCode) {
+    switch (resourceCode) {
+        case 0:
+            return "BRICKS";
+        case 1:
+            return "ENERGY";
+        case 2:
+            return "GLASS";
+        case 3:
+            return "HEAT";
+        case 4:
+            return "WIFI";
+        default:
+            return "PARK";
+    }
+}
+
 void Game::createBoard() {
     // TODO: random board
-
 }
 
 void Game::createBoard(string filename) {
@@ -219,9 +224,9 @@ void Game::moveGeese(int to) {
 
 void Game::saveGame(string filename) {
     ofstream outfile{filename};
-    outfile << curBuilder << std::endl;
+    outfile << curBuilder << endl;
     for (size_t i = 0; i < 4; i++) {
-        outfile << builders[i].get() << std::endl;
+        outfile << builders[i].get() << endl;
     }
     for (size_t i = 0; i < tiles.size(); i++) {
         auto tile = tiles[i].get();
@@ -230,9 +235,9 @@ void Game::saveGame(string filename) {
         }
         outfile << tile->getResource() << " " << tile->getValue();
     }
-    outfile << std::endl;
+    outfile << endl;
     if (geeseLocation != -1) {
-        outfile << geeseLocation << std::endl;
+        outfile << geeseLocation << endl;
     }
 }
 
@@ -249,7 +254,7 @@ void Game::loadGame(string filename) {
         if (!getline(file, line)) {
             throw InvalidSaveFile();
         }
-        auto builder = builders[i].get();
+        auto builder = builders[i];
         std::istringstream ss1{line};
         string temp;
         bool readRoads = false;
@@ -264,7 +269,7 @@ void Game::loadGame(string filename) {
             } else {
                 // if valid valid, try converting value to int
                 try {
-                    builders[i].get()->setResource(i, std::stoi(temp));
+                    builder.get()->setResource(i, std::stoi(temp));
                 } catch (invalid_argument &e) {
                     throw InvalidSaveFile();
                 }
@@ -282,23 +287,28 @@ void Game::loadGame(string filename) {
         }
 
         // read housing
-        int vertex;
-        int bp = 0;  // keep track of added builder points
-        while (ss1 >> vertex) {
+        int vertexIdx;
+        while (ss1 >> vertexIdx) {
             if (ss1 >> temp) {
                 // call addHousing to Vertex
-                if (temp == "B") {
-                    ++bp;
-                } else if (temp == "H") {
-                    bp += 2;
-                } else if (temp == "T") {
-                    bp += 3;
+                auto vertex = vertices[vertexIdx];
+                if (temp == "T") {
+                    vertex.get()->upgradeResidence(builder, false);
+                    temp = "H";
                 }
+                if (temp == "H") {
+                    vertex.get()->upgradeResidence(builder, false);
+                    temp = "B";
+                }
+                if (temp == "B") {
+                    vertex.get()->upgradeResidence(builder, false);
+                }
+                buildLocations.push_back(vertexIdx);
             } else {
                 throw InvalidSaveFile();
             }
         }
-        builder->setBuilderPoints(bp);
+        // builder.get()->setBuilderPoints(bp);
     }
 
     // read board
@@ -343,7 +353,7 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
 }
 
 void Game::beginGame() {
-    int vertexIn;
+    int vertexIdx;
     bool validVertex = false;
     for (int i = 0; i < 2; i++) {
         for (size_t j = 0; j < 4; j++) {
@@ -351,14 +361,24 @@ void Game::beginGame() {
                 // accounts for reverse order
                 auto builder = i == 0 ? builders[j] : builders[4 - j];
                 cout << "Builder " << builder.get()->getColour()
-                     << ", where do you want to build a basement?" << std::endl
+                     << ", where do you want to build a basement?" << endl
                      << "> ";
-                if (cin >> vertexIn) {
-                    if (vertexIn >= 0 && vertexIn <= 53) {
-                        auto vertex = vertices[vertexIn];
+                if (cin >> vertexIdx) {
+                    if (vertexIdx >= 0 && vertexIdx <= 53) {
+                        auto vertex = vertices[vertexIdx];
                         // build the basement
                         validVertex = isValidVertex(vertex, false);
-                        vertex.get()->addBasement(builder, false);
+                        if (validVertex) {
+                            vertex.get()->upgradeResidence(builder, false);
+                            buildLocations.push_back(vertexIdx);
+                        } else {
+                            cout << "You cannot build here." << endl;
+                            cout << "Basements already exist as locations: ";
+                            for (size_t x = 0; x < buildLocations.size(); x++) {
+                                cout << buildLocations[x] << " ";
+                            }
+                            cout << endl;
+                        }
                     }
                 } else {
                     saveGame("backup.sv");
@@ -373,15 +393,89 @@ void Game::beginGame() {
     curBuilder = 0;
 }
 
-void Game::printBoard() { cout << textDisplay << std::endl; }
+void Game::printBoard() { cout << textDisplay << endl; }
 
-void Game::nextTurn() {
+bool Game::nextTurn() {
     // whenever a builder builds, check if builder has 10+ points
-    // if it does set
+    // if it does set gameEnded to true
+    cout << "Builder " << builders[curBuilder].get()->getColour() << "'s turn." << endl;
+
+    // rolling the dice
+    cout << "> ";
+    bool rollDice = false;
+    auto builder = builders[curBuilder].get();
+    while (!rollDice) {
+        string temp;
+        if (!(cin >> temp)) {
+            return false;
+        }
+        if (temp == "load" || temp == "l") {
+            // set dice to laoded
+            builder->useLoadedDice();
+            cout << "Builder " << builder->getColour() << " now has a loaded Dice." << endl;
+        } else if (temp == "fair" || temp == "f") {
+            builder->useFairDice();
+            cout << "Builder " << builder->getColour() << " now has a fair Dice." << endl;
+            // set dice to fair
+        } else if (temp == "roll" || temp == "r") {
+            rollDice = true;
+        } else if (temp == "status" || temp == "s") {
+            for (size_t i = 0; i < 4; i++) {
+                auto b = builders[i].get();
+                string colour = b->getColour();
+                int padding = 6 - colour.size();
+                cout << "Builder " << colour << " ";
+                for (size_t x = 0; x < padding; x++) {
+                    cout << " ";
+                }
+                cout << "has " << b->getBuilderPoints() << " building points";
+                for (size_t r = 0; r < 6; r++) {
+                    cout << ", " << b->getResource(r) << getResourceName(r);
+                }
+            }
+        } else if (temp == "help" || temp == "h") {
+            cout << "load : changes current builder's dice type to 'loaded'" << endl;
+            cout << "~ fair : changes current builder's dice type to 'fair'" << endl;
+            cout << "~ roll : rolls the dice and distributes resources." << endl;
+            cout << "~ status : prints the current status of all builders in order from builder 0 to 3." << endl;
+            cout << "~ help : prints out the list of commands." << endl;
+        } else {
+            cout << "invalid Command." << endl;
+            cout << "Please enter 'help' for a list of valid commands.";
+        }
+    }
+    int num;
+    if (builder->isDiceLoaded()) {
+        num = dice.rollLoaded();
+    } else {
+        num = dice.roll();
+    }
+    // if input failed
+    if (num <= 2) {
+        return false;
+    }
+    // use num to give builders resources
+
+    bool endTurn = false;
+    while (!endTurn) {
+        string temp;
+        if (!(cin >> temp)) {
+            return false;
+        } else if (temp == "help" || temp == "h") {
+
+        }
+    }
+
+    ++curBuilder;
+    return true;
 }
 
 void Game::tradeWith(Builder &builder, Resource resource1, Resource resource2) {
 }
+
+void Game::stealFrom(Builder &builder, Resource resource) {}
+
+void Game::marketTrade(Resource resource1, Resource resource2) {}
 
 void Game::resetGame() {
     curBuilder = -1;
@@ -407,11 +501,3 @@ void Game::resetGame() {
 
     geeseLocation = -1;
 }
-
-void Game::stealFrom(Builder &builder, Resource resource) {}
-
-bool Game::isGameOver() {
-    return gameended;
-}
-
-void Game::marketTrade(Resource resource1, Resource resource2) {}

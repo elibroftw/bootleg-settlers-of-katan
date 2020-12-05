@@ -9,6 +9,7 @@
 #include "textdisplay.h"
 #include "edge.h"
 #include "resource.h"
+#include "dice.h"
 #include "vertex.h"
 
 using std::shared_ptr;
@@ -26,7 +27,8 @@ class Game {
   int geeseLocation;
   // this means that the game has passed the beginning stage
   bool gameStarted;
-  bool gameended;
+  bool gameOver;
+  Dice dice;
   TextDisplay textDisplay;
   vector<shared_ptr<Builder>> builders;
   vector<shared_ptr<Tile>> tiles;
@@ -34,6 +36,7 @@ class Game {
   vector<vector<shared_ptr<Vertex>>> verticesMap;
   vector<vector<shared_ptr<Edge>>> edgesMap;
   vector<shared_ptr<Edge>> edges;
+  vector<int> buildLocations;
 
   bool isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges=true);
 
@@ -46,7 +49,8 @@ class Game {
   void loadGame(string filename);
   void beginGame();
   void printBoard();
-  void nextTurn();
+  // returns whether turn was sucessful (read from cin worked)
+  bool nextTurn();
   void tradeWith(Builder &builder, Resource resource1, Resource resource2);
   void resetGame();
   void stealFrom(Builder &builder, Resource resource);
