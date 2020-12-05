@@ -49,7 +49,6 @@ class Game {
     Game();
     void createBoard();
     void createBoard(string filename);
-    void moveGeese(int to);
     void saveGame(string filename);
     void loadGame(string filename);
     void beginGame();

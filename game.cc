@@ -217,6 +217,8 @@ void Game::createBoard(string filename) {
     while (file >> resource) {
         if (file >> value) {
             auto tile = std::make_shared<Tile>(tiles.size(), value, resource);
+            textDisplay.setTileResource(tiles.size(), getResourceName(resource));
+            textDisplay.setTileValue(tiles.size(), value);
             tiles.push_back(tile);
         }
     }
@@ -225,9 +227,6 @@ void Game::createBoard(string filename) {
 void Game::moveGeese(int to) {
     if (geeseLocation != to) {
         if (geeseLocation != -1) {
-            textDisplay.removeGeese(geeseLocation);
-            textDisplay.setGeese(to);
-            geeseLocation = to;
             // more
         }
     } else {
@@ -246,7 +245,7 @@ void Game::saveGame(string filename) {
         if (i != 0) {
             outfile << " ";
         }
-        outfile << tile->getResource() << " " << tile->getValue();
+        outfile << getResourceName(tile->getResource()) << " " << tile->getValue();
     }
     outfile << endl;
     if (geeseLocation != -1) {
@@ -334,6 +333,8 @@ void Game::loadGame(string filename) {
     while (ss2 >> resource) {
         if (ss2 >> value) {
             auto tile = std::make_shared<Tile>(tiles.size(), value, resource);
+            textDisplay.setTileResource(tiles.size(), getResourceName(resource));
+            textDisplay.setTileValue(tiles.size(), value);
             tiles.push_back(tile);
         }
     }
@@ -419,7 +420,6 @@ unordered_map<int, int> Game::getBuildersFromTile(int tileNumber) {
             int vertexOwner = vertex.get()->getOwner();
             if (vertexOwner >= 0) {
                 int bp = vertex.get()->getBuildingPoints();
-
                 if (buildersOnTile.count(vertexOwner)) {
                     buildersOnTile[vertexOwner] = bp;
                 } else {
@@ -490,55 +490,61 @@ bool Game::nextTurn() {
         return false;
     }
 
-    // move geese
+    // geese
     if (diceVal == 7) {
         for (size_t i = 0; i < NUM_BUILDERS; i++) {
             builders[i].get()->geeseAttack();
         }
         cout << "Choose where to place the GEESE." << endl;
-        unsigned int geeseLocation = 20;
-        while (geeseLocation > 19) {
-            if (!(cin >> geeseLocation)) {
+        unsigned int newGeeseLocation = geeseLocation;
+        while (newGeeseLocation == geeseLocation || newGeeseLocation > 19) {
+            if (!(cin >> newGeeseLocation)) {
                 return false;
             }
-            auto tile = tiles[geeseLocation];
-            unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
-            bool printMsg = false;
-            buildersOnTile.erase(curBuilder);
-            for (auto const &[b, bp] : buildersOnTile) {
-                printMsg = true;
-                cout << "Builder " << builder->getColour() << " can choose to steal from "
-                     << builders[b].get()->getColour() << endl;
-            }
-            if (printMsg) {
-                cout << "Choose a builder to steal from." << endl;
-                locale loc;
-                bool askForInput = true;
-                while (askForInput) {
-                    string input;
-                    if (!(cin >> input)) {
-                        return false;
-                    }
+        }
+        // update textdisplay
+        textDisplay.removeGeese(geeseLocation);
+        textDisplay.setGeese(newGeeseLocation);
+        geeseLocation = newGeeseLocation;
 
-                    toupper(input[0], loc);  // capitalize first letter
-                    for (auto const &[b, bp] : buildersOnTile) {
-                        auto tempBuilder = builders[b].get();
-                        if (input[0] == tempBuilder->getColour()[0]) {
-                            // TODO: check if correct
-                            int stolenResource = tempBuilder->tryStealing();
-                            if (stolenResource >= 0) {
-                                cout << "Builder " << builder->getColour() << " stole "
-                                     << getResourceName(stolenResource) << " from " << tempBuilder->getColour() << endl;
-                                builder->setResource(stolenResource, builder->getResource(stolenResource) + 1);
-                            }
-                            askForInput = false;
-                            break;
+        auto tile = tiles[newGeeseLocation];
+        unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
+        bool printMsg = false;
+        buildersOnTile.erase(curBuilder);
+        for (auto const &[b, bp] : buildersOnTile) {
+            printMsg = true;
+            cout << "Builder " << builder->getColour() << " can choose to steal from "
+                 << builders[b].get()->getColour() << endl;
+        }
+
+        if (printMsg) {
+            cout << "Choose a builder to steal from." << endl;
+            locale loc;
+            bool askForInput = true;
+            while (askForInput) {
+                string input;
+                if (!(cin >> input)) {
+                    return false;
+                }
+
+                toupper(input[0], loc);  // capitalize first letter
+                for (auto const &[b, bp] : buildersOnTile) {
+                    auto tempBuilder = builders[b].get();
+                    if (input[0] == tempBuilder->getColour()[0]) {
+                        // TODO: check if correct
+                        int stolenResource = tempBuilder->tryStealing();
+                        if (stolenResource >= 0) {
+                            cout << "Builder " << builder->getColour() << " stole "
+                                 << getResourceName(stolenResource) << " from " << tempBuilder->getColour() << endl;
+                            builder->setResource(stolenResource, builder->getResource(stolenResource) + 1);
                         }
+                        askForInput = false;
+                        break;
                     }
                 }
-            } else {
-                cout << "No builders to steal from" << endl;
             }
+        } else {
+            cout << "No builders to steal from" << endl;
         }
 
     } else {
@@ -546,10 +552,16 @@ bool Game::nextTurn() {
         vector<shared_ptr<Tile>> tilesWithValue;
         for (size_t i = 0; i < tiles.size(); i++) {
             auto tile = tiles[i];
+            // if tile has the same value as the dice...
             if (tile.get()->getValue() == diceVal) {
+                int resourceCode = tile.get()->getResource();
                 unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
                 for (auto const &[b, bp] : buildersOnTile) {
-                    // TODO
+                    // add resources based on number of improvements on tile
+                    auto temp = builders[b].get();
+                    temp->setResource(resourceCode, temp->getResource(resourceCode) + bp);
+                    cout << "Builder " << temp->getColour() << " gained:" << endl
+                         << bp << getResourceName(resourceCode);
                 }
                 // distribute resources for all vertices and shit... you know the drill
                 // get building points per builder in a map for the tile
@@ -558,26 +570,28 @@ bool Game::nextTurn() {
     }
 
     // post-roll menu for current player
-    bool endTurn = false;
-    while (!endTurn) {
+    while (true) {
         string temp;
+        cout << "Enter a command." << endl
+             << "> ";
         if (!(cin >> temp)) {
             return false;
         } else if (temp == "help" || temp == "h") {
-            cout << "~ board : prints the current board" << endl;
-            cout << "~ status : prints the current status of all builders ini order from builder 0 to 3" << endl;
-            cout << "~ residences : prints the residences the current buildere has completed" << endl;
-            cout << "~ build-road <road#> : attempts to build a road at <road#>" << endl;
-            cout << "~ build-res <housing#> : attempts to build a basement at <housing#>" << endl;
-            cout << "~ improve <housing#> : attempts to improve the residence at <housing#>" << endl;
+            cout << "Valid commands:" << endl;
+            cout << "~ board                        : prints the current board" << endl;
+            cout << "~ status                       : prints the current status of all builders ini order from builder 0 to 3" << endl;
+            cout << "~ residences                   : prints the residences the current buildere has completed" << endl;
+            cout << "~ build-road <road#>           : attempts to build a road at <road#>" << endl;
+            cout << "~ build-res <housing#>         : attempts to build a basement at <housing#>" << endl;
+            cout << "~ improve <housing#>           : attempts to improve the residence at <housing#>" << endl;
             cout << "~ trade <colour> <give> <take> : attempts to trade with builder <colour> giving one resource of type <give> and receving one resource of type <take>" << endl;
-            cout << "~ next : passes control onto the next builder in the game. This ends the \"During the Turn\" phase." << endl;
-            cout << "~ save <file> : saves the current game state to <file>" << endl;
-            cout << "~ help : prints out the list of commands." << endl;
-        } else if (temp == "status") {
-            printStatus();
+            cout << "~ next                         : passes control onto the next builder in the game. This ends the \"During the Turn\" phase." << endl;
+            cout << "~ save <file>                  : saves the current game state to <file>" << endl;
+            cout << "~ help                         : prints out the list of commands." << endl;
         } else if (temp == "board" || temp == "print") {
             printBoard();
+        } else if (temp == "status") {
+            printStatus();
         } else if (temp == "residences") {
             // TODO test
             if (builder->getBuilderPoints()) {
@@ -594,6 +608,56 @@ bool Game::nextTurn() {
                     cout << endl;
                 }
             }
+        } else if (temp == "build-road" || temp == "brd") {
+            // TODO: check if input location was valid,
+            //  check if edge is valid, resources, etc...
+            int edgeLocation;
+            while (true) {
+                if (cin >> edgeLocation) {
+                    break;
+                } else {
+                    return false;
+                }
+            }
+        } else if (temp == "build-res" || temp == "brs") {
+            // TODO: check if input location was valid,
+            //  check if vertex is valid, resources, etc...
+            int vertexLocation;
+            while (true) {
+                if (cin >> vertexLocation) {
+                    break;
+                } else {
+                    return false;
+                }
+            }
+        } else if (temp == "improve" || temp == "i") {
+            // TODO: check if input location was valid,
+            //  check if owner owns vertex, resources, etc...
+            int vertexLocation;
+            while (true) {
+                if (cin >> vertexLocation) {
+                    break;
+                } else {
+                    return false;
+                }
+            }
+            // TODO: check if builder won
+        } else if (temp == "trade") {
+            string colour2;
+            string resGive;
+            string resTake;
+            if (!(cin >> colour2) || !(cin >> resGive) || !!(cin >> resTake)) {
+                return false;
+            }
+            // TODO: validate inputs
+        } else if (temp == "next") {
+            break;
+        } else if (temp == "save") {
+            string filename;
+            if (!(cin >> filename)) {
+                return false;
+            }
+            saveGame(filename);
         }
     }
 

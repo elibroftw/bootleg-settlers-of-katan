@@ -48,7 +48,6 @@ TextDisplay::TextDisplay() {
     for (size_t i = 0; i < 19; i++) {
         setTileNumber(i);
     }
-
 }
 
 void TextDisplay::setChar(int x, int y, char c) {
@@ -115,7 +114,7 @@ pair<int, int> TextDisplay::getTopLeftCoord(int tileNumber) {
     return make_pair(xCoord, yCoord);
 }
 
-void TextDisplay::setResourceName(int tileNumber, string resource) {
+void TextDisplay::setTileResource(int tileNumber, string resource) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int xCoord = tileCoords.first + 3;
     int yCoord = tileCoords.second + 2;
@@ -132,10 +131,12 @@ void TextDisplay::setTileNumber(int tileNumber) {
 }
 
 void TextDisplay::setTileValue(int tileNumber, int tileValue) {
-    auto tileCoords = getTopLeftCoord(tileNumber);
-    int xCoord = tileCoords.first + 4;
-    int yCoord = tileCoords.second + 4;
-    setInt(xCoord, yCoord, tileValue);
+    if (tileValue != 7) {
+        auto tileCoords = getTopLeftCoord(tileNumber);
+        int xCoord = tileCoords.first + 4;
+        int yCoord = tileCoords.second + 4;
+        setInt(xCoord, yCoord, tileValue);
+    }
 }
 
 void TextDisplay::setGeese(int tileNumber) {

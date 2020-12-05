@@ -23,7 +23,7 @@ class TextDisplay {
     pair<int, int> getTopLeftCoord(int tileNumber);
     void setTileNumber(int tileNumber);
     void setTileValue(int tileNumber, int tileValue);
-    void setResourceName(int tileNumber, string resource);
+    void setTileResource(int tileNumber, string resource);
     void setGeese(int tileNumber);
     void removeGeese(int tileNumber);
     // todo: update tile resource, geese, value, number
