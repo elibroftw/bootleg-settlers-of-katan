@@ -26,9 +26,10 @@ using std::pair;
 using std::string;
 using std::tie;
 using std::toupper;
+using std::unordered_map;
 using std::unordered_set;
 
-Game::Game() : curBuilder{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{false} {
+Game::Game() : curTurn{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{false} {
     // create builders
     builders.push_back(std::make_shared<Builder>("Blue"));
     builders.push_back(std::make_shared<Builder>("Red"));
@@ -224,22 +225,43 @@ void Game::createBoard(string filename) {
     }
 }
 
-void Game::moveGeese(int to) {
-    if (geeseLocation != to) {
-        if (geeseLocation != -1) {
-            // more
-        }
-    } else {
-        throw InvalidArgument();
-    }
-}
-
 void Game::saveGame(string filename) {
     ofstream outfile{filename};
-    outfile << curBuilder << endl;
-    for (size_t i = 0; i < 4; i++) {
-        outfile << builders[i].get() << endl;
+    outfile << curTurn << endl;
+
+    unordered_map<int, vector<int>> roads;
+    for (auto &&i : roadLocations) {
+        int owner = edges[i].get()->getOwner();
+        if (roads.count(owner)) {
+            roads[owner].push_back(i);
+        } else {
+            roads.insert(make_pair(owner, vector<int>{i}));
+        }
     }
+
+    unordered_map<int, vector<int>> housing;
+    for (auto &&i : resLocations) {
+        int owner = vertices[i].get()->getOwner();
+        if (housing.count(owner)) {
+            housing[owner].push_back(i);
+        } else {
+            housing.insert(make_pair(owner, vector<int>{i}));
+        }
+    }
+
+    for (size_t i = 0; i < 4; i++) {
+        outfile << builders[i].get() << " r";
+        for (auto &&r : roads[i]) {
+            outfile << ' ' << r;
+        }
+        outfile << " h";
+        for (auto &&v : housing[i]) {
+            auto vertex = vertices[v].get();
+            outfile << ' ' << vertex->getNum() << ' ' << vertex->getImprovement();
+        }
+        outfile << endl;
+    }
+
     for (size_t i = 0; i < tiles.size(); i++) {
         auto tile = tiles[i].get();
         if (i != 0) {
@@ -258,7 +280,7 @@ void Game::loadGame(string filename) {
     if (!file) {
         throw InvalidSaveFile();
     }
-    file >> curBuilder;
+    file >> curTurn;
     string line;
     // read builder data for each buildere
     for (size_t i = 0; i < 4; i++) {
@@ -315,7 +337,7 @@ void Game::loadGame(string filename) {
                 if (temp == "B") {
                     vertex.get()->upgradeResidence(builder, false);
                 }
-                buildLocations.push_back(vertexIdx);
+                resLocations.push_back(vertexIdx);
             } else {
                 throw InvalidSaveFile();
             }
@@ -384,12 +406,12 @@ void Game::beginGame() {
                         validVertex = isValidVertex(vertex, false);
                         if (validVertex) {
                             vertex.get()->upgradeResidence(builder, false);
-                            buildLocations.push_back(vertexIdx);
+                            resLocations.push_back(vertexIdx);
                         } else {
                             cout << "You cannot build here." << endl;
                             cout << "Basements already exist as locations: ";
-                            for (size_t x = 0; x < buildLocations.size(); x++) {
-                                cout << buildLocations[x] << " ";
+                            for (size_t x = 0; x < resLocations.size(); x++) {
+                                cout << resLocations[x] << " ";
                             }
                             cout << endl;
                         }
@@ -404,7 +426,7 @@ void Game::beginGame() {
     //
     gameStarted = true;
     // set curBuilder to Blue after "beginning of game"
-    curBuilder = 0;
+    curTurn = 0;
 }
 
 void Game::printBoard() { cout << textDisplay << endl; }
@@ -450,12 +472,12 @@ void Game::printStatus() {
 bool Game::nextTurn() {
     // whenever a builder builds, check if builder has 10+ points
     // if it does set gameEnded to true
-    cout << "Builder " << builders[curBuilder].get()->getColour() << "'s turn." << endl;
+    cout << "Builder " << builders[curTurn].get()->getColour() << "'s turn." << endl;
 
     // rolling the dice
     cout << "> ";
     bool rollDice = false;
-    auto builder = builders[curBuilder].get();
+    auto builder = builders[curTurn].get();
     while (!rollDice) {
         string temp;
         if (!(cin >> temp)) {
@@ -510,7 +532,7 @@ bool Game::nextTurn() {
         auto tile = tiles[newGeeseLocation];
         unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
         bool printMsg = false;
-        buildersOnTile.erase(curBuilder);
+        buildersOnTile.erase(curTurn);
         for (auto const &[b, bp] : buildersOnTile) {
             printMsg = true;
             cout << "Builder " << builder->getColour() << " can choose to steal from "
@@ -596,9 +618,9 @@ bool Game::nextTurn() {
             // TODO test
             if (builder->getBuilderPoints()) {
                 bool firstPrint = true;
-                for (size_t i = 0; i < buildLocations.size(); i++) {
+                for (size_t i = 0; i < resLocations.size(); i++) {
                     // print out each location if vertex owner = curBuilder
-                    if (vertices[buildLocations[i]].get()->getOwner() == curBuilder) {
+                    if (vertices[resLocations[i]].get()->getOwner() == curTurn) {
                         if (!firstPrint) {
                             cout << ", ";
                             firstPrint = false;
@@ -663,7 +685,7 @@ bool Game::nextTurn() {
         }
     }
 
-    ++curBuilder;
+    ++curTurn;
     return true;
 }
 
@@ -676,7 +698,7 @@ void Game::marketTrade(Resource resource1, Resource resource2) {}
 void Game::stealFrom(Builder &builder, Resource resource) {}
 
 void Game::resetGame() {
-    curBuilder = -1;
+    curTurn = -1;
     if (geeseLocation != -1) {
         tiles[geeseLocation].get()->removeGeese();
         textDisplay.removeGeese(geeseLocation);

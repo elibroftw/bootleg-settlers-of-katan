@@ -18,6 +18,10 @@ int Vertex::getOwner() {
     return owner;
 }
 
+int Vertex::getImprovement() {
+    return improvement;
+}
+
 int Vertex::getBuildingPoints() {
     switch (improvement) {
         case 'B':

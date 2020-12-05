@@ -26,7 +26,7 @@ class InvalidSaveFile {};
 class InvalidArgument {};
 
 class Game {
-    int curBuilder;
+    int curTurn;
     int geeseLocation;
     // this means that the game has passed the beginning stage
     bool gameStarted;
@@ -39,7 +39,8 @@ class Game {
     vector<vector<shared_ptr<Vertex>>> verticesMap;
     vector<vector<shared_ptr<Edge>>> edgesMap;
     vector<shared_ptr<Edge>> edges;
-    vector<int> buildLocations;
+    vector<int> resLocations;
+    vector<int> roadLocations;
 
     bool isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges = true);
     // to be used in conjunction with geese stealing and resource distribution

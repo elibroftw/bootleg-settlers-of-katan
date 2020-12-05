@@ -15,6 +15,7 @@ class Edge {
     int getX();
     int getY();
     int getNum();
+    int getOwner();
     // Used to build a road at an edge. Each edge is limited
     // to one road, and costs the builder one heat and wifi resource.
     // A road can be built by a builder if an adjacent road or

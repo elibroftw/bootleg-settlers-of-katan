@@ -27,6 +27,7 @@ class Vertex {
     int getY();
     int getNum();
     int getOwner();
+    char getImprovement();
     // If the current residence is a basement, can upgrade to a house.
     // If the current residence is a house, can upgrade to a tower.
     // Otherwise cannot upgrade the residence (must at least be a basement

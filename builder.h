@@ -66,6 +66,7 @@ class Builder {
         friend ostream &operator<<(ostream &out, const Builder &builder);
 };
 
+// prints out resources
 ostream &operator<<(ostream &out, const Builder &builder);
 
 #endif
