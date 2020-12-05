@@ -480,7 +480,7 @@ bool Game::nextTurn() {
             cout << "~ status : prints the current status of all builders in order from builder 0 to 3." << endl;
             cout << "~ help : prints out the list of commands." << endl;
         } else {
-            cout << "invalid Command." << endl;
+            cout << "Invalid Command." << endl;
             cout << "Please enter 'help' for a list of valid commands.";
         }
     }
