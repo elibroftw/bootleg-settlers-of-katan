@@ -69,4 +69,14 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool checkResources) 
     }
 }
 
+void Vertex::reset() {
+    owner = -1;
+    improvement = "";
+}
 
+bool Vertex::realVertex() {
+    if (getX() >= 0 && getY() >= 0 && getNum() >= 0) {
+        return true;
+    }
+    return false;
+}
