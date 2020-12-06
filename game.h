@@ -14,6 +14,7 @@
 #include "tile.h"
 #include "vertex.h"
 
+using std::pair;
 using std::shared_ptr;
 using std::string;
 using std::unordered_map;
@@ -27,7 +28,7 @@ class InvalidArgument {};
 
 class Game {
     int curTurn;
-    int geeseLocation;
+    unsigned int geeseLocation;
     // this means that the game has passed the beginning stage
     bool gameStarted;
     bool gameOver;
@@ -47,6 +48,8 @@ class Game {
     bool isValidEdge(shared_ptr<Edge> edge);
     // to be used in conjunction with geese stealing and resource distribution
     unordered_map<int, int> getBuildersFromTile(int tileNumber);
+
+    pair<int, int> getVertexFromCoords(int x, int y);
 
    public:
     Game();

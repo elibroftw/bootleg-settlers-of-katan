@@ -36,7 +36,7 @@ int main(int argc, char const *argv[]) {
         } else if (nextIsSaveFile) {
             nextIsSaveFile = false;
             saveFile = argv[i];
-        } else if (argv[i] == nextIsLayoutFile) {
+        } else if (nextIsLayoutFile) {
             nextIsLayoutFile = false;
             layoutFile = argv[i];
         } else if (argv[i] == flagSeed) {
@@ -57,6 +57,7 @@ int main(int argc, char const *argv[]) {
     } else if (!layoutFile.empty()) {
         game.createBoard(layoutFile);
     } else {
+        // todo also use seed
         game.createBoard();
     }
 

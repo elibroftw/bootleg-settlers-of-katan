@@ -11,9 +11,13 @@ class Tile {
     bool geese;
     public:
         Tile(unsigned int number, unsigned int value, unsigned int resourceCode);
+        unsigned int getNumber();
+
         unsigned int getResource();
-        int getNumber();
-        int getValue();
+        void setResource(unsigned int resourceCode);
+
+        unsigned int getValue();
+        void setValue(unsigned int resourceCode);
         void removeGeese();
         void setGeese();
 };

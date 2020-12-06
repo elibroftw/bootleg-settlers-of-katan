@@ -18,7 +18,7 @@ int Vertex::getOwner() {
     return owner;
 }
 
-int Vertex::getImprovement() {
+char Vertex::getImprovement() {
     return improvement;
 }
 

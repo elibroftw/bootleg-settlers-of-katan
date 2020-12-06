@@ -18,12 +18,14 @@
 #define EM_HEIGHT 21
 #define NUM_BUILDERS 4
 
+using std::cerr;
 using std::cin;
 using std::cout;
 using std::endl;
 using std::ifstream;
 using std::invalid_argument;
 using std::locale;
+using std::make_pair;
 using std::ofstream;
 using std::pair;
 using std::string;
@@ -32,7 +34,7 @@ using std::toupper;
 using std::unordered_map;
 using std::unordered_set;
 
-Game::Game() : curTurn{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{false} {
+Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{false} {
     // create builders
     builders.push_back(std::make_shared<Builder>("Blue"));
     builders.push_back(std::make_shared<Builder>("Red"));
@@ -84,7 +86,7 @@ Game::Game() : curTurn{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{fals
     // create 71 edges
     // edges can be vertical or horizontal
     for (int i = 0; i < 71; i++) {
-        int xCoord;
+        int xCoord = 0;
         bool isHorizontal = false;
         if (i == 9 || i == 26 || i == 43 || i == 60) {
             xCoord = 6;
@@ -118,9 +120,11 @@ Game::Game() : curTurn{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{fals
             xCoord = 41;
         } else if (i == 17 || i == 25 || i == 34 || i == 42 || i == 51 || i == 59) {
             xCoord = 51;
+        } else {
+            cerr << "SOMETHING WENT WRONG" << endl;
         }
 
-        int yCoord;
+        int yCoord = 0;
         // set yCoord based on vertex number
         if (i == 0) {
             yCoord = 0;
@@ -164,23 +168,20 @@ Game::Game() : curTurn{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{fals
             yCoord = 38;
         } else if (i == 71) {
             yCoord = 40;
+        } else {
+            cerr << "SOMETHING WENT WRONG SETTING yCoord" << endl;
         }
         auto edge = std::make_shared<Edge>(i, xCoord, yCoord, isHorizontal);
         edges.push_back(edge);
         edgesMap[xCoord / 5][yCoord / 2] = edge;
     }
-
-    for (size_t i = 0; i < 18; i++) {
-        auto tile = std::make_shared<Tile>(i);
-        tiles.push_back(tile);
-    }
 }
 
-pair<int, int> getVertexFromCoords(int x, int y) {
+pair<int, int> Game::getVertexFromCoords(int x, int y) {
     if ((x - 2) % 10 != 0 || y % 4 != 0) {
         throw InvalidArgument();
     }
-    return std::make_pair(x / 10, y / 4);
+    return make_pair(x / 10, y / 4);
 }
 
 bool Game::hasGameStarted() {
@@ -210,6 +211,10 @@ string getResourceName(int resourceCode) {
 
 void Game::createBoard() {
     // TODO: random board
+    // for (size_t i = 0; i < 18; i++) {
+    //     auto tile = std::make_shared<Tile>(i);
+    //     tiles.push_back(tile);
+    // }
 }
 
 void Game::createBoard(string filename) {
@@ -219,14 +224,16 @@ void Game::createBoard(string filename) {
         createBoard();
         return;
     }
-    int resource;
-    int value;
+    unsigned int resource;
+    unsigned int value;
     while (file >> resource) {
         if (file >> value) {
             auto tile = std::make_shared<Tile>(tiles.size(), value, resource);
             textDisplay.setTileResource(tiles.size(), getResourceName(resource));
             textDisplay.setTileValue(tiles.size(), value);
             tiles.push_back(tile);
+        } else {
+            cerr << "ERROR: layout.txt was not formatted correctly" << endl;
         }
     }
 }
@@ -276,7 +283,7 @@ void Game::saveGame(string filename) {
         outfile << getResourceName(tile->getResource()) << " " << tile->getValue();
     }
     outfile << endl;
-    if (geeseLocation != -1) {
+    if (geeseLocation < 19) {
         outfile << geeseLocation << endl;
     }
 }
@@ -297,17 +304,14 @@ void Game::loadGame(string filename) {
         auto builder = builders[i];
         std::istringstream ss1{line};
         string temp;
-        bool readRoads = false;
-        bool readHousing = false;
         // read resources
         for (size_t i = 0; i < 5; i++) {
             // read from sstream
             ss1 >> temp;
             if (temp == "r") {
-                readRoads = true;
                 break;
             } else {
-                // if valid valid, try converting value to int
+                // if read was valid, try converting value to int
                 try {
                     builder.get()->setResource(i, std::stoi(temp));
                 } catch (invalid_argument &e) {
@@ -317,12 +321,10 @@ void Game::loadGame(string filename) {
         }
 
         // read roads
-        if (readRoads) {
-            while (true) {
-                ss1 >> temp;
-                if (temp == "h") {
-                    break;
-                }
+        while (true) {
+            ss1 >> temp;
+            if (temp == "h") {
+                break;
             }
         }
 
@@ -376,8 +378,8 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
     int xCoord = vertex.get()->getX() / 10;
     int yCoord = vertex.get()->getY() / 4;
     // check if it and adjacent verticies in the map have no owners
-    for (size_t i = xCoord - 1; i < xCoord + 1; i++) {
-        for (size_t j = yCoord - 1; j < yCoord + 1; j++) {
+    for (int i = xCoord - 1; i < xCoord + 1; i++) {
+        for (int j = yCoord - 1; j < yCoord + 1; j++) {
             if (i >= 0 && j >= 0 && i <= VM_HEIGHT && j <= VM_WIDTH) {
                 if (verticesMap[i][j].get()->getOwner() != -1) {
                     // vertex is invalid since it or an adjacent vertex has an owner
@@ -402,8 +404,8 @@ bool Game::isValidEdge(shared_ptr<Edge> edge) {
     if (edge.get()->getOwner() != -1) {
         return false;
     }
-    for (size_t i = xIdx - 1; i < xIdx + 1; i++) {
-        for (size_t j = yIdx - 1; j < yIdx + 1; j++) {
+    for (int i = xIdx - 1; i < xIdx + 1; i++) {
+        for (int j = yIdx - 1; j < yIdx + 1; j++) {
             if (i >= 0 && j >= 0 && i <= EM_HEIGHT && j <= EM_WIDTH) {
                 if (edgesMap[i][j].get()->getOwner() == curTurn) {
                     // edge is valid since an adjacent edge is a road
@@ -503,7 +505,7 @@ void Game::printStatus() {
     for (size_t i = 0; i < 4; i++) {
         auto b = builders[i].get();
         string colour = b->getColour();
-        int padding = 6 - colour.size();
+        unsigned int padding = 6 - colour.size();
         cout << "Builder " << colour << " ";
         for (size_t x = 0; x < padding; x++) {
             cout << " ";
@@ -566,7 +568,7 @@ bool Game::nextTurn() {
         }
         cout << "Choose where to place the GEESE." << endl;
         unsigned int newGeeseLocation = geeseLocation;
-        while (newGeeseLocation == geeseLocation || newGeeseLocation > 19) {
+        while (newGeeseLocation == geeseLocation || newGeeseLocation > 18) {
             // if EOF detected, return false
             if (!(cin >> newGeeseLocation) && cin.eof()) {
                 return false;
@@ -581,7 +583,9 @@ bool Game::nextTurn() {
         unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
         bool printMsg = false;
         buildersOnTile.erase(curTurn);
-        for (auto const &[b, bp] : buildersOnTile) {
+        for (auto const &tuple : buildersOnTile) {
+            int b, bp;
+            tie(b, bp) = tuple;
             printMsg = true;
             cout << "Builder " << builder->getColour() << " can choose to steal from "
                  << builders[b].get()->getColour() << endl;
@@ -598,7 +602,9 @@ bool Game::nextTurn() {
                 }
 
                 toupper(input[0], loc);  // capitalize first letter
-                for (auto const &[b, bp] : buildersOnTile) {
+                for (auto const &tuple : buildersOnTile) {
+                    int b, bp;
+                    tie(b, bp) = tuple;
                     auto tempBuilder = builders[b].get();
                     if (input[0] == tempBuilder->getColour()[0]) {
                         // TODO: check if correct
@@ -626,7 +632,9 @@ bool Game::nextTurn() {
             if (tile.get()->getValue() == diceVal) {
                 int resourceCode = tile.get()->getResource();
                 unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
-                for (auto const &[b, bp] : buildersOnTile) {
+                for (auto const &tuple : buildersOnTile) {
+                    int b, bp;
+                    tie(b, bp) = tuple;
                     // add resources based on number of improvements on tile
                     auto temp = builders[b].get();
                     temp->setResource(resourceCode, temp->getResource(resourceCode) + bp);
@@ -768,7 +776,7 @@ void Game::stealFrom(Builder &builder, Resource resource) {}
 
 void Game::resetGame() {
     curTurn = -1;
-    if (geeseLocation != -1) {
+    if (geeseLocation < 19) {
         tiles[geeseLocation].get()->removeGeese();
         textDisplay.removeGeese(geeseLocation);
     }
