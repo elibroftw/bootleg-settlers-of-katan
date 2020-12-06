@@ -53,15 +53,16 @@ int main(int argc, char const *argv[]) {
     Game game = Game();
     // TODO: functions should check if file exists / is valid
     if (!saveFile.empty()) {
-      game.loadGame(saveFile);
+        game.loadGame(saveFile);
     } else if (!layoutFile.empty()) {
-      game.createBoard(layoutFile);
+        game.createBoard(layoutFile);
     } else {
-      game.createBoard();
+        game.createBoard();
     }
 
     if (!game.hasGameStarted()) {
-      game.beginGame();
+      // quit if begin game failed
+        if(!game.beginGame()) return 0;
     }
 
     while (true) {
@@ -71,16 +72,17 @@ int main(int argc, char const *argv[]) {
             cout << "Would you like to play again?" << std::endl;
             string isYes;
             cin >> isYes;
-            if(isYes == "yes" || isYes == "y" || isYes == "YES") {
+            if (isYes == "yes" || isYes == "y" || isYes == "YES") {
                 game.resetGame();
-                game.beginGame();
+                // quit if begin game failed
+                if(!game.beginGame()) return 0;
             } else {
-              return 0;
+                return 0;
             }
         } else if (!game.nextTurn()) {
-          // nextTurn was unsuccesful, so save and exit gracefully
-          game.saveGame("backup.sv");
-          return 0;
+            // nextTurn was unsuccesful, so save and exit gracefully
+            game.saveGame("backup.sv");
+            return 0;
         }
     }
     return 0;

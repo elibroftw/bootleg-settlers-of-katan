@@ -5,6 +5,10 @@
 #include <iostream>
 #include <string>
 
+using std::cin;
+using std::cout;
+using std::endl;
+
 unsigned int Dice::roll(bool loaded) {
     if (!loaded) {
         srand((int)time(0));
@@ -12,19 +16,15 @@ unsigned int Dice::roll(bool loaded) {
         int die2 = (rand() % 6) + 1;
         return die1 + die2;
     }
-    int loadedDie;
+    int loadedDie = 0;
     while (true) {
-        std::cout << "Input a roll between 2 and 12: ";
+        cout << "Input a roll between 2 and 12: ";
 
-        if (!(std::cin >> loadedDie)) {
-            // input failed therefore return an invalid roll
-            return 0;
-        }
+        // EOF detected therefore return an invalid roll
+        if (!(cin >> loadedDie) && cin.eof()) return 0;
 
-        if (loadedDie >= 2 && loadedDie <= 12) {
-            return loadedDie;
-        }
+        if (loadedDie >= 2 && loadedDie <= 12) return loadedDie;
 
-        std::cout << "Invalid roll." << std::endl;
+        cout << "Invalid roll." << endl;
     }
 }

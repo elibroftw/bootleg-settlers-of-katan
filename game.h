@@ -43,6 +43,8 @@ class Game {
     vector<int> roadLocations;
 
     bool isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges = true);
+    // checks if edge is valid to build a road on for curTurn builder
+    bool isValidEdge(shared_ptr<Edge> edge);
     // to be used in conjunction with geese stealing and resource distribution
     unordered_map<int, int> getBuildersFromTile(int tileNumber);
 
@@ -52,7 +54,7 @@ class Game {
     void createBoard(string filename);
     void saveGame(string filename);
     void loadGame(string filename);
-    void beginGame();
+    bool beginGame();
     void printBoard();
     // returns whether turn was sucessful (read from cin worked)
     bool nextTurn();

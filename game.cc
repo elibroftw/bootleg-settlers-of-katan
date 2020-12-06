@@ -13,6 +13,9 @@
 // VM = verticiesMap
 #define VM_WIDTH 6
 #define VM_HEIGHT 11
+// EM = edgesMap
+#define EM_WIDTH 10
+#define EM_HEIGHT 21
 #define NUM_BUILDERS 4
 
 using std::cin;
@@ -36,9 +39,9 @@ Game::Game() : curTurn{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{fals
     builders.push_back(std::make_shared<Builder>("Orange"));
     builders.push_back(std::make_shared<Builder>("Yellow"));
 
-    verticesMap.resize(11);
+    verticesMap.resize(VM_HEIGHT);
     for (size_t row = 0; row < verticesMap.size(); row++) {
-        verticesMap[row].resize(6);
+        verticesMap[row].resize(VM_WIDTH);
     }
 
     // create 53 vertices
@@ -72,10 +75,10 @@ Game::Game() : curTurn{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{fals
         verticesMap[vertexX][vertexY] = vertex;
     }
 
-    edgesMap.resize(21);
+    edgesMap.resize(EM_HEIGHT);
     for (size_t row = 0; row < edgesMap.size(); row++) {
         // might need a Vertex default ctor (-1, -1, -1)
-        edgesMap[row].resize(10);
+        edgesMap[row].resize(EM_WIDTH);
     }
 
     // create 71 edges
@@ -174,6 +177,9 @@ Game::Game() : curTurn{-1}, geeseLocation{-1}, gameStarted{false}, gameOver{fals
 }
 
 pair<int, int> getVertexFromCoords(int x, int y) {
+    if ((x - 2) % 10 != 0 || y % 4 != 0) {
+        throw InvalidArgument();
+    }
     return std::make_pair(x / 10, y / 4);
 }
 
@@ -369,13 +375,12 @@ void Game::loadGame(string filename) {
 bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
     int xCoord = vertex.get()->getX() / 10;
     int yCoord = vertex.get()->getY() / 4;
-    // check if adjacent verticies in the map have no owners
-
+    // check if it and adjacent verticies in the map have no owners
     for (size_t i = xCoord - 1; i < xCoord + 1; i++) {
         for (size_t j = yCoord - 1; j < yCoord + 1; j++) {
-            if (i >= 0 && j >= 0 && i <= VM_HEIGHT && j <= VM_WIDTH && i != xCoord && j != yCoord) {
+            if (i >= 0 && j >= 0 && i <= VM_HEIGHT && j <= VM_WIDTH) {
                 if (verticesMap[i][j].get()->getOwner() != -1) {
-                    // vertex is invalid since an adjacent vertex has an owner
+                    // vertex is invalid since it or an adjacent vertex has an owner
                     return false;
                 }
             }
@@ -388,7 +393,47 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
     return true;
 }
 
-void Game::beginGame() {
+bool Game::isValidEdge(shared_ptr<Edge> edge) {
+    int xCoord = edge.get()->getX();
+    int xIdx = xCoord / 10;
+    int yCoord = edge.get()->getY();
+    int yIdx = yCoord / 4;
+    // can't build on a built road
+    if (edge.get()->getOwner() != -1) {
+        return false;
+    }
+    for (size_t i = xIdx - 1; i < xIdx + 1; i++) {
+        for (size_t j = yIdx - 1; j < yIdx + 1; j++) {
+            if (i >= 0 && j >= 0 && i <= EM_HEIGHT && j <= EM_WIDTH) {
+                if (edgesMap[i][j].get()->getOwner() == curTurn) {
+                    // edge is valid since an adjacent edge is a road
+                    return true;
+                }
+            }
+        }
+    }
+
+    int vertexX, vertexY;
+    // check +- 5 xCoord vertices if horizontal edge
+    if (edge.get()->getHorizontal()) {
+        tie(vertexX, vertexY) = getVertexFromCoords(xCoord - 5, yCoord);
+        if (verticesMap[vertexX][vertexY].get()->getOwner() == curTurn) return true;
+
+        tie(vertexX, vertexY) = getVertexFromCoords(xCoord + 5, yCoord);
+        if (verticesMap[vertexX][vertexY].get()->getOwner() == curTurn) return true;
+
+    } else {
+        // check +- 2 yCoord vertices if vertical edge
+        tie(vertexX, vertexY) = getVertexFromCoords(xCoord, yCoord - 2);
+        if (verticesMap[vertexX][vertexY].get()->getOwner() == curTurn) return true;
+
+        tie(vertexX, vertexY) = getVertexFromCoords(xCoord, yCoord + 2);
+        if (verticesMap[vertexX][vertexY].get()->getOwner() == curTurn) return true;
+    }
+    return false;
+}
+
+bool Game::beginGame() {
     int vertexIdx;
     bool validVertex = false;
     for (int i = 0; i < 2; i++) {
@@ -416,9 +461,9 @@ void Game::beginGame() {
                             cout << endl;
                         }
                     }
-                } else {
+                } else if (cin.eof()) {
                     saveGame("backup.sv");
-                    return;
+                    return false;
                 }
             }
         }
@@ -427,6 +472,7 @@ void Game::beginGame() {
     gameStarted = true;
     // set curBuilder to Blue after "beginning of game"
     curTurn = 0;
+    return true;
 }
 
 void Game::printBoard() { cout << textDisplay << endl; }
@@ -477,10 +523,11 @@ bool Game::nextTurn() {
     // rolling the dice
     cout << "> ";
     bool rollDice = false;
-    auto builder = builders[curTurn].get();
+    auto builderShared = builders[curTurn];
+    auto builder = builderShared.get();
     while (!rollDice) {
         string temp;
-        if (!(cin >> temp)) {
+        if (!(cin >> temp) && cin.eof()) {
             return false;
         }
         if (temp == "load" || temp == "l") {
@@ -507,7 +554,7 @@ bool Game::nextTurn() {
         }
     }
     unsigned int diceVal = dice.roll(builder->isDiceLoaded());
-    // if input failed
+    // if EOF detected
     if (diceVal <= 2) {
         return false;
     }
@@ -520,7 +567,8 @@ bool Game::nextTurn() {
         cout << "Choose where to place the GEESE." << endl;
         unsigned int newGeeseLocation = geeseLocation;
         while (newGeeseLocation == geeseLocation || newGeeseLocation > 19) {
-            if (!(cin >> newGeeseLocation)) {
+            // if EOF detected, return false
+            if (!(cin >> newGeeseLocation) && cin.eof()) {
                 return false;
             }
         }
@@ -545,7 +593,7 @@ bool Game::nextTurn() {
             bool askForInput = true;
             while (askForInput) {
                 string input;
-                if (!(cin >> input)) {
+                if (!(cin >> input) && cin.eof()) {
                     return false;
                 }
 
@@ -596,7 +644,7 @@ bool Game::nextTurn() {
         string temp;
         cout << "Enter a command." << endl
              << "> ";
-        if (!(cin >> temp)) {
+        if (!(cin >> temp) && cin.eof()) {
             return false;
         } else if (temp == "help" || temp == "h") {
             cout << "Valid commands:" << endl;
@@ -615,7 +663,7 @@ bool Game::nextTurn() {
         } else if (temp == "status") {
             printStatus();
         } else if (temp == "residences") {
-            // TODO test
+            // TODO test against sampel executaable
             if (builder->getBuilderPoints()) {
                 bool firstPrint = true;
                 for (size_t i = 0; i < resLocations.size(); i++) {
@@ -637,9 +685,19 @@ bool Game::nextTurn() {
             while (true) {
                 if (cin >> edgeLocation) {
                     break;
-                } else {
+                } else if (cin.eof()) {
                     return false;
                 }
+            }
+            if (edgeLocation >= 0 && edgeLocation <= 71 && isValidEdge(edges[edgeLocation])) {
+                if (edges[edgeLocation].get()->buildRoad(builderShared)) {
+                    cout << "Builder " << builder->getColour()
+                         << " built a road at " << edgeLocation << endl;
+                } else {
+                    cout << "You do not have enough resources." << endl;
+                }
+            } else {
+                cout << "You cannot build here" << endl;
             }
         } else if (temp == "build-res" || temp == "brs") {
             // TODO: check if input location was valid,
@@ -648,9 +706,19 @@ bool Game::nextTurn() {
             while (true) {
                 if (cin >> vertexLocation) {
                     break;
-                } else {
+                } else if (cin.eof()) {
                     return false;
                 }
+            }
+            if (vertexLocation >= 0 && vertexLocation <= 53 && isValidVertex(vertices[vertexLocation])) {
+                if (vertices[vertexLocation].get()->upgradeResidence(builderShared)) {
+                    cout << "Builder " << builder->getColour()
+                         << " built a basement at " << vertexLocation << endl;
+                } else {
+                    cout << "You do not have enough resources." << endl;
+                }
+            } else {
+                cout << "You cannot build here" << endl;
             }
         } else if (temp == "improve" || temp == "i") {
             // TODO: check if input location was valid,
@@ -659,7 +727,7 @@ bool Game::nextTurn() {
             while (true) {
                 if (cin >> vertexLocation) {
                     break;
-                } else {
+                } else if (cin.eof()) {
                     return false;
                 }
             }
@@ -668,15 +736,16 @@ bool Game::nextTurn() {
             string colour2;
             string resGive;
             string resTake;
-            if (!(cin >> colour2) || !(cin >> resGive) || !!(cin >> resTake)) {
+            if ((cin >> colour2) && (cin >> resGive) && !(cin >> resTake)) {
+                // TODO: validate inputs
+            } else if (cin.eof()) {
                 return false;
             }
-            // TODO: validate inputs
         } else if (temp == "next") {
             break;
         } else if (temp == "save") {
             string filename;
-            if (!(cin >> filename)) {
+            if (!(cin >> filename) && cin.eof()) {
                 return false;
             }
             saveGame(filename);
