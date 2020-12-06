@@ -196,23 +196,6 @@ bool Game::isGameOver() {
     return gameOver;
 }
 
-string getResourceName(int resourceCode) {
-    switch (resourceCode) {
-        case 0:
-            return "BRICKS";
-        case 1:
-            return "ENERGY";
-        case 2:
-            return "GLASS";
-        case 3:
-            return "HEAT";
-        case 4:
-            return "WIFI";
-        default:
-            return "PARK";
-    }
-}
-
 void Game::createBoard() {
     // TODO: random board
     // for (size_t i = 0; i < 18; i++) {
@@ -422,7 +405,7 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
             if (edgesMap[edgeY][edgeY].get()->getOwner() == curTurn) return true;
         }
 
-        if (leftIsFlat) { // check +1 xCoord if left is flat
+        if (leftIsFlat) {  // check +1 xCoord if left is flat
             tie(edgeX, edgeY) = getEdgeFromCoords(xCoord + 5, yCoord);
             if (edgesMap[edgeY][edgeY].get()->getOwner() == curTurn) return true;
         } else {  // check -1 xCoord if right is flat
@@ -432,7 +415,6 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
         return false;
     }
     return true;
-
 }
 
 bool Game::isValidEdge(shared_ptr<Edge> edge) {
@@ -803,11 +785,22 @@ bool Game::nextTurn() {
             }
 
         } else if (temp == "trade") {
-            string colour2;
-            string resGive;
-            string resTake;
+            Colour colour2;
+            Resource resGive;
+            Resource resTake;
+            unordered_map<char, int> colours;
+            // add colours to a map
+            for (int i = 0; i < NUM_BUILDERS; i++) {
+                if (i != curTurn) {
+                    colours[builders[i].get()->getColour()[0]] = i;
+                }
+            }
             if ((cin >> colour2) && (cin >> resGive) && !(cin >> resTake)) {
-                // TODO: validate inputs
+                if (colour2 != curTurn) {
+                    tradeWith(builders[colour2], resGive, resTake);
+                } else {
+                    // pass
+                }
             } else if (cin.eof()) {
                 return false;
             }
@@ -828,13 +821,42 @@ bool Game::nextTurn() {
     return true;
 }
 
-void Game::tradeWith(Builder &builder, Resource resource1, Resource resource2) {
+bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource resTake) {
+    auto curBuilder = builders[curTurn].get();
+    auto otherBuilder = builder.get();
+    if (curBuilder->getResource(resGive)) {
+        cout << "You do not have "
+             << "(" << getResourceName(resGive) << ")" << endl;
+    } else if (!otherBuilder->getResource(resTake)) {
+        cout << otherBuilder->getColour() << "does not have " << getResourceName(resTake) << endl;
+    } else {
+        cout << curBuilder->getColour() << "offers" << otherBuilder->getColour() << " one " << getResourceName(resGive)
+             << " for one " << getResourceName(resTake) << "." << endl
+             << "Does " << otherBuilder->getColour() << " accept this offer?";
+        string yesOrNo;
+        if (cin >> yesOrNo) {
+            if (yesOrNo[0] == 'y' || yesOrNo[0] == 'Y') {
+                curBuilder->setResource(resTake, curBuilder->getResource(resTake) + 1);
+                curBuilder->setResource(resGive, curBuilder->getResource(resGive) - 1);
+
+                otherBuilder->setResource(resTake, otherBuilder->getResource(resTake) - 1);
+                otherBuilder->setResource(resGive, otherBuilder->getResource(resGive) + 1);
+                // TODO: maybe make more informative
+                cout << "Trade successful." << endl;
+            } else {
+                cout << "Trade offer was declined." << endl;
+            }
+        } if (cin.eof()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void Game::marketTrade(Resource resource1, Resource resource2) {}
 
 // might be able to delete
-void Game::stealFrom(Builder &builder, Resource resource) {}
+void Game::stealFrom(shared_ptr<Builder> &builder, Resource resource) {}
 
 void Game::resetGame() {
     curTurn = -1;

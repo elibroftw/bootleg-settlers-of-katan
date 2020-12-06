@@ -8,6 +8,13 @@
 using std::string;
 using std::ostream;
 using std::vector;
+using std::istream;
+
+enum Colour { blue, red, orange, yellow };
+
+// read string, use only the capitalized first letter to determine the builder
+// if fail, in.setstate(std::ios::failbit);
+istream& operator>>(istream& in, Colour& x);
 
 class Builder {
     // indicate colour: red, blue, orange, yellow

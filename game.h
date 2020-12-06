@@ -62,9 +62,10 @@ class Game {
     void printBoard();
     // returns whether turn was sucessful (read from cin worked)
     bool nextTurn();
-    void tradeWith(Builder &builder, Resource resource1, Resource resource2);
+    // returns whether or not any cin was sucessful
+    bool tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource resTake);
     void resetGame();
-    void stealFrom(Builder &builder, Resource resource);
+    void stealFrom(shared_ptr<Builder> &builder, Resource resource);
     bool isGameOver();
     bool hasGameStarted();
     void marketTrade(Resource resource1, Resource resource2);
