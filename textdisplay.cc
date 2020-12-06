@@ -160,10 +160,18 @@ void TextDisplay::removeGeese(int tileNumber) {
 }
 
 void TextDisplay::updateVertex(shared_ptr<Vertex> &vertex, shared_ptr<Builder> &builder) {
-    char c1 = builder.get()->getColour()[0];
-    char c2 = vertex.get()->getImprovement();
-    setChar(vertex.get()->getX(), vertex.get()->getY(), c1);
-    setChar(vertex.get()->getX() + 1, vertex.get()->getY(), c2);
+    if (vertex.get()->getOwner() == builder.get()->getNum()) {
+        char c1 = builder.get()->getColour()[0];
+        char c2 = vertex.get()->getImprovement();
+        setChar(vertex.get()->getX(), vertex.get()->getY(), c1);
+        setChar(vertex.get()->getX() + 1, vertex.get()->getY(), c2);
+    }
+}
+
+void TextDisplay::buildRoad(shared_ptr<Edge> &edge, shared_ptr<Builder> &builder) {
+    char colour = builder.get()->getColour()[0];
+    setChar(edge.get()->getX(), edge.get()->getY(), colour);
+    setChar(edge.get()->getX() + 1, edge.get()->getY(), 'R');
 }
 
 ostream &operator<<(ostream &out, const TextDisplay &td) {

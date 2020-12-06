@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include "vertex.h"
+#include "edge.h"
 #include "builder.h"
 
 using std::ostream;
@@ -31,8 +32,8 @@ class TextDisplay {
     void setGeese(int tileNumber);
     void removeGeese(int tileNumber);
     void updateVertex(shared_ptr<Vertex> &vertex, shared_ptr<Builder> &builder);
-    // todo: update tile resource, geese, value, number
-    // maybe each tile has an x and y coordinate equal to top-left?
+    void buildRoad(shared_ptr<Edge> &edge, shared_ptr<Builder> &builder);
+
     friend ostream &operator<<(ostream &out, const TextDisplay &td);
 };
 

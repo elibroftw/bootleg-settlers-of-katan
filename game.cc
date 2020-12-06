@@ -40,10 +40,10 @@ using std::unordered_set;
 
 Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{false} {
     // create builders
-    builders.push_back(std::make_shared<Builder>("Blue"));
-    builders.push_back(std::make_shared<Builder>("Red"));
-    builders.push_back(std::make_shared<Builder>("Orange"));
-    builders.push_back(std::make_shared<Builder>("Yellow"));
+    builders.push_back(std::make_shared<Builder>("Blue", 0));
+    builders.push_back(std::make_shared<Builder>("Red", 1));
+    builders.push_back(std::make_shared<Builder>("Orange", 2));
+    builders.push_back(std::make_shared<Builder>("Yellow", 3));
 
     verticesMap.resize(VM_HEIGHT);
     for (size_t row = 0; row < verticesMap.size(); row++) {
@@ -250,7 +250,8 @@ void Game::saveGame(string filename) {
     }
 
     for (size_t i = 0; i < 4; i++) {
-        outfile << builders[i].get() << " r";
+        builders[i].get()->printResources(outfile);
+        outfile << " r";
         for (auto &&r : roads[i]) {
             outfile << ' ' << r;
         }
@@ -312,6 +313,12 @@ void Game::loadGame(string filename) {
             ss1 >> temp;
             if (temp == "h") {
                 break;
+            } else {
+                int roadIdx = std::stoi(temp);
+                auto edge = edges[roadIdx];
+                edge.get()->buildRoad(builder, false);
+                textDisplay.buildRoad(edge, builder);
+                roadLocations.push_back(roadIdx);
             }
         }
 
@@ -332,6 +339,7 @@ void Game::loadGame(string filename) {
                 if (temp == "B") {
                     vertex.get()->upgradeResidence(builder, false);
                 }
+                textDisplay.updateVertex(vertex, builder);
                 resLocations.push_back(vertexIdx);
             } else {
                 throw InvalidSaveFile();
@@ -365,7 +373,6 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
     int xCoord = vertex.get()->getX() / 10;
     int yCoord = vertex.get()->getY() / 4;
     // check if it and adjacent verticies in the map have no owners
-    // TODO: fix since some are not adjacent
     for (int y = yCoord - 1; y < yCoord + 1; y++) {
         // check if vertex above, below and itself have owners
         if (y >= 0 && y <= VM_HEIGHT && verticesMap[y][xCoord].get()->getOwner() != -1) {
@@ -391,7 +398,6 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
     }
 
     // look for adjacent roads
-
     if (considerEdges) {
         int edgeX, edgeY;
         // check +- 2 yCoord edges
@@ -699,7 +705,7 @@ bool Game::nextTurn() {
         } else if (temp == "status") {
             printStatus();
         } else if (temp == "residences") {
-            // TODO test against sampel executaable
+            // TODO test against sample executable
             if (builder->getBuilderPoints()) {
                 bool firstPrint = true;
                 for (size_t i = 0; i < resLocations.size(); i++) {
@@ -715,8 +721,6 @@ bool Game::nextTurn() {
                 }
             }
         } else if (temp == "build-road" || temp == "brd") {
-            // TODO: check if input location was valid,
-            //  check if edge is valid, resources, etc...
             int edgeLocation;
             while (true) {
                 if (cin >> edgeLocation) {
@@ -725,11 +729,12 @@ bool Game::nextTurn() {
                     return false;
                 }
             }
-            // cout << "You do not have enough resources." << endl;
+            //  check if edge is valid, resources, etc...
             if (edgeLocation >= 0 && edgeLocation <= 71 && isValidEdge(edges[edgeLocation])) {
                 if (edges[edgeLocation].get()->buildRoad(builderShared)) {
                     cout << "Builder " << builder->getColour()
                          << " built a road at " << edgeLocation << endl;
+                    textDisplay.buildRoad(edges[edgeLocation], builderShared);
                 } else {
                     cout << "You do not have enough resources." << endl;
                 }
@@ -737,8 +742,7 @@ bool Game::nextTurn() {
                 cout << "You cannot build here" << endl;
             }
         } else if (temp == "build-res" || temp == "brs") {
-            // TODO: check if input location was valid,
-            //  check if vertex is valid, resources, etc...
+
             int vertexLocation;
             while (true) {
                 if (cin >> vertexLocation) {
@@ -747,6 +751,7 @@ bool Game::nextTurn() {
                     return false;
                 }
             }
+            //  check if vertex is valid, resources, etc...
             if (vertexLocation >= 0 && vertexLocation <= 53 && isValidVertex(vertices[vertexLocation])) {
                 if (vertices[vertexLocation].get()->upgradeResidence(builderShared)) {
                     cout << "Builder " << builder->getColour()
@@ -759,8 +764,6 @@ bool Game::nextTurn() {
                 cout << "You cannot build here" << endl;
             }
         } else if (temp == "improve" || temp == "i") {
-            // TODO: check if input location was valid,
-            //  check if owner owns vertex, resources, etc...
             int vertexLocation;
             while (true) {
                 if (cin >> vertexLocation) {
@@ -776,7 +779,7 @@ bool Game::nextTurn() {
                 } else if (vertex.get()->upgradeResidence(builderShared)) {
                     cout << "Residence upgrade succesful" << endl;
                     textDisplay.updateVertex(vertex, builderShared);
-                    if (builder->getBuilderPoints() >= 10) {
+                    if (builder->hasWon()) {
                         cout << "Builder " << builder->getColour() << " has won the game!!" << endl;
                     }
                 } else {
@@ -797,9 +800,12 @@ bool Game::nextTurn() {
             }
             if ((cin >> colour2) && (cin >> resGive) && !(cin >> resTake)) {
                 if (colour2 != curTurn) {
-                    tradeWith(builders[colour2], resGive, resTake);
+                    // if trade function fails, return false
+                    if(!tradeWith(builders[colour2], resGive, resTake)) {
+                        return false;
+                    }
                 } else {
-                    // pass
+                    cout << "You cannot trade with yourself!." << endl;
                 }
             } else if (cin.eof()) {
                 return false;
@@ -854,9 +860,6 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
 }
 
 void Game::marketTrade(Resource resource1, Resource resource2) {}
-
-// might be able to delete
-void Game::stealFrom(shared_ptr<Builder> &builder, Resource resource) {}
 
 void Game::resetGame() {
     curTurn = -1;

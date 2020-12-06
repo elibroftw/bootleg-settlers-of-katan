@@ -27,7 +27,7 @@ class Edge {
     // to one road, and costs the builder one heat and wifi resource.
     // A road can be built by a builder if an adjacent road or
     // residence has been built by the same builder.
-    bool buildRoad(shared_ptr<Builder> builder);
+    bool buildRoad(shared_ptr<Builder> builder, bool checkResource = true);
 
     // resets owner to -1 and improvement to ""
     void reset();

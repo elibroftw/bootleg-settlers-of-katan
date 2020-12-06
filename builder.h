@@ -19,6 +19,7 @@ istream& operator>>(istream& in, Colour& x);
 class Builder {
     // indicate colour: red, blue, orange, yellow
     string colour;
+    int num;
     // store the resources the builder has: brick, energy, glass,
     // heat, wifi
     vector<int> resources;
@@ -26,13 +27,7 @@ class Builder {
     int buildPoints;
     bool diceIsLoaded;
     public:
-        // TODO (in builder / vertex) for building basements,
-        // after verifying that the vertex does not have any adjacent buildings,
-        // for each road builder has built,
-        // check for (yCoordE == yCoordV && xCoordV - 5 <= xCoordE <= xCoordV + 5) OR
-        // check for (xCoordE == xCoordV && yCoordV - 2 <= xCoordE <= xCoordV + 2)
-
-        Builder(string colour);
+        Builder(string colour, int num);
         // When a seven is rolled, current builder moves the geese
         // to any tile. Any builder with 10 or more resources will
         // automatically lose half their resources. Resources lost
@@ -52,11 +47,14 @@ class Builder {
         void reset();
 
         string getColour(bool firstCharOnly=false);
-
+        int getNum();
         // return the number of resource of the specified string or int
         // if string, first toLower the string
         int getResource(std::string resourceName);
         int getResource(int resourceCode);
+
+        // prints out resources
+        void printResources(ostream &out);
 
         int setResource(std::string resourceName, int num);
         int setResource(int resourceCode, int num);
@@ -69,11 +67,6 @@ class Builder {
         void useLoadedDice();
         void useFairDice();
         bool isDiceLoaded();
-
-        friend ostream &operator<<(ostream &out, const Builder &builder);
 };
-
-// prints out resources
-ostream &operator<<(ostream &out, const Builder &builder);
 
 #endif
