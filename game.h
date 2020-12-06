@@ -50,6 +50,7 @@ class Game {
     unordered_map<int, int> getBuildersFromTile(int tileNumber);
 
     pair<int, int> getVertexFromCoords(int x, int y);
+    pair<int, int> getEdgeFromCoords(int x, int y);
 
    public:
     Game();

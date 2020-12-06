@@ -11,11 +11,15 @@
 #include "builder.h"
 
 // VM = verticiesMap
-#define VM_WIDTH 6
 #define VM_HEIGHT 11
+#define VM_WIDTH 6
 // EM = edgesMap
-#define EM_WIDTH 10
 #define EM_HEIGHT 21
+#define EM_WIDTH 10
+// text display height and width
+#define TD_HEIGHT 41
+#define TD_WIDTH 54
+
 #define NUM_BUILDERS 4
 
 using std::cerr;
@@ -378,21 +382,57 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
     int xCoord = vertex.get()->getX() / 10;
     int yCoord = vertex.get()->getY() / 4;
     // check if it and adjacent verticies in the map have no owners
-    for (int i = xCoord - 1; i < xCoord + 1; i++) {
-        for (int j = yCoord - 1; j < yCoord + 1; j++) {
-            if (i >= 0 && j >= 0 && i <= VM_HEIGHT && j <= VM_WIDTH) {
-                if (verticesMap[i][j].get()->getOwner() != -1) {
-                    // vertex is invalid since it or an adjacent vertex has an owner
-                    return false;
-                }
-            }
+    // TODO: fix since some are not adjacent
+    for (int y = yCoord - 1; y < yCoord + 1; y++) {
+        // check if vertex above, below and itself have owners
+        if (y >= 0 && y <= VM_HEIGHT && verticesMap[y][xCoord].get()->getOwner() != -1) {
+            // vertex is invalid since it or an vertex above/below has an owner
+            return false;
+        }
+    }
+    int x;
+    int vertexNum = vertex.get()->getNum();
+    bool leftIsFlat = false;
+    if ((vertexNum >= 13 && vertexNum <= 16) ||
+        (vertexNum >= 25 && vertexNum <= 28) || (vertexNum >= 37 && vertexNum <= 40)) {
+        x = xCoord + (vertexNum % 2 ? 1 : -1);
+        leftIsFlat = vertexNum % 2 ? true : false;
+    } else {
+        x = xCoord + (vertexNum % 2 ? -1 : 1);
+        leftIsFlat = vertexNum % 2 ? false : true;
+    }
+    if (x >= 0 && x <= VM_WIDTH) {
+        if (verticesMap[yCoord][x].get()->getOwner() != -1) {
+            return false;
         }
     }
 
-    if (considerEdges) {
-    }
+    // look for adjacent roads
 
+    if (considerEdges) {
+        int edgeX, edgeY;
+        // check +- 2 yCoord edges
+        if (yCoord + 2 < TD_HEIGHT) {
+            tie(edgeX, edgeY) = getEdgeFromCoords(xCoord, yCoord + 2);
+            if (edgesMap[edgeX][edgeY].get()->getOwner() == curTurn) return true;
+        }
+
+        if (yCoord - 2 >= 0) {
+            tie(edgeX, edgeY) = getEdgeFromCoords(xCoord, yCoord - 2);
+            if (edgesMap[edgeY][edgeY].get()->getOwner() == curTurn) return true;
+        }
+
+        if (leftIsFlat) { // check +1 xCoord if left is flat
+            tie(edgeX, edgeY) = getEdgeFromCoords(xCoord + 5, yCoord);
+            if (edgesMap[edgeY][edgeY].get()->getOwner() == curTurn) return true;
+        } else {  // check -1 xCoord if right is flat
+            tie(edgeX, edgeY) = getEdgeFromCoords(xCoord - 5, yCoord);
+            if (edgesMap[edgeY][edgeY].get()->getOwner() == curTurn) return true;
+        }
+        return false;
+    }
     return true;
+
 }
 
 bool Game::isValidEdge(shared_ptr<Edge> edge) {
@@ -610,7 +650,7 @@ bool Game::nextTurn() {
                         // TODO: check if correct
                         int stolenResource = tempBuilder->tryStealing();
                         if (stolenResource >= 0) {
-                            cout << "Builder " << builder->getColour() << " stole "
+                            cout << "Builder " << builder->getColour() << " steals "
                                  << getResourceName(stolenResource) << " from " << tempBuilder->getColour() << endl;
                             builder->setResource(stolenResource, builder->getResource(stolenResource) + 1);
                         }
@@ -620,12 +660,14 @@ bool Game::nextTurn() {
                 }
             }
         } else {
-            cout << "No builders to steal from" << endl;
+            cout << "Builder " << builder->getColour() << " has no builders to steal from" << endl;
         }
 
     } else {
         // use num to give builders resources
         vector<shared_ptr<Tile>> tilesWithValue;
+        // keep track of whether or not resources were gained given the dice roll
+        bool gainedResources = false;
         for (size_t i = 0; i < tiles.size(); i++) {
             auto tile = tiles[i];
             // if tile has the same value as the dice...
@@ -633,6 +675,7 @@ bool Game::nextTurn() {
                 int resourceCode = tile.get()->getResource();
                 unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
                 for (auto const &tuple : buildersOnTile) {
+                    gainedResources = true;
                     int b, bp;
                     tie(b, bp) = tuple;
                     // add resources based on number of improvements on tile
@@ -644,6 +687,9 @@ bool Game::nextTurn() {
                 // distribute resources for all vertices and shit... you know the drill
                 // get building points per builder in a map for the tile
             }
+        }
+        if (!gainedResources) {
+            cout << "No builders gained resources." << endl;
         }
     }
 
@@ -697,6 +743,7 @@ bool Game::nextTurn() {
                     return false;
                 }
             }
+            // cout << "You do not have enough resources." << endl;
             if (edgeLocation >= 0 && edgeLocation <= 71 && isValidEdge(edges[edgeLocation])) {
                 if (edges[edgeLocation].get()->buildRoad(builderShared)) {
                     cout << "Builder " << builder->getColour()
@@ -722,6 +769,7 @@ bool Game::nextTurn() {
                 if (vertices[vertexLocation].get()->upgradeResidence(builderShared)) {
                     cout << "Builder " << builder->getColour()
                          << " built a basement at " << vertexLocation << endl;
+                    textDisplay.updateVertex(vertices[vertexLocation], builderShared);
                 } else {
                     cout << "You do not have enough resources." << endl;
                 }
@@ -739,7 +787,21 @@ bool Game::nextTurn() {
                     return false;
                 }
             }
-            // TODO: check if builder won
+            if (vertexLocation >= 0 && vertexLocation <= 53) {
+                auto vertex = vertices[vertexLocation];
+                if (vertex.get()->getOwner() != curTurn || vertex.get()->getImprovement() == 'T') {
+                    cout << "You cannot build here." << endl;
+                } else if (vertex.get()->upgradeResidence(builderShared)) {
+                    cout << "Residence upgrade succesful" << endl;
+                    textDisplay.updateVertex(vertex, builderShared);
+                    if (builder->getBuilderPoints() >= 10) {
+                        cout << "Builder " << builder->getColour() << " has won the game!!" << endl;
+                    }
+                } else {
+                    cout << "You do not have enough resources." << endl;
+                }
+            }
+
         } else if (temp == "trade") {
             string colour2;
             string resGive;

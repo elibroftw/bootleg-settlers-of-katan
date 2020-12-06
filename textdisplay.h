@@ -2,11 +2,15 @@
 #define __TEXT_DISPLAY__
 #include <iostream>
 #include <vector>
+#include <memory>
+#include "vertex.h"
+#include "builder.h"
 
 using std::ostream;
 using std::pair;
 using std::string;
 using std::vector;
+using std::shared_ptr;
 
 class TextDisplay {
     vector<vector<char>> board;
@@ -26,6 +30,7 @@ class TextDisplay {
     void setTileResource(int tileNumber, string resource);
     void setGeese(int tileNumber);
     void removeGeese(int tileNumber);
+    void updateVertex(shared_ptr<Vertex> &vertex, shared_ptr<Builder> &builder);
     // todo: update tile resource, geese, value, number
     // maybe each tile has an x and y coordinate equal to top-left?
     friend ostream &operator<<(ostream &out, const TextDisplay &td);

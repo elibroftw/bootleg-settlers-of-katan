@@ -159,6 +159,13 @@ void TextDisplay::removeGeese(int tileNumber) {
     }
 }
 
+void TextDisplay::updateVertex(shared_ptr<Vertex> &vertex, shared_ptr<Builder> &builder) {
+    char c1 = builder.get()->getColour()[0];
+    char c2 = vertex.get()->getImprovement();
+    setChar(vertex.get()->getX(), vertex.get()->getY(), c1);
+    setChar(vertex.get()->getX() + 1, vertex.get()->getY(), c2);
+}
+
 ostream &operator<<(ostream &out, const TextDisplay &td) {
     for (auto &&row : td.board) {
         for (auto &&c : row) {

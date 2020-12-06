@@ -1,6 +1,7 @@
 #ifndef __EDGE__
 #define __EDGE__
 #include <memory>
+
 #include "builder.h"
 
 using std::shared_ptr;
@@ -15,7 +16,7 @@ class Edge {
     bool isRoad;
 
    public:
-    Edge(int number = -1, int xCoord = -1, int yCoord = -1, bool isHorizontal=false);
+    Edge(int number = -1, int xCoord = -1, int yCoord = -1, bool isHorizontal = false);
 
     int getX();
     int getY();
