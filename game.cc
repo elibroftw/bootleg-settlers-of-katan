@@ -800,12 +800,14 @@ bool Game::nextTurn() {
             }
             if ((cin >> colour2) && (cin >> resGive) && !(cin >> resTake)) {
                 if (colour2 != curTurn) {
+                    cout << "You cannot trade with yourself!" << endl;
                     // if trade function fails, return false
+                } else if (resGive == resTake) {
+                    cout << "You cannot trade the same resource!" << endl;
+                } else {
                     if(!tradeWith(builders[colour2], resGive, resTake)) {
                         return false;
                     }
-                } else {
-                    cout << "You cannot trade with yourself!." << endl;
                 }
             } else if (cin.eof()) {
                 return false;
