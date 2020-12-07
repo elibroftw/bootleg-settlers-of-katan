@@ -886,4 +886,7 @@ void Game::resetGame() {
     }
 
     geeseLocation = -1;
+
+    resLocations.clear();
+    roadLocations.clear();
 }
