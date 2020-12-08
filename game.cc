@@ -437,6 +437,7 @@ bool Game::isValidEdge(shared_ptr<Edge> edge) {
             if (i >= 0 && j >= 0 && i <= EM_HEIGHT && j <= EM_WIDTH) {
                 if (edgesMap[i][j].get()->getOwner() == curTurn) {
                     // edge is valid since an adjacent edge is a road
+                    // TODO: check if vertex in between is empty/self-owned
                     return true;
                 }
             }
