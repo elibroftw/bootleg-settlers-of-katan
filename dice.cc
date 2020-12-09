@@ -9,7 +9,7 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-unsigned int Dice::roll(bool loaded) {
+unsigned Dice::roll(bool loaded) {
     if (!loaded) {
         srand((int)time(0));
         int die1 = (rand() % 6) + 1;

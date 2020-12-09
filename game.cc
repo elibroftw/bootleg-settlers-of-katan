@@ -202,7 +202,7 @@ bool Game::isGameOver() {
     return gameOver;
 }
 
-void Game::createBoard(unsigned int seed) {
+void Game::createBoard(unsigned seed) {
 
     // use a time-based seed for the default seed value
     default_random_engine rng{seed};
@@ -210,10 +210,10 @@ void Game::createBoard(unsigned int seed) {
     uniform_int_distribution<unsigned> distrib1(3, 6);
     uniform_int_distribution<unsigned> distrib2(8, 11);
 
-    vector<unsigned int> randomResources{Wifi, Wifi, Wifi, Heat, Heat, Heat,
+    vector<unsigned> randomResources{Wifi, Wifi, Wifi, Heat, Heat, Heat,
                                          Brick, Brick, Brick, Brick, Energy,
                                          Energy, Energy, Energy, Glass, Glass, Glass};
-    vector<unsigned int> randomValues;
+    vector<unsigned> randomValues;
     for (size_t i = 0; i < 3; i++) {
         randomValues.push_back(2);
         randomValues.push_back(distrib1(rng));
@@ -227,7 +227,7 @@ void Game::createBoard(unsigned int seed) {
     random_shuffle(randomValues.begin(), randomValues.end());
 
     // create random index from 0 to 18 to insert Park and value of 7
-    unsigned int parkIndex = distribAll(rng);
+    unsigned parkIndex = distribAll(rng);
     randomResources.insert(randomResources.begin() + parkIndex, Park);
     randomValues.insert(randomValues.begin() + parkIndex, 7);
 
@@ -245,8 +245,8 @@ void Game::createBoard(string filename) {
         createBoard(seed);
         return;
     }
-    unsigned int resource;
-    unsigned int value;
+    unsigned resource;
+    unsigned value;
     while (file >> resource) {
         if (file >> value) {
             auto tile = std::make_shared<Tile>(tiles.size(), value, resource);
@@ -400,7 +400,7 @@ void Game::loadGame(string filename) {
 
     // read geese location if present
     file >> geeseLocation;
-    gameStarted = false;
+    gameStarted = true;
 }
 
 bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
@@ -568,7 +568,7 @@ void Game::printStatus() {
     for (size_t i = 0; i < 4; i++) {
         auto b = builders[i].get();
         string colour = b->getColour();
-        unsigned int padding = 6 - colour.size();
+        unsigned padding = 6 - colour.size();
         cout << "Builder " << colour << " ";
         for (size_t x = 0; x < padding; x++) {
             cout << " ";
@@ -618,7 +618,7 @@ bool Game::nextTurn() {
             cout << "Please enter 'help' for a list of valid commands.";
         }
     }
-    unsigned int diceVal = dice.roll(builder->isDiceLoaded());
+    unsigned diceVal = dice.roll(builder->isDiceLoaded());
     // if EOF detected
     if (diceVal <= 2) {
         return false;
@@ -630,7 +630,7 @@ bool Game::nextTurn() {
             builders[i].get()->geeseAttack();
         }
         cout << "Choose where to place the GEESE." << endl;
-        unsigned int newGeeseLocation = geeseLocation;
+        unsigned newGeeseLocation = geeseLocation;
         while (newGeeseLocation == geeseLocation || newGeeseLocation > 18) {
             // if EOF detected, return false
             if (!(cin >> newGeeseLocation) && cin.eof()) {
@@ -896,10 +896,11 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
     return true;
 }
 
+
+// TODO: bonus feature
 void Game::marketTrade(Resource resource1, Resource resource2) {}
 
 void Game::resetGame() {
-    curTurn = -1;
     if (geeseLocation < 19) {
         tiles[geeseLocation].get()->removeGeese();
         textDisplay.removeGeese(geeseLocation);
@@ -920,8 +921,11 @@ void Game::resetGame() {
         textDisplay.setInt(edge->getX(), edge->getY(), edge->getNum());
     }
 
-    geeseLocation = -1;
-
     resLocations.clear();
     roadLocations.clear();
+
+    curTurn = -1;
+    geeseLocation = -1;
+    gameStarted = false;
+    gameOver = false;
 }

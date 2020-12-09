@@ -5,21 +5,22 @@
 using std::string;
 
 class Tile {
-    unsigned int number;
-    unsigned int value;
-    unsigned int resource;
+    unsigned number;
+    unsigned value;
+    unsigned resource;
     bool geese;
-    public:
-        Tile(unsigned int number, unsigned int value, unsigned int resourceCode);
-        unsigned int getNumber();
 
-        unsigned int getResource();
-        void setResource(unsigned int resourceCode);
+   public:
+    Tile(unsigned number, unsigned value, unsigned resourceCode);
+    unsigned getNumber();
 
-        unsigned int getValue();
-        void setValue(unsigned int resourceCode);
-        void removeGeese();
-        void setGeese();
+    unsigned getResource();
+    void setResource(unsigned resourceCode);
+
+    unsigned getValue();
+    void setValue(unsigned resourceCode);
+    void removeGeese();
+    void setGeese();
 };
 
 #endif

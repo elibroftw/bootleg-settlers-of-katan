@@ -28,7 +28,7 @@ class InvalidArgument {};
 
 class Game {
     int curTurn;
-    unsigned int geeseLocation;
+    unsigned geeseLocation;
     // this means that the game has passed the beginning stage
     bool gameStarted;
     bool gameOver;
@@ -54,7 +54,7 @@ class Game {
 
    public:
     Game();
-    void createBoard(unsigned int seed);
+    void createBoard(unsigned seed);
     void createBoard(string filename);
     void saveGame(string filename);
     void loadGame(string filename);

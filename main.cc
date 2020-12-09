@@ -22,23 +22,25 @@ int main(int argc, char const *argv[]) {
     bool nextIsSaveFile = false;
     bool nextIsLayoutFile = false;
     bool useRandomBoard = false;
+    bool useLayoutFile = false;
 
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     string saveFile = "";
-    string layoutFile = "";
+    string layoutFile = "layout.txt";
 
     for (int i = 1; i < argc; i++) {
         if (nextIsSeed) {
             nextIsSeed = false;
             istringstream ss{argv[i]};
             ss >> seed;
-            // print error if seed is negative???
         } else if (nextIsSaveFile) {
             nextIsSaveFile = false;
             saveFile = argv[i];
         } else if (nextIsLayoutFile) {
             nextIsLayoutFile = false;
             layoutFile = argv[i];
+            useLayoutFile = true;
+            useRandomBoard = false;
         } else if (argv[i] == flagSeed) {
             nextIsSeed = true;
         } else if (argv[i] == flagLoad) {
@@ -46,7 +48,7 @@ int main(int argc, char const *argv[]) {
         } else if (argv[i] == flagBoard) {
             nextIsLayoutFile = true;
         } else if (argv[i] == randomBoard) {
-            useRandomBoard = layoutFile.empty() ? false : true;
+            useRandomBoard = useLayoutFile == false;
         }
     }
 
@@ -54,16 +56,15 @@ int main(int argc, char const *argv[]) {
     // TODO: functions should check if file exists / is valid
     if (!saveFile.empty()) {
         game.loadGame(saveFile);
-    } else if (!layoutFile.empty()) {
-        game.createBoard(layoutFile);
-    } else {
-        // todo also use seed
+    } else if (useRandomBoard) {
         game.createBoard(seed);
+    } else {
+        game.createBoard(layoutFile);
     }
 
     if (!game.hasGameStarted()) {
-      // quit if begin game failed
-        if(!game.beginGame()) return 0;
+        // quit if begin game failed
+        if (!game.beginGame()) return 0;
     }
 
     while (true) {
@@ -76,7 +77,7 @@ int main(int argc, char const *argv[]) {
             if (isYes == "yes" || isYes == "y" || isYes == "YES") {
                 game.resetGame();
                 // quit if begin game failed
-                if(!game.beginGame()) return 0;
+                if (!game.beginGame()) return 0;
             } else {
                 return 0;
             }
