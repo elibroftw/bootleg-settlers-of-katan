@@ -24,7 +24,7 @@ istream& operator>>(istream& in, Resource& x) {
         } else if (val == "HEAT") {
             x = Resource::Heat;
         } else if (val == "WIFI" || val == "") {
-            x = Resource::Glass;
+            x = Resource::Wifi;
         } else {
             // x = Resource::Park;
             in.setstate(std::ios::failbit);

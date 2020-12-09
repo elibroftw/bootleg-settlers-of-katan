@@ -58,7 +58,7 @@ int main(int argc, char const *argv[]) {
         game.createBoard(layoutFile);
     } else {
         // todo also use seed
-        game.createBoard();
+        game.createBoard(seed);
     }
 
     if (!game.hasGameStarted()) {

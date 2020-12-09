@@ -1,9 +1,12 @@
 #include "game.h"
 
+#include <chrono>
 #include <exception>
 #include <fstream>
 #include <iostream>
 #include <locale>
+#include <random>
+#include <algorithm>
 #include <sstream>
 #include <string>
 #include <unordered_set>
@@ -25,6 +28,9 @@
 using std::cerr;
 using std::cin;
 using std::cout;
+using std::default_random_engine;
+using std::uniform_int_distribution;
+using std::random_shuffle;
 using std::endl;
 using std::ifstream;
 using std::invalid_argument;
@@ -196,19 +202,47 @@ bool Game::isGameOver() {
     return gameOver;
 }
 
-void Game::createBoard() {
-    // TODO: random board
-    // for (size_t i = 0; i < 18; i++) {
-    //     auto tile = std::make_shared<Tile>(i);
-    //     tiles.push_back(tile);
-    // }
+void Game::createBoard(unsigned int seed) {
+
+    // use a time-based seed for the default seed value
+    default_random_engine rng{seed};
+    uniform_int_distribution<unsigned> distribAll(0, 18);
+    uniform_int_distribution<unsigned> distrib1(3, 6);
+    uniform_int_distribution<unsigned> distrib2(8, 11);
+
+    vector<unsigned int> randomResources{Wifi, Wifi, Wifi, Heat, Heat, Heat,
+                                         Brick, Brick, Brick, Brick, Energy,
+                                         Energy, Energy, Energy, Glass, Glass, Glass};
+    vector<unsigned int> randomValues;
+    for (size_t i = 0; i < 3; i++) {
+        randomValues.push_back(2);
+        randomValues.push_back(distrib1(rng));
+        randomValues.push_back(distrib1(rng));
+        randomValues.push_back(distrib2(rng));
+        randomValues.push_back(distrib2(rng));
+        randomValues.push_back(12);
+    }
+    // shuffle here
+    random_shuffle(randomResources.begin(), randomResources.end());
+    random_shuffle(randomValues.begin(), randomValues.end());
+
+    // create random index from 0 to 18 to insert Park and value of 7
+    unsigned int parkIndex = distribAll(rng);
+    randomResources.insert(randomResources.begin() + parkIndex, Park);
+    randomValues.insert(randomValues.begin() + parkIndex, 7);
+
+    for (size_t i = 0; i < 19; i++) {
+        auto tile = std::make_shared<Tile>(i, randomValues[i], randomResources[i]);
+        tiles.push_back(tile);
+    }
 }
 
 void Game::createBoard(string filename) {
     ifstream file{filename};
     if (!file) {
-        // if file exists or is invalid, create a random board
-        createBoard();
+        // if file does not exist or is invalid, create a random board
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        createBoard(seed);
         return;
     }
     unsigned int resource;
@@ -743,7 +777,6 @@ bool Game::nextTurn() {
                 cout << "You cannot build here" << endl;
             }
         } else if (temp == "build-res" || temp == "brs") {
-
             int vertexLocation;
             while (true) {
                 if (cin >> vertexLocation) {
@@ -806,7 +839,7 @@ bool Game::nextTurn() {
                 } else if (resGive == resTake) {
                     cout << "You cannot trade the same resource!" << endl;
                 } else {
-                    if(!tradeWith(builders[colour2], resGive, resTake)) {
+                    if (!tradeWith(builders[colour2], resGive, resTake)) {
                         return false;
                     }
                 }
@@ -855,7 +888,8 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
             } else {
                 cout << "Trade offer was declined." << endl;
             }
-        } if (cin.eof()) {
+        }
+        if (cin.eof()) {
             return false;
         }
     }

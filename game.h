@@ -54,7 +54,7 @@ class Game {
 
    public:
     Game();
-    void createBoard();
+    void createBoard(unsigned int seed);
     void createBoard(string filename);
     void saveGame(string filename);
     void loadGame(string filename);
