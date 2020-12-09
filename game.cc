@@ -1,12 +1,12 @@
 #include "game.h"
 
+#include <algorithm>
 #include <chrono>
 #include <exception>
 #include <fstream>
 #include <iostream>
 #include <locale>
 #include <random>
-#include <algorithm>
 #include <sstream>
 #include <string>
 #include <unordered_set>
@@ -29,8 +29,6 @@ using std::cerr;
 using std::cin;
 using std::cout;
 using std::default_random_engine;
-using std::uniform_int_distribution;
-using std::random_shuffle;
 using std::endl;
 using std::ifstream;
 using std::invalid_argument;
@@ -38,9 +36,11 @@ using std::locale;
 using std::make_pair;
 using std::ofstream;
 using std::pair;
+using std::random_shuffle;
 using std::string;
 using std::tie;
 using std::toupper;
+using std::uniform_int_distribution;
 using std::unordered_map;
 using std::unordered_set;
 
@@ -203,16 +203,15 @@ bool Game::isGameOver() {
 }
 
 void Game::createBoard(unsigned seed) {
-
     // use a time-based seed for the default seed value
     default_random_engine rng{seed};
-    uniform_int_distribution<unsigned> distribAll(0, 18);
-    uniform_int_distribution<unsigned> distrib1(3, 6);
-    uniform_int_distribution<unsigned> distrib2(8, 11);
+    uniform_int_distribution<unsigned> distribAll{0, 18};
+    uniform_int_distribution<unsigned> distrib1{3, 6};
+    uniform_int_distribution<unsigned> distrib2{8, 11};
 
-    vector<unsigned> randomResources{Wifi, Wifi, Wifi, Heat, Heat, Heat,
-                                         Brick, Brick, Brick, Brick, Energy,
-                                         Energy, Energy, Energy, Glass, Glass, Glass};
+    vector<unsigned> randomResources = {Wifi, Wifi, Wifi, Heat, Heat, Heat,
+                                        Brick, Brick, Brick, Brick, Energy,
+                                        Energy, Energy, Energy, Glass, Glass, Glass};
     vector<unsigned> randomValues;
     for (size_t i = 0; i < 3; i++) {
         randomValues.push_back(2);
@@ -663,22 +662,24 @@ bool Game::nextTurn() {
                 if (!(cin >> input) && cin.eof()) {
                     return false;
                 }
-
-                toupper(input[0], loc);  // capitalize first letter
-                for (auto const &tuple : buildersOnTile) {
-                    int b, bp;
-                    tie(b, bp) = tuple;
-                    auto tempBuilder = builders[b].get();
-                    if (input[0] == tempBuilder->getColour()[0]) {
-                        // TODO: check if correct
-                        int stolenResource = tempBuilder->tryStealing();
-                        if (stolenResource >= 0) {
-                            cout << "Builder " << builder->getColour() << " steals "
-                                 << getResourceName(stolenResource) << " from " << tempBuilder->getColour() << endl;
-                            builder->setResource(stolenResource, builder->getResource(stolenResource) + 1);
+                if (!input.empty()) {
+                    toupper(input[0], loc);  // capitalize first letter
+                    for (auto const &tuple : buildersOnTile) {
+                        int b, bp;
+                        tie(b, bp) = tuple;
+                        auto tempBuilder = builders[b].get();
+                        if (input[0] == tempBuilder->getColour()[0]) {
+                            // TODO: check if correct
+                            int stolenResource = tempBuilder->tryStealing();
+                            if (stolenResource >= 0) {
+                                cout << "Builder " << builder->getColour() << " steals "
+                                     << getResourceName(stolenResource)
+                                     << " from " << tempBuilder->getColour() << endl;
+                                builder->setResource(stolenResource, builder->getResource(stolenResource) + 1);
+                            }
+                            askForInput = false;
+                            break;
                         }
-                        askForInput = false;
-                        break;
                     }
                 }
             }
@@ -895,7 +896,6 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
     }
     return true;
 }
-
 
 // TODO: bonus feature
 void Game::marketTrade(Resource resource1, Resource resource2) {}

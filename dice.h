@@ -1,7 +1,13 @@
 #ifndef __DICE__
 #define __DICE__
+#include <random>
+
+using std::default_random_engine;
+using std::uniform_int_distribution;
 
 class Dice {
+    default_random_engine rng;
+    uniform_int_distribution<unsigned> diceDistribution{2, 12};
     public:
         // rolls the fair dice, produces two random numbers
         // between 1 and 6, and returns the sum of the two

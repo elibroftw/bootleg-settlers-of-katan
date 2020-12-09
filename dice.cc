@@ -1,21 +1,24 @@
 #include "dice.h"
 
-#include <cstdlib>
-#include <ctime>
+#include <chrono>
 #include <iostream>
+#include <random>
 #include <string>
 
 using std::cin;
 using std::cout;
+using std::default_random_engine;
 using std::endl;
+using std::uniform_int_distribution;
+
+Dice::Dice() {
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    rng = default_random_engine{seed};
+}
 
 unsigned Dice::roll(bool loaded) {
-    if (!loaded) {
-        srand((int)time(0));
-        int die1 = (rand() % 6) + 1;
-        int die2 = (rand() % 6) + 1;
-        return die1 + die2;
-    }
+    if (!loaded) return diceDistribution(rng);
+
     int loadedDie = 0;
     while (true) {
         cout << "Input a roll between 2 and 12: ";
