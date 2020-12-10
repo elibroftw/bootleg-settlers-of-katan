@@ -14,10 +14,8 @@ class Tile {
     unsigned getNumber();
 
     unsigned getResource();
-    // void setResource(unsigned resourceCode);
 
     unsigned getValue();
-    // void setValue(unsigned newValue);
 };
 
 #endif

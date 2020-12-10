@@ -14,14 +14,6 @@ unsigned Tile::getResource() {
     return resource;
 }
 
-// void Tile::setResource(unsigned resourceCode) {
-//     resource = resourceCode;
-// }
-
 unsigned Tile::getValue() {
     return value;
 }
-
-// void Tile::setValue(unsigned newValue) {
-//     value = newValue;
-// }
