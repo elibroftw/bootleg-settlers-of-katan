@@ -17,7 +17,7 @@ Dice::Dice() {
 }
 
 unsigned Dice::roll(bool loaded) {
-    if (!loaded) return diceDistribution(rng);
+    if (!loaded) return diceDistribution(rng) + diceDistribution(rng);
 
     int loadedDie = 0;
     while (true) {
