@@ -922,7 +922,6 @@ void Game::marketTrade(Resource resource1, Resource resource2) {}
 
 void Game::resetGame() {
     if (geeseLocation < 19) {
-        tiles[geeseLocation].get()->removeGeese();
         textDisplay.removeGeese(geeseLocation);
     }
 
