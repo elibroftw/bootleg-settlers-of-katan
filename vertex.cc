@@ -44,7 +44,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool checkResources) 
     int numWifi = builder->getResource("wifi");
     if (improvement == ' ') {
         if (numBrick >= 1 && numEnergy >= 1 && numGlass >= 1 && numWifi >= 1) {
-            builder->IncreasePoint();
+            builder->addBuildingPoints();
             builder->setResource("brick", numBrick - 1);
             builder->setResource("energy", numEnergy - 1);
             builder->setResource("glass", numGlass - 1);
@@ -56,7 +56,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool checkResources) 
         }
     } else if (improvement == 'B') {
         if (numGlass >= 2 && numHeat >= 3) {
-            builder->IncreasePoint();
+            builder->addBuildingPoints();
             builder->setResource("glass", numGlass - 2);
             builder->setResource("heat", numHeat - 1);
             return true;
@@ -66,7 +66,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool checkResources) 
         }
     } else if (improvement == 'H') {
         if (numBrick >= 3 && numEnergy >= 2 && numGlass >= 2 && numWifi >= 1 && numHeat >= 2) {
-            builder->IncreasePoint();
+            builder->addBuildingPoints();
             builder->setResource("brick", numBrick - 3);
             builder->setResource("energy", numEnergy - 2);
             builder->setResource("glass", numGlass - 2);

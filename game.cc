@@ -5,7 +5,6 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
-#include <locale>
 #include <random>
 #include <sstream>
 #include <string>
@@ -32,7 +31,6 @@ using std::default_random_engine;
 using std::endl;
 using std::ifstream;
 using std::invalid_argument;
-using std::locale;
 using std::make_pair;
 using std::ofstream;
 using std::pair;
@@ -283,7 +281,7 @@ void Game::saveGame(string filename) {
 
     for (size_t i = 0; i < 4; i++) {
         builders[i].get()->printResources(outfile);
-        outfile << " r";
+        outfile << "r";
         for (auto &&r : roads[i]) {
             outfile << ' ' << r;
         }
@@ -595,7 +593,7 @@ void Game::printStatus() {
         for (size_t j = 0; j < padding; j++) {
             cout << " ";
         }
-        cout << "has " << b->getBuilderPoints() << " building points";
+        cout << "has " << b->getBuildingPoints() << " building points";
         for (size_t r = 0; r < 6; r++) {
             cout << ", " << b->getResource(r) << getResourceName(r);
         }
@@ -678,7 +676,6 @@ bool Game::nextTurn() {
 
         if (printMsg) {
             cout << "Choose a builder to steal from." << endl;
-            locale loc;
             bool askForInput = true;
             while (askForInput) {
                 string input;
@@ -686,7 +683,7 @@ bool Game::nextTurn() {
                     return false;
                 }
                 if (!input.empty()) {
-                    toupper(input[0], loc);  // capitalize first letter
+                    toupper(input[0]);  // capitalize first letter
                     for (auto const &tuple : buildersOnTile) {
                         int b, bp;
                         tie(b, bp) = tuple;
@@ -765,7 +762,7 @@ bool Game::nextTurn() {
             printStatus();
         } else if (temp == "residences") {
             // TODO test against sample executable
-            if (builder->getBuilderPoints()) {
+            if (builder->getBuildingPoints()) {
                 bool firstPrint = true;
                 for (size_t i = 0; i < resLocations.size(); i++) {
                     // print out each location if vertex owner = curBuilder

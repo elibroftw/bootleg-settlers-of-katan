@@ -8,36 +8,45 @@
 
 using std::istream;
 using std::string;
+using std::tolower;
 
 istream& operator>>(istream& in, Resource& x) {
     string val;
     if (in >> val) {
-        for (size_t i = 0; i < val.size(); i++) {
-            std::toupper(val[i]);
-        }
-        if (val == "BRICK") {
-            x = Resource::Brick;
-        } else if (val == "ENERGY") {
-            x = Resource::Energy;
-        } else if (val == "GLASS") {
-            x = Resource::Glass;
-        } else if (val == "HEAT") {
-            x = Resource::Heat;
-        } else if (val == "WIFI" || val == "") {
-            x = Resource::Wifi;
-        } else {
-            // x = Resource::Park;
+        Resource temp = getResourceCode(val);
+        if (temp == Park) {
             in.setstate(std::ios::failbit);
+        } else {
+            x = temp;
         }
     }
-
     return in;
+}
+
+Resource getResourceCode(string resourceName) {
+    toupper(resourceName[0]);
+    char r = resourceName[0];
+    switch (r) {
+        case 'B':
+            return Brick;
+        case 'E':
+            return Energy;
+        case 'G':
+            return Glass;
+        case 'H':
+            return Heat;
+        case 'W':
+            return Wifi;
+        default:
+            return Park;
+    }
+    return Park;
 }
 
 string getResourceName(int resourceCode) {
     switch (resourceCode) {
         case 0:
-            return "BRICKS";
+            return "BRICK";
         case 1:
             return "ENERGY";
         case 2:

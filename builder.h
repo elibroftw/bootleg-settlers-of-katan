@@ -10,22 +10,26 @@ using std::ostream;
 using std::vector;
 using std::istream;
 
-enum Colour { blue, red, orange, yellow };
+enum Colour { Blue, Red, Orange, Yellow };
 
-// read string, use only the capitalized first letter to determine the builder
-// if fail, in.setstate(std::ios::failbit);
-istream& operator>>(istream& in, Colour& x);
+// read string and returns the corresponding colour
+// if string is invalid, set fail bit
+istream& operator>>(istream& in, Colour& colour);
 
 class Builder {
-    // indicate colour: red, blue, orange, yellow
+    // blue, red, orange, yellow
     string colour;
+    // the turn order of the builder
     int num;
+    // store number of points the builder has
+    int buildPoints = 0;
+    // whether the builder is using a loaded dice
+    bool diceIsLoaded = true;
+
     // store the resources the builder has: brick, energy, glass,
     // heat, wifi
-    vector<int> resources;
-    // store number of points the builder has
-    int buildPoints;
-    bool diceIsLoaded;
+    vector<int> resources {0, 0, 0, 0, 0};
+
     public:
         Builder(string colour, int num);
         // When a seven is rolled, current builder moves the geese
@@ -46,23 +50,25 @@ class Builder {
         //  and clears vertices and edges
         void reset();
 
-        string getColour(bool firstCharOnly=false);
+        string getColour();
         int getNum();
-        // return the number of resource of the specified string or int
+
+        // returns the number of resource of the specified string or int
         // if string, first toLower the string
         int getResource(std::string resourceName);
         int getResource(int resourceCode);
 
-        // prints out resources
+        // prints out resources space separated (ends with a space) e.g. 0 0 3 0 0
         void printResources(ostream &out);
 
-        int setResource(std::string resourceName, int num);
-        int setResource(int resourceCode, int num);
+        void setResource(std::string resourceName, int num);
+        void setResource(int resourceCode, int num);
 
-        int getBuilderPoints();
-        void setBuilderPoints(int value);
-        // increases the builder's points by one (must upgrade residence)
-        void IncreasePoint();
+        int getBuildingPoints();
+        void setBuildingPoints(int value);
+
+        // increments the builder's building points
+        void addBuildingPoints(int points = 1);
 
         void useLoadedDice();
         void useFairDice();
