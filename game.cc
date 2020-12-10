@@ -309,6 +309,7 @@ void Game::saveGame(string filename) {
 void Game::loadGame(string filename) {
     ifstream file{filename};
     if (!file) {
+        cerr << "ERROR: Invalid Save File" << endl;
         throw InvalidSaveFile();
     }
     file >> curTurn;
@@ -317,6 +318,7 @@ void Game::loadGame(string filename) {
     for (size_t i = 0; i < 4; i++) {
         // for each builder
         if (!getline(file, line)) {
+            cerr << "ERROR: Invalid Save File" << endl;
             throw InvalidSaveFile();
         }
         auto builder = builders[i];
@@ -333,6 +335,7 @@ void Game::loadGame(string filename) {
                 try {
                     builder.get()->setResource(i, std::stoi(temp));
                 } catch (invalid_argument &e) {
+                    cerr << "ERROR: Invalid Save File" << endl;
                     throw InvalidSaveFile();
                 }
             }
@@ -372,10 +375,10 @@ void Game::loadGame(string filename) {
                 textDisplay.updateVertex(vertex, builder);
                 resLocations.push_back(vertexIdx);
             } else {
+                cerr << "ERROR: Invalid Save File" << endl;
                 throw InvalidSaveFile();
             }
         }
-        // builder.get()->setBuilderPoints(bp);
     }
 
     // read board

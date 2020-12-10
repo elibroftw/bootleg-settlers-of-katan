@@ -35,7 +35,7 @@ int Vertex::getBuildingPoints() {
     }
 }
 
-bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool checkResources) {
+bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool useResouces) {
     std::string errorMsg = "You do not have enough resources.";
     int numBrick = builder->getResource("brick");
     int numEnergy = builder->getResource("energy");

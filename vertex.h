@@ -36,7 +36,7 @@ class Vertex {
     // Otherwise cannot upgrade the residence (must at least be a basement
     // and at most a tower).
     // Increases building point by one each time it is called.
-    bool upgradeResidence(shared_ptr<Builder> builder, bool checkResources = true);
+    bool upgradeResidence(shared_ptr<Builder> builder, bool useResouces = true);
 
     // resets owner to -1 and improvement to ""
     void reset();

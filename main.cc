@@ -53,7 +53,6 @@ int main(int argc, char const *argv[]) {
     }
 
     Game game = Game();
-    // TODO: functions should check if file exists / is valid
     if (!saveFile.empty()) {
         game.loadGame(saveFile);
     } else if (useRandomBoard) {
