@@ -1,8 +1,8 @@
 CXX=g++
-CXXFLAGS=-std=c++14 -Wall -O -g -MMD -Werror=vla # use -MMD to generate dependencies
-SOURCES=$(wildcard *.cc)   # list of all .cc files in the current directory
-OBJECTS=${SOURCES:.cc=.o}  # .o files depend upon .cc files with same names
-DEPENDS=${OBJECTS:.o=.d}   # .d file is list of dependencies for corresponding .cc file
+CXXFLAGS=-std=c++14 -Wall -O -g -MMD -Werror=vla
+SOURCES=$(filter-out test_harness.cc, $(wildcard *.cc))
+OBJECTS=${SOURCES:.cc=.o}
+DEPENDS=${OBJECTS:.o=.d}
 EXEC=constructor
 # for creating a test harness executable to test the modules
 TEST_SOURCES=test_harness.cc textdisplay.cc
@@ -35,4 +35,4 @@ ${TEST_EXEC} test: ${TEST_OBJECTS}
 
 .PHONY: clean
 clean:
-	rm -f $(OBJECTS) ${TEST_OBJECTS} $(TEST_DEPENDS) $(DEPENDS) $(RUN_EXE) ${TEST_EXE}
+	rm -f $(wildcard *.o) $(wildcard *.d) $(RUN_EXE) ${TEST_EXE}
