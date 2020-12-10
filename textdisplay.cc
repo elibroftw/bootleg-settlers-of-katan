@@ -50,112 +50,112 @@ TextDisplay::TextDisplay() {
     }
 }
 
-void TextDisplay::setChar(int x, int y, char c) {
-    // assumes x >= 0 and y >= 0;
-    board[x][y] = c;
+void TextDisplay::setChar(int row, int col, char val) {
+    // assumes row >= 0 and col >= 0;
+    board[row][col] = val;
 }
 
-void TextDisplay::setString(int x, int y, string s) {
-    for (size_t i = 0; i < s.size(); i++, x++) {
-        board[x][y] = s[i];
+void TextDisplay::setString(int row, int col, string str) {
+    for (size_t i = 0; i < str.size(); i++, col++) {
+        board[row][col] = str[i];
     }
 }
 
-void TextDisplay::setInt(int x, int y, int v) {
-    // assumes x >= 0 and y >= 0;
+void TextDisplay::setInt(int row, int col, int num) {
+    // assumes row >= 0 and col >= 0;
     string int_as_str;
-    if (v < 10) {
-        int_as_str = " " + to_string(v);
+    if (num < 10) {
+        int_as_str = " " + to_string(num);
     } else {
-        int_as_str = to_string(v);
+        int_as_str = to_string(num);
     }
     // for char in string, set it to board starting from (x, y)
-    for (size_t i = 0; i < int_as_str.size(); i++, y++) {
-        board[x][y] = int_as_str[i];
+    for (size_t i = 0; i < int_as_str.size(); i++, col++) {
+        board[row][col] = int_as_str[i];
     }
 }
 
 pair<int, int> TextDisplay::getTopLeftCoord(int tileNumber) {
     // returns the location of the top left "|" of the tileNumber
-    int xCoord;
-    int yCoord;
+    int row;
+    int col;
     if (tileNumber == 0) {
-        xCoord = 0;
+        row = 0;
     } else if (tileNumber == 1 || tileNumber == 2) {
-        xCoord = 4;
+        row = 4;
     } else if (tileNumber >= 3 && tileNumber <= 5) {
-        xCoord = 8;
+        row = 8;
     } else if (tileNumber == 6 || tileNumber == 7) {
-        xCoord = 12;
+        row = 12;
     } else if (tileNumber >= 8 && tileNumber <= 10) {
-        xCoord = 16;
+        row = 16;
     } else if (tileNumber == 11 || tileNumber == 12) {
-        xCoord = 20;
+        row = 20;
     } else if (tileNumber >= 13 && tileNumber <= 15) {
-        xCoord = 24;
+        row = 24;
     } else if (tileNumber == 16 || tileNumber <= 17) {
-        xCoord = 28;
+        row = 28;
     } else {  //  tileNumber == 18
-        xCoord = 32;
+        row = 32;
     }
     // yCoord
     if (tileNumber == 0 || tileNumber == 4 || tileNumber == 9 || tileNumber == 14 || tileNumber == 18) {
-        yCoord = 20;
+        col = 20;
     } else if (tileNumber == 1 || tileNumber == 6 || tileNumber == 11 || tileNumber == 16) {
-        yCoord = 10;
+        col = 10;
     } else if (tileNumber == 2 || tileNumber == 7 || tileNumber == 12 || tileNumber == 17) {
-        yCoord = 30;
+        col = 30;
     } else if (tileNumber == 3 || tileNumber == 8 || tileNumber == 13) {
-        yCoord = 0;
+        col = 0;
     } else {  // tileNumber == 5 || tileNumber == 10 || tileNumber == 15
-        yCoord = 40;
+        col = 40;
     }
 
-    return make_pair(xCoord, yCoord);
+    return make_pair(row, col);
 }
 
 void TextDisplay::setTileResource(int tileNumber, string resource) {
     auto tileCoords = getTopLeftCoord(tileNumber);
-    int xCoord = tileCoords.first + 3;
-    int yCoord = tileCoords.second + 2;
+    int row = tileCoords.first + 3;
+    int col = tileCoords.second + 2;
     for (size_t i = 0; i < resource.size(); i++) {
-        board[xCoord][yCoord + i] = resource[i];
+        board[row][col + i] = resource[i];
     }
 }
 
 void TextDisplay::setTileNumber(int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
-    int xCoord = tileCoords.first + 2;
-    int yCoord = tileCoords.second + 6;
-    setInt(xCoord, yCoord, tileNumber);
+    int row = tileCoords.first + 2;
+    int col = tileCoords.second + 6;
+    setInt(row, col, tileNumber);
 }
 
 void TextDisplay::setTileValue(int tileNumber, int tileValue) {
     if (tileValue != 7) {
         auto tileCoords = getTopLeftCoord(tileNumber);
-        int xCoord = tileCoords.first + 4;
-        int yCoord = tileCoords.second + 4;
-        setInt(xCoord, yCoord, tileValue);
+        int row = tileCoords.first + 4;
+        int col = tileCoords.second + 4;
+        setInt(row, col, tileValue);
     }
 }
 
 void TextDisplay::setGeese(int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
-    int xCoord = tileCoords.first + 3;
-    int yCoord = tileCoords.second + 3;
+    int row = tileCoords.first + 3;
+    int col = tileCoords.second + 3;
     string geese = "GEESE";
     for (size_t i = 0; i < geese.size(); i++) {
-        board[xCoord][yCoord + i] = geese[i];
+        board[row][col + i] = geese[i];
     }
 }
 
 void TextDisplay::removeGeese(int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
-    int xCoord = tileCoords.first + 3;
-    int yCoord = tileCoords.second + 3;
+    int row = tileCoords.first + 3;
+    int col = tileCoords.second + 3;
     string geese = "GEESE";
     for (size_t i = 0; i < geese.size(); i++) {
-        board[xCoord][yCoord + i] = ' ';
+        board[row][col + i] = ' ';
     }
 }
 
@@ -163,15 +163,15 @@ void TextDisplay::updateVertex(shared_ptr<Vertex> &vertex, shared_ptr<Builder> &
     if (vertex.get()->getOwner() == builder.get()->getNum()) {
         char c1 = builder.get()->getColour()[0];
         char c2 = vertex.get()->getImprovement();
-        setChar(vertex.get()->getX(), vertex.get()->getY(), c1);
-        setChar(vertex.get()->getX() + 1, vertex.get()->getY(), c2);
+        setChar(vertex.get()->getCol(), vertex.get()->getRow(), c1);
+        setChar(vertex.get()->getCol() + 1, vertex.get()->getRow(), c2);
     }
 }
 
 void TextDisplay::buildRoad(shared_ptr<Edge> &edge, shared_ptr<Builder> &builder) {
     char colour = builder.get()->getColour()[0];
-    setChar(edge.get()->getX(), edge.get()->getY(), colour);
-    setChar(edge.get()->getX() + 1, edge.get()->getY(), 'R');
+    setChar(edge.get()->getRow(), edge.get()->getCol(), colour);
+    setChar(edge.get()->getRow() + 1, edge.get()->getCol(), 'R');
 }
 
 ostream &operator<<(ostream &out, const TextDisplay &td) {

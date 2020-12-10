@@ -9,17 +9,20 @@ using std::shared_ptr;
 class Edge {
     int owner;
     int number;
-    // the x and y coordinates are for the text display
-    int xCoord;
-    int yCoord;
+    // the row and col coordinates are for the text display
+    int row;
+    int col;
+
     bool isHorizontal;
     bool isRoad;
 
    public:
-    Edge(int number = -1, int xCoord = -1, int yCoord = -1, bool isHorizontal = false);
+    Edge(int number = -1, int row = -1, int col = -1, bool isHorizontal = false);
 
-    int getX();
-    int getY();
+    // get row nad column of textDisplay 2D array
+    int getRow();
+    int getCol();
+
     int getNum();
     int getOwner();
     bool getHorizontal();
@@ -32,7 +35,7 @@ class Edge {
     // resets owner to -1 and improvement to ""
     void reset();
 
-    // returns whether the edge has valid number, xCoord, and yCoord
+    // returns whether the edge has valid number, row, and col
     bool realEdge();
 };
 

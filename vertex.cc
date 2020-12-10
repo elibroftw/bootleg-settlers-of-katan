@@ -1,13 +1,13 @@
 #include "vertex.h"
 
-Vertex::Vertex(int number, int xCoord, int yCoord) : number{number}, xCoord{xCoord}, yCoord{yCoord}, improvement{' '} {}
+Vertex::Vertex(int number, int row, int col) : number{number}, row{row}, col{col}, improvement{' '} {}
 
-int Vertex::getX() {
-    return xCoord;
+int Vertex::getCol() {
+    return col;
 }
 
-int Vertex::getY() {
-    return yCoord;
+int Vertex::getRow() {
+    return row;
 }
 
 int Vertex::getNum() {
@@ -88,7 +88,7 @@ void Vertex::reset() {
 }
 
 bool Vertex::realVertex() {
-    if (getX() >= 0 && getY() >= 0 && getNum() >= 0) {
+    if (getCol() >= 0 && getRow() >= 0 && getNum() >= 0) {
         return true;
     }
     return false;

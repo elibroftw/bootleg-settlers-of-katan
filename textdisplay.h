@@ -20,11 +20,11 @@ class TextDisplay {
    public:
     // create the outlines of the board
     TextDisplay();
-    void setChar(int x, int y, char c);
-    void setString(int x, int y, string c);
-    void setInt(int x, int y, int v);
+    void setChar(int row, int col, char val);
+    void setString(int row, int col, string str);
+    void setInt(int row, int col, int num);
     // tile helper methods
-    // returns the location of the top left "|" of the tileNumber
+    // returns the row, col location of the top left "|" of the tileNumber
     pair<int, int> getTopLeftCoord(int tileNumber);
     void setTileNumber(int tileNumber);
     void setTileValue(int tileNumber, int tileValue);
