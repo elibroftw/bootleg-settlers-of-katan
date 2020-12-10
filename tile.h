@@ -1,5 +1,5 @@
-#ifndef __TILE__
-#define __TILE__
+#ifndef __TILE_H__
+#define __TILE_H__
 #include <string>
 
 using std::string;
@@ -8,7 +8,7 @@ class Tile {
     unsigned number;
     unsigned value;
     unsigned resource;
-    bool geese;
+    bool geese = false;
 
    public:
     Tile(unsigned number, unsigned value, unsigned resourceCode);

@@ -1,5 +1,5 @@
-#ifndef __EDGE__
-#define __EDGE__
+#ifndef __EDGE_H__
+#define __EDGE_H__
 #include <memory>
 
 #include "builder.h"

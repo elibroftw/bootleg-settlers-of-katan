@@ -1,5 +1,5 @@
-#ifndef __RESOURCE__
-#define __RESOURCE__
+#ifndef __RESOURCE_H__
+#define __RESOURCE_H__
 #include <iostream>
 #include <string>
 

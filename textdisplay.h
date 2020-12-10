@@ -1,5 +1,5 @@
-#ifndef __TEXT_DISPLAY__
-#define __TEXT_DISPLAY__
+#ifndef __TEXT_DISPLAY_H__
+#define __TEXT_DISPLAY_H__
 #include <iostream>
 #include <vector>
 #include <memory>

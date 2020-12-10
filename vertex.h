@@ -1,5 +1,5 @@
-#ifndef __VERTEX__
-#define __VERTEX__
+#ifndef __VERTEX_H__
+#define __VERTEX_H__
 #include <memory>
 
 #include "builder.h"

@@ -1,5 +1,5 @@
-#ifndef __GAME__
-#define __GAME__
+#ifndef __GAME_H__
+#define __GAME_H__
 #include <memory>
 #include <string>
 #include <unordered_map>

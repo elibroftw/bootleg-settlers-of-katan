@@ -1,5 +1,5 @@
-#ifndef __DICE__
-#define __DICE__
+#ifndef __DICE_H__
+#define __DICE_H__
 #include <random>
 
 using std::default_random_engine;
