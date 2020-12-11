@@ -303,7 +303,7 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
     // check if it and adjacent verticies in the map have no owners
     for (int r = row - 1; r < row + 1; r++) {
         // check if vertex above, below and itself have owners
-        if (r >= 0 && r <= VM_HEIGHT && verticesMap[r][col].get()->getOwner() != -1) {
+        if (r >= 0 && r < VM_HEIGHT && verticesMap[r][col].get()->getOwner() != -1) {
             // vertex is invalid since it or an vertex above/below has an owner
             return false;
         }
@@ -322,7 +322,7 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
     }
 
     // check if vertex directly left/right has a residence
-    if (c >= 0 && c <= VM_WIDTH) {
+    if (c >= 0 && c < VM_WIDTH) {
         if (verticesMap[row][c].get()->getOwner() != -1) {
             return false;
         }
@@ -377,7 +377,7 @@ bool Game::isValidEdge(shared_ptr<Edge> edge) {
                 // check if edges up and below are valid, given vertex is not blocked
                 int c = col + colDelta / 5;
                 for (int r = row - 1; r <= row + 1; r += 2) {
-                    if (r >= 0 && r <= EM_HEIGHT) {
+                    if (r >= 0 && r < EM_HEIGHT) {
                         if (edgesMap[r][c].get()->getOwner() == curTurn) {
                             // edge is valid since an adjacent edge is a road
                             return true;
@@ -395,15 +395,15 @@ bool Game::isValidEdge(shared_ptr<Edge> edge) {
             else if (vertex->getOwner() == -1) {
                 // check if edges above, and right are valid, given vertex is not blocked
                 int r = row + rowDelta;
-                if (r >= 0 && r <= EM_HEIGHT) {
+                if (r >= 0 && r < EM_HEIGHT) {
                     if (edgesMap[r][col].get()->getOwner() == curTurn) {
                         return true;
                     }
                 }
                 r -= rowDelta / 2;
-                if (r >= 0 && r <= EM_HEIGHT) {
+                if (r >= 0 && r < EM_HEIGHT) {
                     for (int c = row - 1; c <= row + 1; c += 2) {
-                        if (c >= 0 && c <= EM_WIDTH) {
+                        if (c >= 0 && c < EM_WIDTH) {
                             if (edgesMap[r][c].get()->getOwner() == curTurn) {
                                 return true;
                             }
