@@ -24,7 +24,7 @@ class Vertex {
    public:
     // default ctor for when vector is being resized
     Vertex(int number = -1);
-    Vertex(const Vertex &v2);
+    Vertex(const Vertex &v);
 
     int getCol();
     int getRow();

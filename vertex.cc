@@ -39,6 +39,12 @@ Vertex::Vertex(int number) : number{number} {
     }
 }
 
+Vertex::Vertex(const Vertex &v) : number{v.number},
+                                  owner{v.owner},
+                                  row{v.row},
+                                  col{v.col},
+                                  improvement{v.improvement} {}
+
 int Vertex::getCol() {
     return col;
 }

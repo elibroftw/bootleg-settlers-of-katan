@@ -26,8 +26,7 @@ istream& operator>>(istream& in, Resource& x) {
 }
 
 Resource getResourceCode(string resourceName) {
-    toupper(resourceName[0]);
-    char r = resourceName[0];
+    char r = toupper(resourceName[0]);;
     switch (r) {
         case 'B':
             return Brick;

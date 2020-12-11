@@ -38,6 +38,7 @@ int main(int argc, char const *argv[]) {
         } else if (nextIsSaveFile) {
             nextIsSaveFile = false;
             saveFile = argv[i];
+            cout << "f" << endl;
         } else if (nextIsLayoutFile) {
             nextIsLayoutFile = false;
             layoutFile = argv[i];
@@ -53,9 +54,12 @@ int main(int argc, char const *argv[]) {
             useRandomBoard = useLayoutFile == false;
         }
     }
-    cerr << "Settlers of Waterloo By Elijah Lopez and Abdullah Hadi" << endl;
+    cout << "Settlers of Waterloo By Elijah Lopez and Abdullah Hadi" << endl;
+
     Game game;
+    cout << "Loading game from " << saveFile << endl;
     if (!saveFile.empty()) {
+        cout << "Loading game from " << saveFile << endl;
         game.loadGame(saveFile);
     } else if (useRandomBoard) {
         game.createBoard(seed);
