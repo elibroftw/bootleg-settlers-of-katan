@@ -6,9 +6,6 @@
 using std::cout;
 
 int main(int argc, char const *argv[]) {
-    TextDisplay td;
-    cout << td << std::endl;
-
     Game g;
     g.test();
 

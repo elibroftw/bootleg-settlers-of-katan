@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "resource.h"
+
 using std::make_pair;
 using std::ostream;
 using std::pair;
@@ -119,10 +121,16 @@ pair<int, int> TextDisplay::getTopLeftCoord(int tileNumber) {
     return make_pair(row, col);
 }
 
+void TextDisplay::updateTile(shared_ptr<Tile> tile) {
+    setTileNumber(tile.get()->getNumber());
+    setTileResource(tile.get()->getNumber(), getResourceName(tile.get()->getResource()));
+    setTileValue(tile.get()->getNumber(), tile.get()->getValue());
+}
+
 void TextDisplay::setTileResource(int tileNumber, string resource) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int row = tileCoords.first + 3;
-    int col = tileCoords.second + 2;
+    int col = tileCoords.second + 5;
     for (size_t i = 0; i < resource.size(); i++) {
         board[row][col + i] = resource[i];
     }
@@ -139,7 +147,7 @@ void TextDisplay::setTileValue(int tileNumber, int tileValue) {
     if (tileValue != 7) {
         auto tileCoords = getTopLeftCoord(tileNumber);
         int row = tileCoords.first + 4;
-        int col = tileCoords.second + 4;
+        int col = tileCoords.second + 6;
         setInt(row, col, tileValue);
     }
 }
@@ -147,7 +155,7 @@ void TextDisplay::setTileValue(int tileNumber, int tileValue) {
 void TextDisplay::setGeese(int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int row = tileCoords.first + 3;
-    int col = tileCoords.second + 3;
+    int col = tileCoords.second + 6;
     string geese = "GEESE";
     for (size_t i = 0; i < geese.size(); i++) {
         board[row][col + i] = geese[i];

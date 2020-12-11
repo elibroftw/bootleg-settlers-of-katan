@@ -62,7 +62,7 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
     }
 
     // create 53 vertices
-    for (int i = 0; i < 53; i++) {
+    for (int i = 0; i <= 53; i++) {
         auto vertex = make_shared<Vertex>(i);
         int rowTD = vertex.get()->getRow();
         int colTD = vertex.get()->getCol();
@@ -70,6 +70,7 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
         int vertexR, vertexC;
         tie(vertexR, vertexC) = Vertex::getVertexFromCoords(rowTD, colTD);
         verticesMap[vertexR][vertexC] = vertex;
+        textDisplay.setInt(rowTD, colTD, i);
     }
 
     for (size_t r = 0; r < EM_HEIGHT; r++) {
@@ -82,7 +83,7 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
 
     // create 71 edges
     // edges can be vertical or horizontal
-    for (int i = 0; i < 71; i++) {
+    for (int i = 0; i <= 71; i++) {
         auto edge = make_shared<Edge>(i);
         int rowTD = edge.get()->getRow();
         int colTD = edge.get()->getCol();
@@ -90,6 +91,7 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
         int edgeR, edgeC;
         tie(edgeR, edgeC) = Edge::getEdgeFromCoords(rowTD, colTD);
         edgesMap[edgeR][edgeC] = edge;
+        textDisplay.setInt(rowTD, colTD, i);
     }
 }
 
@@ -108,9 +110,6 @@ void Game::createBoard(unsigned seed) {
     uniform_int_distribution<unsigned> distrib1{3, 6};
     uniform_int_distribution<unsigned> distrib2{8, 11};
 
-    vector<unsigned> randomResources = {Wifi, Wifi, Wifi, Heat, Heat, Heat,
-                                        Brick, Brick, Brick, Brick, Energy,
-                                        Energy, Energy, Energy, Glass, Glass, Glass};
     vector<unsigned> randomValues;
     for (size_t i = 0; i < 3; i++) {
         randomValues.push_back(2);
@@ -120,6 +119,12 @@ void Game::createBoard(unsigned seed) {
         randomValues.push_back(distrib2(rng));
         randomValues.push_back(12);
     }
+
+    vector<Resource> randomResources = {Wifi, Wifi, Wifi, Heat, Heat, Heat,
+                                        Brick, Brick, Brick, Brick,
+                                        Energy, Energy, Energy, Energy,
+                                        Glass, Glass, Glass, Glass};
+
     // shuffle here
     random_shuffle(randomResources.begin(), randomResources.end());
     random_shuffle(randomValues.begin(), randomValues.end());
@@ -128,10 +133,10 @@ void Game::createBoard(unsigned seed) {
     unsigned parkIndex = distribAll(rng);
     randomResources.insert(randomResources.begin() + parkIndex, Park);
     randomValues.insert(randomValues.begin() + parkIndex, 7);
-
     for (size_t i = 0; i < 19; i++) {
         auto tile = std::make_shared<Tile>(i, randomValues[i], randomResources[i]);
         tiles.push_back(tile);
+        textDisplay.updateTile(tile);
     }
 }
 
@@ -890,6 +895,9 @@ void Game::test() {
     cerr << "creating random board" << endl;
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     createBoard(seed);
+
+    cerr << "testing print board" << endl;
+    printBoard();
 
     cerr << "testing Vertex" << endl;
     for (size_t r = 0; r < VM_HEIGHT; r++) {

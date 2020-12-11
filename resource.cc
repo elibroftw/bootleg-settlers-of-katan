@@ -6,6 +6,8 @@
 #include <iostream>
 #include <string>
 
+using std::cerr;
+using std::endl;
 using std::istream;
 using std::string;
 using std::tolower;
@@ -55,7 +57,10 @@ string getResourceName(int resourceCode) {
             return "HEAT";
         case 4:
             return "WIFI";
+        case 5:
+            return "PARK";
         default:
+            cerr << "ERROR getting resource name " << resourceCode << endl;
             return "PARK";
     }
 }

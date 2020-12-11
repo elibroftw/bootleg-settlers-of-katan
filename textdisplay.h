@@ -6,6 +6,7 @@
 
 #include "builder.h"
 #include "edge.h"
+#include "tile.h"
 #include "vertex.h"
 
 using std::ostream;
@@ -26,12 +27,14 @@ class TextDisplay {
     // tile helper methods
     // returns the row, col location of the top left "|" of the tileNumber
     pair<int, int> getTopLeftCoord(int tileNumber);
+    void updateTile(shared_ptr<Tile>);
     void setTileNumber(int tileNumber);
     void setTileValue(int tileNumber, int tileValue);
     void setTileResource(int tileNumber, string resource);
     void setGeese(int tileNumber);
     void removeGeese(int tileNumber);
     void updateVertex(shared_ptr<Vertex> &vertex, shared_ptr<Builder> &builder);
+    // void updateEdge(shared_ptr<Edge> &edge);
     void buildRoad(shared_ptr<Edge> &edge, shared_ptr<Builder> &builder);
 
     friend ostream &operator<<(ostream &out, const TextDisplay &td);

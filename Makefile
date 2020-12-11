@@ -8,7 +8,7 @@ EXEC=constructor
 TEST_SOURCES=$(filter-out main.cc, $(wildcard *.cc))
 TEST_OBJECTS=${TEST_SOURCES:.cc=.o}
 TEST_DEPENDS=${TEST_OBJECTS:.o=.d}
-TEST_EXEC=test_harness
+TEST_EXEC=tconstructor
 
 ifeq ($(OS),Windows_NT)
 	RUN_EXE := ${EXEC}.exe

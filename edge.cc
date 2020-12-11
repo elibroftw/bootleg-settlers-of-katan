@@ -23,10 +23,10 @@ Edge::Edge(int number) : number{number} {
         } else if (number == 3 || number == 18 || number == 35 || number == 52 || number == 67) {
             col = 16;
             isHorizontal = true;
-        } else if (number == 0 || number == 10 || number == 27 || number == 44 || number == 61 || number == 72) {
+        } else if (number == 0 || number == 10 || number == 27 || number == 44 || number == 61 || number == 71) {
             col = 26;
             isHorizontal = true;
-        } else if (number == 4 || number == 19 || number == 36 || number == 53 || number == 69 || number == 68) {
+        } else if (number == 4 || number == 19 || number == 36 || number == 53 || number == 68) {
             col = 36;
             isHorizontal = true;
         } else if (number == 11 || number == 28 || number == 45 || number == 62) {
@@ -50,7 +50,7 @@ Edge::Edge(int number) : number{number} {
         } else if (number == 17 || number == 25 || number == 34 || number == 42 || number == 51 || number == 59) {
             col = 51;
         } else {
-            cerr << "SOMETHING WENT WRONG" << endl;
+            cerr << "SOMETHING WENT WRONG WITH SETTING COL OF EDGE #" << number << endl;
         }
 
         // set rowTD based on edge number
