@@ -7,6 +7,8 @@
 
 using std::cin;
 using std::cout;
+using std::cerr;
+using std::endl;
 using std::istringstream;
 using std::string;
 
@@ -51,7 +53,7 @@ int main(int argc, char const *argv[]) {
             useRandomBoard = useLayoutFile == false;
         }
     }
-
+    cerr << "Settlers of Waterloo By Elijah Lopez and Abdullah Hadi" << endl;
     Game game = Game();
     if (!saveFile.empty()) {
         game.loadGame(saveFile);
@@ -63,7 +65,10 @@ int main(int argc, char const *argv[]) {
 
     if (!game.hasGameStarted()) {
         // quit if begin game failed
-        if (!game.beginGame()) return 0;
+        if (!game.beginGame()) {
+            cerr << "failed to begin game, please try again" << endl;
+            return 0;
+        }
     }
 
     while (true) {

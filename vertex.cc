@@ -8,7 +8,36 @@ using std::endl;
 using std::make_pair;
 using std::pair;
 
-Vertex::Vertex(int number, int row, int col) : number{number}, row{row}, col{col}, improvement{' '} {}
+Vertex::Vertex(int number) : number{number} {
+    if (number == -1) {
+        row = -1;
+        col = -1;
+        improvement = -1;
+    } else {
+        improvement = ' ';
+        // set rowTD based on vertex number
+        if (number == 0 || number == 1) {
+            row = 0;
+        } else if (number == 52 || number == 53) {
+            row = 40;
+        } else {
+            row = number / 6 * 4 + 4;
+        }
+
+        // set colTD based on vertex number
+        if (number == 2 || number == 48) {
+            col = 11;
+        } else if (number == 0 || number == 3 || number == 49 || number == 52) {
+            col = 21;
+        } else if (number == 1 || number == 4 || number == 50 || number == 53) {
+            col = 31;
+        } else if (number == 5 || number == 51) {
+            col = 41;
+        } else {  // i >=6 && i <= 47
+            col = (number % 6) * 10 + 1;
+        }
+    }
+}
 
 int Vertex::getCol() {
     return col;
@@ -120,7 +149,10 @@ bool Vertex::realVertex() {
 
 pair<int, int> Vertex::getVertexFromCoords(int row, int col) {
     if (row % 4 != 0 || (col - 1) % 10 != 0) {
-        cerr << "something went wrong in getEdgeFromCoords" << endl;
+        // DEBUG STATEMENT; SHOULD NEVER BE RUN
+        cerr << "something went wrong in getVertexFromCoords "
+             << (row % 4 != 0) << ' ' << ((col - 1) % 10 != 0) << ' '
+             << "row = " << row << ", col = " << col << endl;
     }
     return make_pair(row / 4, col / 10);
 }

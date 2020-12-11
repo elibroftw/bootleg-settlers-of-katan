@@ -19,7 +19,7 @@
 #define VM_WIDTH 6
 // EM = edgesMap
 #define EM_HEIGHT 21
-#define EM_WIDTH 10
+#define EM_WIDTH 11
 // text display height and width
 #define TD_HEIGHT 41
 #define TD_WIDTH 54
@@ -58,29 +58,9 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
 
     // create 53 vertices
     for (int i = 0; i < 53; i++) {
-        int colTD;
-        if (i == 2 || i == 48) {
-            colTD = 11;
-        } else if (i == 0 || i == 3 || i == 49 || i == 52) {
-            colTD = 21;
-        } else if (i == 1 || i == 4 || i == 50 || i == 53) {
-            colTD = 31;
-        } else if (i == 5 || i == 51) {
-            colTD = 41;
-        } else {  // i >=6 && i <= 47
-            colTD = (i % 6) * 10 + 1;
-        }
-
-        int rowTD;
-        // set rowTD based on vertex number
-        if (i == 0 || i == 1) {
-            rowTD = 0;
-        } else if (i == 52 || i == 53) {
-            rowTD = 40;
-        } else {
-            rowTD = i / 6 * 4 + 4;
-        }
-        auto vertex = std::make_shared<Vertex>(i, rowTD, colTD);
+        auto vertex = std::make_shared<Vertex>(i);
+        int rowTD = vertex.get()->getRow();
+        int colTD = vertex.get()->getCol();
         vertices.push_back(vertex);
         int vertexR, vertexC;
         tie(vertexR, vertexC) = Vertex::getVertexFromCoords(rowTD, colTD);
@@ -95,92 +75,9 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
     // create 71 edges
     // edges can be vertical or horizontal
     for (int i = 0; i < 71; i++) {
-        int colTD = 0;
-        bool isHorizontal = false;
-        if (i == 9 || i == 26 || i == 43 || i == 60) {
-            colTD = 6;
-            isHorizontal = true;
-        } else if (i == 3 || i == 18 || i == 35 || i == 52 || i == 67) {
-            colTD = 16;
-            isHorizontal = true;
-        } else if (i == 0 || i == 10 || i == 27 || i == 44 || i == 61 || i == 72) {
-            colTD = 26;
-            isHorizontal = true;
-        } else if (i == 4 || i == 19 || i == 36 || i == 53 || i == 69 || i == 68) {
-            colTD = 36;
-            isHorizontal = true;
-        } else if (i == 11 || i == 28 || i == 45 || i == 62) {
-            colTD = 42;
-            isHorizontal = true;
-        } else if (i == 12 || i == 20 || i == 29 || i == 37 || i == 46 || i == 54) {
-            colTD = 1;
-        } else if (i == 5 || i == 13 || i == 21 || i == 30 || i == 38 || i == 47 ||
-                   i == 55 || i == 63) {
-            colTD = 11;
-        } else if (i == 1 || i == 6 || i == 14 || i == 22 || i == 31 || i == 39 ||
-                   i == 48 || i == 56 ||
-                   i == 64 || i == 69) {
-            colTD = 21;
-        } else if (i == 2 || i == 7 || i == 15 || i == 23 || i == 32 || i == 40 ||
-                   i == 49 || i == 57 ||
-                   i == 65 || i == 70) {
-            colTD = 31;
-        } else if (i == 8 || i == 16 || i == 24 || i == 24 || i == 33 || i == 41 || i == 50 || i == 58 || i == 66) {
-            colTD = 41;
-        } else if (i == 17 || i == 25 || i == 34 || i == 42 || i == 51 || i == 59) {
-            colTD = 51;
-        } else {
-            cerr << "SOMETHING WENT WRONG" << endl;
-        }
-
-        int rowTD = 0;
-        // set colTD based on edge number
-        if (i == 0) {
-            rowTD = 0;
-        } else if (i == 1 || i == 2) {
-            rowTD = 2;
-        } else if (i == 3 || i == 4) {
-            rowTD = 4;
-        } else if (i >= 5 && i <= 8) {
-            rowTD = 6;
-        } else if (i >= 6 && i <= 11) {
-            rowTD = 8;
-        } else if (i >= 12 && i <= 17) {
-            rowTD = 10;
-        } else if (i >= 18 && i <= 19) {
-            rowTD = 12;
-        } else if (i >= 20 && i <= 25) {
-            rowTD = 14;
-        } else if (i >= 26 && i <= 28) {
-            rowTD = 16;
-        } else if (i >= 29 && i <= 34) {
-            rowTD = 18;
-        } else if (i >= 25 && i <= 36) {
-            rowTD = 20;
-        } else if (i >= 37 && i <= 42) {
-            rowTD = 22;
-        } else if (i >= 43 && i <= 45) {
-            rowTD = 24;
-        } else if (i >= 47 && i <= 51) {
-            rowTD = 26;
-        } else if (i >= 52 && i <= 53) {
-            rowTD = 28;
-        } else if (i >= 54 && i <= 59) {
-            rowTD = 30;
-        } else if (i >= 60 && i <= 62) {
-            rowTD = 32;
-        } else if (i >= 63 && i <= 66) {
-            rowTD = 34;
-        } else if (i >= 67 && i <= 68) {
-            rowTD = 36;
-        } else if (i == 69 || i == 70) {
-            rowTD = 38;
-        } else if (i == 71) {
-            rowTD = 40;
-        } else {
-            cerr << "SOMETHING WENT WRONG SETTING ROW OF EDGE" << endl;
-        }
-        auto edge = std::make_shared<Edge>(i, colTD, rowTD, isHorizontal);
+        auto edge = std::make_shared<Edge>(i);
+        int rowTD = edge.get()->getRow();
+        int colTD = edge.get()->getCol();
         edges.push_back(edge);
         int edgeR, edgeC;
         tie(edgeR, edgeC) = Edge::getEdgeFromCoords(rowTD, colTD);
@@ -549,6 +446,8 @@ bool Game::beginGame() {
                 } else if (cin.eof()) {
                     saveGame("backup.sv");
                     return false;
+                } else {
+                    cin.clear();
                 }
             }
         }

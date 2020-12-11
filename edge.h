@@ -18,7 +18,8 @@ class Edge {
     bool isRoad;
 
    public:
-    Edge(int number = -1, int row = -1, int col = -1, bool isHorizontal = false);
+    // default ctor for when vector is being resized
+    Edge(int number = -1);
 
     // get row nad column of textDisplay 2D array
     int getRow();
