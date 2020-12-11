@@ -228,7 +228,7 @@ void Game::loadGame(string filename) {
             } else {
                 // if read was valid, try converting value to int
                 try {
-                    builder.get()->setResource(i, std::stoi(temp));
+                    builder.get()->setResource(i, stoi(temp));
                 } catch (invalid_argument &e) {
                     cerr << "ERROR: Invalid Save File" << endl;
                     throw InvalidSaveFile();
@@ -242,7 +242,7 @@ void Game::loadGame(string filename) {
             if (temp == "h") {
                 break;
             } else {
-                int roadIdx = std::stoi(temp);
+                int roadIdx = stoi(temp);
                 auto edge = edges[roadIdx];
                 edge.get()->buildRoad(builder, false);
                 textDisplay.buildRoad(edge, builder);
