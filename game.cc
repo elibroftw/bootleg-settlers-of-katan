@@ -691,17 +691,14 @@ bool Game::nextTurn() {
         } else if (temp == "residences") {
             // TODO test against sample executable
             if (builder->getBuildingPoints()) {
+                cout << builder->getColour() << " has built:" << endl;
                 bool firstPrint = true;
                 for (size_t i = 0; i < resLocations.size(); i++) {
-                    // print out each location if vertex owner = curBuilder
-                    if (vertices[resLocations[i]].get()->getOwner() == curTurn) {
-                        if (!firstPrint) {
-                            cout << ", ";
-                            firstPrint = false;
-                        }
-                        cout << i;
+                    // prints out 
+                    auto vertex = vertices[resLocations[i]].get();
+                    if (vertex->getOwner() == curTurn) {
+                        cout << i << ' ' << vertex->getImprovement() << endl;
                     }
-                    cout << endl;
                 }
             }
         } else if (temp == "build-road" || temp == "brd") {
