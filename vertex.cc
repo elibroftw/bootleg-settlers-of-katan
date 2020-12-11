@@ -1,6 +1,6 @@
-#include <string>
-
 #include "vertex.h"
+
+#include <string>
 
 Vertex::Vertex(int number, int row, int col) : number{number}, row{row}, col{col}, improvement{' '} {}
 
@@ -37,51 +37,67 @@ int Vertex::getBuildingPoints() {
     }
 }
 
+bool Vertex::canUpgrade(shared_ptr<Builder> builder) {
+    return improvement != 'T' && builder.get()->getNum() == owner;
+}
+
 bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool useResouces) {
-    std::string errorMsg = "You do not have enough resources.";
+    if (!useResouces && (owner == -1 || owner == builder.get()->getNum())) {
+        owner = builder.get()->getNum();
+        switch (improvement) {
+            case ' ':
+                improvement = 'B';
+                return true;
+            case 'B':
+                improvement = 'H';
+                return true;
+            case 'T':
+                improvement = 'T';
+                return true;
+            default:
+                return false;
+        }
+    }
     int numBrick = builder->getResource("brick");
     int numEnergy = builder->getResource("energy");
     int numGlass = builder->getResource("glass");
     int numHeat = builder->getResource("heat");
     int numWifi = builder->getResource("wifi");
-    if (improvement == ' ') {
-        if (numBrick >= 1 && numEnergy >= 1 && numGlass >= 1 && numWifi >= 1) {
-            builder->addBuildingPoints();
-            builder->setResource("brick", numBrick - 1);
-            builder->setResource("energy", numEnergy - 1);
-            builder->setResource("glass", numGlass - 1);
-            builder->setResource("wifi", numWifi - 1);
-            return true;
-        } else {
-            std::cout << errorMsg << std::endl;
+
+    switch (improvement) {
+        case ' ':
+            if (numBrick >= 1 && numEnergy >= 1 && numGlass >= 1 && numWifi >= 1) {
+                builder->addBuildingPoints();
+                builder->setResource("brick", numBrick - 1);
+                builder->setResource("energy", numEnergy - 1);
+                builder->setResource("glass", numGlass - 1);
+                builder->setResource("wifi", numWifi - 1);
+                improvement = 'B';
+                return true;
+            }
             return false;
-        }
-    } else if (improvement == 'B') {
-        if (numGlass >= 2 && numHeat >= 3) {
-            builder->addBuildingPoints();
-            builder->setResource("glass", numGlass - 2);
-            builder->setResource("heat", numHeat - 1);
-            return true;
-        } else {
-            std::cout << errorMsg << std::endl;
+        case 'B':
+            if (numGlass >= 2 && numHeat >= 3) {
+                builder->addBuildingPoints();
+                builder->setResource("glass", numGlass - 2);
+                builder->setResource("heat", numHeat - 1);
+                return true;
+            }
             return false;
-        }
-    } else if (improvement == 'H') {
-        if (numBrick >= 3 && numEnergy >= 2 && numGlass >= 2 && numWifi >= 1 && numHeat >= 2) {
-            builder->addBuildingPoints();
-            builder->setResource("brick", numBrick - 3);
-            builder->setResource("energy", numEnergy - 2);
-            builder->setResource("glass", numGlass - 2);
-            builder->setResource("wifi", numWifi - 2);
-            builder->setResource("heat", numHeat - 2);
-            return true;
-        } else {
-            std::cout << errorMsg << std::endl;
+        case 'H':
+            if (numBrick >= 3 && numEnergy >= 2 && numGlass >= 2 && numWifi >= 1 && numHeat >= 2) {
+                builder->addBuildingPoints();
+                builder->setResource("brick", numBrick - 3);
+                builder->setResource("energy", numEnergy - 2);
+                builder->setResource("glass", numGlass - 2);
+                builder->setResource("wifi", numWifi - 2);
+                builder->setResource("heat", numHeat - 2);
+                return true;
+            }
             return false;
-        }
-    } else {  //improvement is a tower
-        return false;
     }
+    // improvement is a tower
+    return false;
 }
 
 void Vertex::reset() {

@@ -38,6 +38,9 @@ class Vertex {
     // Increases building point by one each time it is called.
     bool upgradeResidence(shared_ptr<Builder> builder, bool useResouces = true);
 
+    // whether or not the builder is allowed to upgrade the residence
+    bool canUpgrade(shared_ptr<Builder> builder);
+
     // resets owner to -1 and improvement to ""
     void reset();
 

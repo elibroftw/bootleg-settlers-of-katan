@@ -832,7 +832,8 @@ bool Game::nextTurn() {
             }
             if (vertexLocation >= 0 && vertexLocation <= 53) {
                 auto vertex = vertices[vertexLocation];
-                if (vertex.get()->getOwner() != curTurn || vertex.get()->getImprovement() == 'T') {
+                // if vertex has a different owner or is a tower
+                if (!vertex.get()->canUpgrade(builderShared)) {
                     cout << "You cannot build here." << endl;
                 } else if (vertex.get()->upgradeResidence(builderShared)) {
                     cout << "Residence upgrade succesful" << endl;
