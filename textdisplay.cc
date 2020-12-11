@@ -78,6 +78,8 @@ void TextDisplay::setInt(int row, int col, int num) {
     }
 }
 
+// TODO: return top left Vertex Coord
+// TODO: return pair<unsigned, unsigned>
 pair<int, int> TextDisplay::getTopLeftCoord(int tileNumber) {
     // returns the location of the top left "|" of the tileNumber
     int row;

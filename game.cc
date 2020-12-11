@@ -470,11 +470,13 @@ void Game::printBoard() { cout << textDisplay << endl; }
 unordered_map<int, int> Game::getBuildersFromTile(int tileNumber) {
     int row, col;
     tie(row, col) = textDisplay.getTopLeftCoord(tileNumber);
-    ++row;
+
     unordered_map<int, int> buildersOnTile;
-    for (size_t r = 0; r < 2; r++) {
-        for (size_t c = 0; c < 3; c++) {
-            auto vertex = verticesMap[row + r][col + c];
+    for (size_t r = 0; r <= 8; r += 4) {
+        for (size_t c = 0; c <= 10; c += 10) {
+            int vertexR, vertexC;
+            tie(vertexR, vertexC) = Vertex::getVertexFromCoords(row + r, col + 1 + c);
+            auto vertex = verticesMap[vertexR][vertexC];
             int vertexOwner = vertex.get()->getOwner();
             if (vertexOwner >= 0) {
                 int bp = vertex.get()->getBuildingPoints();
@@ -521,7 +523,7 @@ bool Game::nextTurn() {
     auto builderShared = builders[curTurn];
     auto builder = builderShared.get();
     while (!rollDice) {
-        string temp;
+        string temp = " ";
         cout << "> ";
         if (!(cin >> temp)) {
             if (cin.eof()) {
@@ -529,6 +531,7 @@ bool Game::nextTurn() {
             }
             resetCin();
         }
+        // TODO: switch to using lowered first letter
         if (temp == "load" || temp == "l") {
             // set dice to laoded
             builder->useLoadedDice();
@@ -632,7 +635,7 @@ bool Game::nextTurn() {
         // use num to give builders resources
         vector<shared_ptr<Tile>> tilesWithValue;
         // keep track of whether or not resources were gained given the dice roll
-        bool gainedResources = false;
+        bool aBuilderGained = false;
         for (size_t i = 0; i < tiles.size(); i++) {
             auto tile = tiles[i];
             // if tile has the same value as the dice...
@@ -640,20 +643,20 @@ bool Game::nextTurn() {
                 int resourceCode = tile.get()->getResource();
                 unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
                 for (auto const &tuple : buildersOnTile) {
-                    gainedResources = true;
-                    int b, bp;
-                    tie(b, bp) = tuple;
+                    aBuilderGained = true;
+                    int b, resourcesGained;
+                    tie(b, resourcesGained) = tuple;
                     // add resources based on number of improvements on tile
                     auto temp = builders[b].get();
-                    temp->setResource(resourceCode, temp->getResource(resourceCode) + bp);
+                    temp->setResource(resourceCode, temp->getResource(resourceCode) + resourcesGained);
                     cout << "Builder " << temp->getColour() << " gained:" << endl
-                         << bp << getResourceName(resourceCode);
+                         << resourcesGained << ' ' << getResourceName(resourceCode) << endl;
                 }
                 // distribute resources for all vertices and shit... you know the drill
                 // get building points per builder in a map for the tile
             }
         }
-        if (!gainedResources) {
+        if (!aBuilderGained) {
             cout << "No builders gained resources." << endl;
         }
     }
@@ -884,6 +887,11 @@ void Game::resetGame() {
 }
 
 void Game::test() {
+    cerr << "creating random board" << endl;
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    createBoard(seed);
+
+    cerr << "testing Vertex" << endl;
     for (size_t r = 0; r < VM_HEIGHT; r++) {
         for (size_t c = 0; c < VM_WIDTH; c++) {
             auto vertex = verticesMap[r][c];
@@ -895,10 +903,16 @@ void Game::test() {
         }
     }
 
+    cerr << "testing Edge" << endl;
     for (size_t r = 0; r < EM_HEIGHT; r++) {
         for (size_t c = 0; c < EM_WIDTH; c++) {
             auto edge = edgesMap[r][c];
             edge.get()->getOwner();
         }
+    }
+
+    cerr << "testing getBuildersFromTile" << endl;
+    for (size_t i = 0; i < tiles.size(); i++) {
+        getBuildersFromTile(i);
     }
 }
