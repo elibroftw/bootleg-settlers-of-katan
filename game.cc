@@ -310,13 +310,11 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
 
     // check if it and adjacent verticies in the map have no owners
     for (int r = row - 1; r < row + 1; r++) {
-        cerr << r << endl;
         if (r >= 0 && r < VM_HEIGHT && verticesMap[r][col].get()->getOwner() != -1) {
             // vertex is invalid since the vertex above, below or itself has an owner
             return false;
         }
     }
-    cerr << "UNO" << endl;
     int c;
     int vertexNum = vertex.get()->getNum();
     bool leftIsFlat = false;
@@ -329,15 +327,12 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
         c = col + (vertexNum % 2 ? -1 : 1);
         leftIsFlat = vertexNum % 2 ? false : true;
     }
-    cerr << "MID" << endl;
     // check if vertex directly left/right has a residence
     if (c >= 0 && c < VM_WIDTH) {
         if (verticesMap[row][c].get()->getOwner() != -1) {
             return false;
         }
     }
-    cerr << "FIN" << endl;
-
     // look for adjacent roads
     if (considerEdges) {
         int edgeR, edgeC;
