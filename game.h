@@ -49,25 +49,49 @@ class Game {
     // to be used in conjunction with geese stealing and resource distribution
     unordered_map<int, int> getBuildersFromTile(int tileNumber);
 
+    // clears and ignores cin
+    void resetCin();
+
+    // prints the current status of all builders in order from builder 0 to 3
+    void printStatus();
+
+    // prints the board
+    void printBoard();
+
+    // start trade from curTurn with builder, returns whether or not any cin was sucessful
+    bool tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource resTake);
+
+    // TODO: remove
+    void stealFrom(shared_ptr<Builder> &builder, Resource resource);
+
+    // TODO: bonus feature
+    void marketTrade(Resource resource1, Resource resource2);
+
    public:
     Game();
     void createBoard(unsigned seed);
     void createBoard(string filename);
     void saveGame(string filename);
     void loadGame(string filename);
+
+    // begins the game by asking for basement locations
+    // returns if EOF was not detected
     bool beginGame();
-    void printBoard();
-    // returns whether turn was sucessful (read from cin worked)
+
+    // start next players turn.
+    //  returns whether turn was sucessful (EOF was not detected)
     bool nextTurn();
-    // returns whether or not any cin was sucessful
-    bool tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource resTake);
+
+    // resets the game
     void resetGame();
-    void stealFrom(shared_ptr<Builder> &builder, Resource resource);
+
+    // returns whether or not the game is over
     bool isGameOver();
+
+    // returns whether or not the beginning phase of the game was completed
     bool hasGameStarted();
-    void marketTrade(Resource resource1, Resource resource2);
-    // prints the current status of all builders in order from builder 0 to 3
-    void printStatus();
+
+
 };
 
 #endif

@@ -37,6 +37,7 @@ using std::make_pair;
 using std::ofstream;
 using std::pair;
 using std::random_shuffle;
+using std::stoi;
 using std::string;
 using std::tie;
 using std::toupper;
@@ -447,7 +448,7 @@ bool Game::beginGame() {
                     saveGame("backup.sv");
                     return false;
                 } else {
-                    cin.clear();
+                    resetCin();
                 }
             }
         }
@@ -499,6 +500,11 @@ void Game::printStatus() {
     }
 }
 
+void Game::resetCin() {
+    cin.clear();
+    cin.ignore(1000, '\n');
+}
+
 bool Game::nextTurn() {
     // whenever a builder builds, check if builder has 10+ points
     // if it does set gameEnded to true
@@ -511,8 +517,11 @@ bool Game::nextTurn() {
     auto builder = builderShared.get();
     while (!rollDice) {
         string temp;
-        if (!(cin >> temp) && cin.eof()) {
-            return false;
+        if (!(cin >> temp)) {
+            if (cin.eof()) {
+                return false;
+            }
+            resetCin();
         }
         if (temp == "load" || temp == "l") {
             // set dice to laoded
@@ -552,8 +561,11 @@ bool Game::nextTurn() {
         unsigned newGeeseLocation = geeseLocation;
         while (newGeeseLocation == geeseLocation || newGeeseLocation > 18) {
             // if EOF detected, return false
-            if (!(cin >> newGeeseLocation) && cin.eof()) {
-                return false;
+            if (!(cin >> newGeeseLocation)) {
+                if (cin.eof()) {
+                    return false;
+                }
+                resetCin();
             }
         }
         // update textdisplay
@@ -578,8 +590,11 @@ bool Game::nextTurn() {
             bool askForInput = true;
             while (askForInput) {
                 string input;
-                if (!(cin >> input) && cin.eof()) {
-                    return false;
+                if (!(cin >> input)) {
+                    if (cin.eof()) {
+                        return false;
+                    }
+                    resetCin();
                 }
                 if (!input.empty()) {
                     toupper(input[0]);  // capitalize first letter
@@ -641,8 +656,12 @@ bool Game::nextTurn() {
         string temp;
         cout << "Enter a command." << endl
              << "> ";
-        if (!(cin >> temp) && cin.eof()) {
-            return false;
+        if (!(cin >> temp)) {
+            if (cin.eof()) {
+                return false;
+            }
+            resetCin();
+
         } else if (temp == "help" || temp == "h") {
             cout << "Valid commands:" << endl;
             cout << "~ board                        : prints the current board" << endl;
@@ -682,6 +701,8 @@ bool Game::nextTurn() {
                     break;
                 } else if (cin.eof()) {
                     return false;
+                } else {
+                    resetCin();
                 }
             }
             //  check if edge is valid, resources, etc...
@@ -703,6 +724,8 @@ bool Game::nextTurn() {
                     break;
                 } else if (cin.eof()) {
                     return false;
+                } else {
+                    resetCin();
                 }
             }
             //  check if vertex is valid, resources, etc...
@@ -724,6 +747,8 @@ bool Game::nextTurn() {
                     break;
                 } else if (cin.eof()) {
                     return false;
+                } else {
+                    resetCin();
                 }
             }
             if (vertexLocation >= 0 && vertexLocation <= 53) {
@@ -766,13 +791,18 @@ bool Game::nextTurn() {
                 }
             } else if (cin.eof()) {
                 return false;
+            } else {
+                resetCin();
             }
         } else if (temp == "next") {
             break;
         } else if (temp == "save") {
             string filename;
-            if (!(cin >> filename) && cin.eof()) {
-                return false;
+            if (!(cin >> filename)) {
+                if (cin.eof()) {
+                    return false;
+                }
+                resetCin();
             }
             saveGame(filename);
         } else {
@@ -809,9 +839,10 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
             } else {
                 cout << "Trade offer was declined." << endl;
             }
-        }
-        if (cin.eof()) {
+        } else if (cin.eof()) {
             return false;
+        } else {
+            resetCin();
         }
     }
     return true;
