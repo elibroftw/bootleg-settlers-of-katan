@@ -516,12 +516,12 @@ bool Game::nextTurn() {
     cout << "Builder " << builders[curTurn].get()->getColour() << "'s turn." << endl;
 
     // rolling the dice
-    cout << "> ";
     bool rollDice = false;
     auto builderShared = builders[curTurn];
     auto builder = builderShared.get();
     while (!rollDice) {
         string temp;
+        cout << "> ";
         if (!(cin >> temp)) {
             if (cin.eof()) {
                 return false;
@@ -548,7 +548,7 @@ bool Game::nextTurn() {
             cout << "~ help : prints out the list of commands." << endl;
         } else {
             cout << "Invalid Command." << endl;
-            cout << "Please enter 'help' for a list of valid commands.";
+            cout << "Please enter 'help' for a list of valid commands." << endl;
         }
     }
     unsigned diceVal = dice.roll(builder->isDiceLoaded());
@@ -566,6 +566,7 @@ bool Game::nextTurn() {
         unsigned newGeeseLocation = geeseLocation;
         while (newGeeseLocation == geeseLocation || newGeeseLocation > 18) {
             // if EOF detected, return false
+            cout << "> ";
             if (!(cin >> newGeeseLocation)) {
                 if (cin.eof()) {
                     return false;
@@ -594,6 +595,7 @@ bool Game::nextTurn() {
             cout << "Choose a builder to steal from." << endl;
             bool askForInput = true;
             while (askForInput) {
+                cout << "> ";
                 string input;
                 if (!(cin >> input)) {
                     if (cin.eof()) {
