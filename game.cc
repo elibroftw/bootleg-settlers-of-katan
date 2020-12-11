@@ -34,6 +34,7 @@ using std::endl;
 using std::ifstream;
 using std::invalid_argument;
 using std::make_pair;
+using std::make_shared;
 using std::ofstream;
 using std::pair;
 using std::random_shuffle;
@@ -47,19 +48,22 @@ using std::unordered_set;
 
 Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{false} {
     // create builders
-    builders.push_back(std::make_shared<Builder>("Blue", 0));
-    builders.push_back(std::make_shared<Builder>("Red", 1));
-    builders.push_back(std::make_shared<Builder>("Orange", 2));
-    builders.push_back(std::make_shared<Builder>("Yellow", 3));
+    builders.push_back(make_shared<Builder>("Blue", 0));
+    builders.push_back(make_shared<Builder>("Red", 1));
+    builders.push_back(make_shared<Builder>("Orange", 2));
+    builders.push_back(make_shared<Builder>("Yellow", 3));
 
-    verticesMap.resize(VM_HEIGHT);
-    for (size_t row = 0; row < verticesMap.size(); row++) {
-        verticesMap[row].resize(VM_WIDTH);
+    for (size_t r = 0; r < VM_HEIGHT; r++) {
+        vector<shared_ptr<Vertex>> row;
+        for (size_t c = 0; c < VM_WIDTH; c++) {
+            row.push_back(make_shared<Vertex>());
+        }
+        verticesMap.push_back(row);
     }
 
     // create 53 vertices
     for (int i = 0; i < 53; i++) {
-        auto vertex = std::make_shared<Vertex>(i);
+        auto vertex = make_shared<Vertex>(i);
         int rowTD = vertex.get()->getRow();
         int colTD = vertex.get()->getCol();
         vertices.push_back(vertex);
@@ -68,15 +72,18 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
         verticesMap[vertexR][vertexC] = vertex;
     }
 
-    edgesMap.resize(EM_HEIGHT);
-    for (size_t row = 0; row < edgesMap.size(); row++) {
-        edgesMap[row].resize(EM_WIDTH);
+    for (size_t r = 0; r < EM_HEIGHT; r++) {
+        vector<shared_ptr<Edge>> row;
+        for (size_t c = 0; c < EM_WIDTH; c++) {
+            row.push_back(make_shared<Edge>());
+        }
+        edgesMap.push_back(row);
     }
 
     // create 71 edges
     // edges can be vertical or horizontal
     for (int i = 0; i < 71; i++) {
-        auto edge = std::make_shared<Edge>(i);
+        auto edge = make_shared<Edge>(i);
         int rowTD = edge.get()->getRow();
         int colTD = edge.get()->getCol();
         edges.push_back(edge);
@@ -298,16 +305,18 @@ void Game::loadGame(string filename) {
 }
 
 bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
-    int col = vertex.get()->getCol() / 10;
     int row = vertex.get()->getRow() / 4;
+    int col = vertex.get()->getCol() / 10;
+
     // check if it and adjacent verticies in the map have no owners
     for (int r = row - 1; r < row + 1; r++) {
-        // check if vertex above, below and itself have owners
+        cerr << r << endl;
         if (r >= 0 && r < VM_HEIGHT && verticesMap[r][col].get()->getOwner() != -1) {
-            // vertex is invalid since it or an vertex above/below has an owner
+            // vertex is invalid since the vertex above, below or itself has an owner
             return false;
         }
     }
+    cerr << "UNO" << endl;
     int c;
     int vertexNum = vertex.get()->getNum();
     bool leftIsFlat = false;
@@ -320,13 +329,14 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
         c = col + (vertexNum % 2 ? -1 : 1);
         leftIsFlat = vertexNum % 2 ? false : true;
     }
-
+    cerr << "MID" << endl;
     // check if vertex directly left/right has a residence
     if (c >= 0 && c < VM_WIDTH) {
         if (verticesMap[row][c].get()->getOwner() != -1) {
             return false;
         }
     }
+    cerr << "FIN" << endl;
 
     // look for adjacent roads
     if (considerEdges) {
@@ -878,4 +888,24 @@ void Game::resetGame() {
     geeseLocation = -1;
     gameStarted = false;
     gameOver = false;
+}
+
+void Game::test() {
+    for (size_t r = 0; r < VM_HEIGHT; r++) {
+        for (size_t c = 0; c < VM_WIDTH; c++) {
+            auto vertex = verticesMap[r][c];
+            cerr << vertex.get()->getNum() << endl;
+            cerr << vertex.get()->getImprovement() << endl;
+            cerr << vertex.get()->getRow() << endl;
+            cerr << vertex.get()->getCol() << endl;
+            cerr << vertex.get()->getOwner() << endl;
+        }
+    }
+
+    for (size_t r = 0; r < EM_HEIGHT; r++) {
+        for (size_t c = 0; c < EM_WIDTH; c++) {
+            auto edge = edgesMap[r][c];
+            cerr << edge.get()->getOwner() << endl;
+        }
+    }
 }

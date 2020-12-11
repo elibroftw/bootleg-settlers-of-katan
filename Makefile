@@ -5,7 +5,7 @@ OBJECTS=${SOURCES:.cc=.o}
 DEPENDS=${OBJECTS:.o=.d}
 EXEC=constructor
 # for creating a test harness executable to test the modules
-TEST_SOURCES=test_harness.cc textdisplay.cc
+TEST_SOURCES=$(filter-out main.cc, $(wildcard *.cc))
 TEST_OBJECTS=${TEST_SOURCES:.cc=.o}
 TEST_DEPENDS=${TEST_OBJECTS:.o=.d}
 TEST_EXEC=test_harness
@@ -24,9 +24,11 @@ endif
 $(EXEC): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXEC)
 
-${TEST_EXEC} test: ${TEST_OBJECTS}
-	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC) && ${TEST_EXE}
+${TEST_EXEC} test: ${TEST_OBJECTS} run_test
+	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC)
 
+run_test:
+	${TEST_EXE}
 
 %.o: %.cc
 	$(CXX) -c -o $@ $< $(CXXFLAGS)

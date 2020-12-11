@@ -91,7 +91,8 @@ class Game {
     // returns whether or not the beginning phase of the game was completed
     bool hasGameStarted();
 
-
+    // testing helper
+    void test();
 };
 
 #endif

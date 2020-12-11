@@ -8,7 +8,9 @@ using std::endl;
 using std::make_pair;
 using std::pair;
 
-Edge::Edge(int number) : owner{-1}, number{number} {
+Edge::Edge(int number) : number{number} {
+    isRoad = false;
+    owner = -1;
     if (number == -1) {
         row = -1;
         col = -1;

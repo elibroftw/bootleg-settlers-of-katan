@@ -15,7 +15,7 @@ class Edge {
     int col;
 
     bool isHorizontal;
-    bool isRoad;
+    bool isRoad = false;
 
    public:
     // default ctor for when vector is being resized

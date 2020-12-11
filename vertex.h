@@ -8,8 +8,8 @@ using std::pair;
 using std::shared_ptr;
 
 class Vertex {
-    int owner;
     int number;
+    int owner;
     // the row and col will be used for text display
     // left side of vertex number starts at col
     // e.g. a number like 12 would overflow
@@ -24,6 +24,7 @@ class Vertex {
    public:
     // default ctor for when vector is being resized
     Vertex(int number = -1);
+    Vertex(const Vertex &v2);
 
     int getCol();
     int getRow();

@@ -8,13 +8,13 @@ using std::endl;
 using std::make_pair;
 using std::pair;
 
-Vertex::Vertex(int number) : owner{-1}, number{number} {
+Vertex::Vertex(int number) : number{number} {
+    improvement = ' ';
+    owner = -1;
     if (number == -1) {
         row = -1;
         col = -1;
-        improvement = -1;
     } else {
-        improvement = ' ';
         // set rowTD based on vertex number
         if (number == 0 || number == 1) {
             row = 0;
