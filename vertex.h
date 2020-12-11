@@ -4,12 +4,12 @@
 
 #include "builder.h"
 
+using std::pair;
 using std::shared_ptr;
 
 class Vertex {
     int owner;
     int number;
-
 
     // the row and col will be used for text display
     // left side of vertex number starts at col
@@ -48,6 +48,10 @@ class Vertex {
     bool realVertex();
 
     int getBuildingPoints();
+
+    // given the row, column coordinates of the vertex in the textDisplay,
+    // return the row, column indices for the vertices maps
+    pair<int, int> static getVertexFromCoords(int row, int col);
 };
 
 #endif

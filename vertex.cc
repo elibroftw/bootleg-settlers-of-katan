@@ -1,6 +1,12 @@
 #include "vertex.h"
 
+#include <iostream>
 #include <string>
+
+using std::cerr;
+using std::endl;
+using std::make_pair;
+using std::pair;
 
 Vertex::Vertex(int number, int row, int col) : number{number}, row{row}, col{col}, improvement{' '} {}
 
@@ -110,4 +116,11 @@ bool Vertex::realVertex() {
         return true;
     }
     return false;
+}
+
+pair<int, int> Vertex::getVertexFromCoords(int row, int col) {
+    if (row % 4 != 0 || (col - 1) % 10 != 0) {
+        cerr << "something went wrong in getEdgeFromCoords" << endl;
+    }
+    return make_pair(row / 4, col / 10);
 }

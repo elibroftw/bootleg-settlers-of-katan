@@ -49,11 +49,6 @@ class Game {
     // to be used in conjunction with geese stealing and resource distribution
     unordered_map<int, int> getBuildersFromTile(int tileNumber);
 
-    // given the row, column coordinates of the vertex/edge in the textDisplay,
-    // return the row, column indices for the vertices/edges maps
-    pair<int, int> getVertexFromCoords(int row, int col);
-    pair<int, int> getEdgeFromCoords(int row, int col);
-
    public:
     Game();
     void createBoard(unsigned seed);

@@ -4,6 +4,7 @@
 
 #include "builder.h"
 
+using std::pair;
 using std::shared_ptr;
 
 class Edge {
@@ -37,6 +38,10 @@ class Edge {
 
     // returns whether the edge has valid number, row, and col
     bool realEdge();
+
+    // given the row, column coordinates of the edge in the textDisplay,
+    // return the row, column indices for the edges maps
+    pair<int, int> static getEdgeFromCoords(int row, int col);
 };
 
 #endif

@@ -11,6 +11,8 @@
 #include <unordered_set>
 
 #include "builder.h"
+#include "edge.h"
+#include "vertex.h"
 
 // VM = verticiesMap
 #define VM_HEIGHT 11
@@ -70,7 +72,7 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
         }
 
         int rowTD;
-        // set yCoord based on vertex number
+        // set rowTD based on vertex number
         if (i == 0 || i == 1) {
             rowTD = 0;
         } else if (i == 52 || i == 53) {
@@ -79,9 +81,9 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
             rowTD = i / 6 * 4 + 4;
         }
         auto vertex = std::make_shared<Vertex>(i, rowTD, colTD);
-
+        vertices.push_back(vertex);
         int vertexR, vertexC;
-        tie(vertexR, vertexC) = getVertexFromCoords(rowTD, colTD);
+        tie(vertexR, vertexC) = Vertex::getVertexFromCoords(rowTD, colTD);
         verticesMap[vertexR][vertexC] = vertex;
     }
 
@@ -93,102 +95,97 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
     // create 71 edges
     // edges can be vertical or horizontal
     for (int i = 0; i < 71; i++) {
-        int rowTD = 0;
+        int colTD = 0;
         bool isHorizontal = false;
         if (i == 9 || i == 26 || i == 43 || i == 60) {
-            rowTD = 6;
+            colTD = 6;
             isHorizontal = true;
         } else if (i == 3 || i == 18 || i == 35 || i == 52 || i == 67) {
-            rowTD = 16;
+            colTD = 16;
             isHorizontal = true;
         } else if (i == 0 || i == 10 || i == 27 || i == 44 || i == 61 || i == 72) {
-            rowTD = 26;
+            colTD = 26;
             isHorizontal = true;
         } else if (i == 4 || i == 19 || i == 36 || i == 53 || i == 69 || i == 68) {
-            rowTD = 36;
+            colTD = 36;
             isHorizontal = true;
         } else if (i == 11 || i == 28 || i == 45 || i == 62) {
-            rowTD = 42;
+            colTD = 42;
             isHorizontal = true;
         } else if (i == 12 || i == 20 || i == 29 || i == 37 || i == 46 || i == 54) {
-            rowTD = 1;
+            colTD = 1;
         } else if (i == 5 || i == 13 || i == 21 || i == 30 || i == 38 || i == 47 ||
                    i == 55 || i == 63) {
-            rowTD = 11;
+            colTD = 11;
         } else if (i == 1 || i == 6 || i == 14 || i == 22 || i == 31 || i == 39 ||
                    i == 48 || i == 56 ||
                    i == 64 || i == 69) {
-            rowTD = 21;
+            colTD = 21;
         } else if (i == 2 || i == 7 || i == 15 || i == 23 || i == 32 || i == 40 ||
                    i == 49 || i == 57 ||
                    i == 65 || i == 70) {
-            rowTD = 31;
+            colTD = 31;
         } else if (i == 8 || i == 16 || i == 24 || i == 24 || i == 33 || i == 41 || i == 50 || i == 58 || i == 66) {
-            rowTD = 41;
+            colTD = 41;
         } else if (i == 17 || i == 25 || i == 34 || i == 42 || i == 51 || i == 59) {
-            rowTD = 51;
+            colTD = 51;
         } else {
             cerr << "SOMETHING WENT WRONG" << endl;
         }
 
-        int colTD = 0;
-        // set yCoord based on vertex number
+        int rowTD = 0;
+        // set colTD based on edge number
         if (i == 0) {
-            colTD = 0;
+            rowTD = 0;
         } else if (i == 1 || i == 2) {
-            colTD = 2;
+            rowTD = 2;
         } else if (i == 3 || i == 4) {
-            colTD = 4;
+            rowTD = 4;
         } else if (i >= 5 && i <= 8) {
-            colTD = 6;
+            rowTD = 6;
         } else if (i >= 6 && i <= 11) {
-            colTD = 8;
+            rowTD = 8;
         } else if (i >= 12 && i <= 17) {
-            colTD = 10;
+            rowTD = 10;
         } else if (i >= 18 && i <= 19) {
-            colTD = 12;
+            rowTD = 12;
         } else if (i >= 20 && i <= 25) {
-            colTD = 14;
+            rowTD = 14;
         } else if (i >= 26 && i <= 28) {
-            colTD = 16;
+            rowTD = 16;
         } else if (i >= 29 && i <= 34) {
-            colTD = 18;
+            rowTD = 18;
         } else if (i >= 25 && i <= 36) {
-            colTD = 20;
+            rowTD = 20;
         } else if (i >= 37 && i <= 42) {
-            colTD = 22;
+            rowTD = 22;
         } else if (i >= 43 && i <= 45) {
-            colTD = 24;
+            rowTD = 24;
         } else if (i >= 47 && i <= 51) {
-            colTD = 26;
+            rowTD = 26;
         } else if (i >= 52 && i <= 53) {
-            colTD = 28;
+            rowTD = 28;
         } else if (i >= 54 && i <= 59) {
-            colTD = 30;
+            rowTD = 30;
         } else if (i >= 60 && i <= 62) {
-            colTD = 32;
+            rowTD = 32;
         } else if (i >= 63 && i <= 66) {
-            colTD = 34;
+            rowTD = 34;
         } else if (i >= 67 && i <= 68) {
-            colTD = 36;
+            rowTD = 36;
         } else if (i == 69 || i == 70) {
-            colTD = 38;
+            rowTD = 38;
         } else if (i == 71) {
-            colTD = 40;
+            rowTD = 40;
         } else {
-            cerr << "SOMETHING WENT WRONG SETTING yCoord" << endl;
+            cerr << "SOMETHING WENT WRONG SETTING ROW OF EDGE" << endl;
         }
-        auto edge = std::make_shared<Edge>(i, rowTD, colTD, isHorizontal);
+        auto edge = std::make_shared<Edge>(i, colTD, rowTD, isHorizontal);
         edges.push_back(edge);
-        edgesMap[rowTD / 5][colTD / 2] = edge;
+        int edgeR, edgeC;
+        tie(edgeR, edgeC) = Edge::getEdgeFromCoords(rowTD, colTD);
+        edgesMap[edgeR][edgeC] = edge;
     }
-}
-
-pair<int, int> Game::getVertexFromCoords(int row, int col) {
-    if ((col - 2) % 10 != 0 || row % 4 != 0) {
-        throw InvalidArgument();
-    }
-    return make_pair(row / 4, col / 10);
 }
 
 bool Game::hasGameStarted() {
@@ -439,23 +436,23 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
 
         if (row + 2 < TD_HEIGHT) {
             // check if edge above is a road
-            tie(edgeR, edgeC) = getEdgeFromCoords(row + 2, col);
+            tie(edgeR, edgeC) = Edge::getEdgeFromCoords(row + 2, col);
             if (edgesMap[edgeR][edgeC].get()->getOwner() == curTurn) return true;
         }
 
         if (row - 2 >= 0) {
             // check if edge below is a road
-            tie(edgeR, edgeC) = getEdgeFromCoords(row - 2, col);
+            tie(edgeR, edgeC) = Edge::getEdgeFromCoords(row - 2, col);
             if (edgesMap[edgeR][edgeC].get()->getOwner() == curTurn) return true;
         }
 
         if (leftIsFlat) {
             // since left is flat, check if edge to the right is flat
-            tie(edgeR, edgeC) = getEdgeFromCoords(row, col + 5);
+            tie(edgeR, edgeC) = Edge::getEdgeFromCoords(row, col + 5);
             if (edgesMap[edgeR][edgeC].get()->getOwner() == curTurn) return true;
         } else {
             // since right is falt, check if edge to the lefet is flat
-            tie(edgeR, edgeC) = getEdgeFromCoords(row, col - 5);
+            tie(edgeR, edgeC) = Edge::getEdgeFromCoords(row, col - 5);
             if (edgesMap[edgeR][edgeC].get()->getOwner() == curTurn) return true;
         }
         return false;
@@ -475,7 +472,7 @@ bool Game::isValidEdge(shared_ptr<Edge> edge) {
     if (edge.get()->getHorizontal()) {
         // check the vertecies left and right of 5 units
         for (int colDelta = -5; colDelta <= 5; colDelta += 10) {
-            tie(vertexR, vertexC) = getVertexFromCoords(rowTD, colTD + colDelta);
+            tie(vertexR, vertexC) = Vertex::getVertexFromCoords(rowTD, colTD + colDelta);
             auto vertex = verticesMap[vertexR][vertexC].get();
             if (vertex->getOwner() == curTurn) return true;
             else if (vertex->getOwner() == -1) {
@@ -494,7 +491,7 @@ bool Game::isValidEdge(shared_ptr<Edge> edge) {
     } else {
         // check the vertecies above and below of 2 units
         for (int rowDelta = -2; rowDelta <= 2; rowDelta += 4) {
-            tie(vertexR, vertexC) = getVertexFromCoords(rowTD + rowDelta, colTD);
+            tie(vertexR, vertexC) = Vertex::getVertexFromCoords(rowTD + rowDelta, colTD);
             auto vertex = verticesMap[vertexR][vertexC].get();
             if (vertex->getOwner() == curTurn) return true;
             else if (vertex->getOwner() == -1) {
