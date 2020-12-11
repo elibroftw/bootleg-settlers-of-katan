@@ -500,8 +500,9 @@ void Game::printStatus() {
         }
         cout << "has " << b->getBuildingPoints() << " building points";
         for (size_t r = 0; r < 6; r++) {
-            cout << ", " << b->getResource(r) << getResourceName(r);
+            cout << ", " << b->getResource(r) << ' ' << getResourceName(r);
         }
+        cout << endl;
     }
 }
 
@@ -553,7 +554,7 @@ bool Game::nextTurn() {
     }
     unsigned diceVal = dice.roll(builder->isDiceLoaded());
     // if EOF detected
-    if (diceVal <= 2) {
+    if (diceVal < 2 || diceVal > 12) {
         return false;
     }
 
@@ -627,7 +628,6 @@ bool Game::nextTurn() {
         } else {
             cout << "Builder " << builder->getColour() << " has no builders to steal from" << endl;
         }
-
     } else {
         // use num to give builders resources
         vector<shared_ptr<Tile>> tilesWithValue;
