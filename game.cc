@@ -706,18 +706,19 @@ bool Game::nextTurn() {
                 }
             }
         } else if (temp == "build-road" || temp == "brd") {
-            int edgeLocation;
+            unsigned edgeLocation = 72;
             while (true) {
                 if (cin >> edgeLocation) {
                     break;
                 } else if (cin.eof()) {
                     return false;
                 } else {
+                    cout << "Enter an integer for Edge #: ";
                     resetCin();
                 }
             }
             //  check if edge is valid, resources, etc...
-            if (edgeLocation >= 0 && edgeLocation <= 71 && isValidEdge(edges[edgeLocation])) {
+            if (edgeLocation <= 71 && isValidEdge(edges[edgeLocation])) {
                 if (edges[edgeLocation].get()->buildRoad(builderShared)) {
                     cout << "Builder " << builder->getColour()
                          << " built a road at " << edgeLocation << endl;
@@ -729,18 +730,19 @@ bool Game::nextTurn() {
                 cout << "You cannot build here" << endl;
             }
         } else if (temp == "build-res" || temp == "brs") {
-            int vertexLocation;
+            unsigned vertexLocation = 54;
             while (true) {
                 if (cin >> vertexLocation) {
                     break;
                 } else if (cin.eof()) {
                     return false;
                 } else {
+                    cout << "Enter a positive integer Vertex #: ";
                     resetCin();
                 }
             }
             //  check if vertex is valid, resources, etc...
-            if (vertexLocation >= 0 && vertexLocation <= 53 && isValidVertex(vertices[vertexLocation])) {
+            if (vertexLocation <= 53 && isValidVertex(vertices[vertexLocation])) {
                 if (vertices[vertexLocation].get()->upgradeResidence(builderShared)) {
                     cout << "Builder " << builder->getColour()
                          << " built a basement at " << vertexLocation << endl;
@@ -908,6 +910,7 @@ void Game::test() {
             vertex.get()->getRow();
             vertex.get()->getCol();
             vertex.get()->getOwner();
+            isValidVertex(vertex);
         }
     }
 
@@ -916,6 +919,7 @@ void Game::test() {
         for (size_t c = 0; c < EM_WIDTH; c++) {
             auto edge = edgesMap[r][c];
             edge.get()->getOwner();
+            isValidEdge(edge);
         }
     }
 

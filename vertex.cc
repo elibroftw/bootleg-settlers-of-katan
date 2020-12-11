@@ -82,16 +82,17 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool useResouces) {
         switch (improvement) {
             case ' ':
                 improvement = 'B';
-                return true;
+                break;
             case 'B':
                 improvement = 'H';
-                return true;
+                break;
             case 'T':
                 improvement = 'T';
-                return true;
+                break;
             default:
                 return false;
         }
+        builder.get()->addBuildingPoints();
     }
     int numBrick = builder->getResource("brick");
     int numEnergy = builder->getResource("energy");
