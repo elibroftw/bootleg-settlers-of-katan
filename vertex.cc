@@ -1,3 +1,5 @@
+#include <string>
+
 #include "vertex.h"
 
 Vertex::Vertex(int number, int row, int col) : number{number}, row{row}, col{col}, improvement{' '} {}
