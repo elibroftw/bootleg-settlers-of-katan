@@ -418,9 +418,9 @@ bool Game::isValidEdge(shared_ptr<Edge> edge) {
 
 bool Game::beginGame() {
     int vertexIdx;
-    bool validVertex = false;
     for (int i = 0; i < 2; i++) {
         for (size_t j = 0; j < 4; j++) {
+            bool validVertex = false;
             while (!validVertex) {
                 // accounts for reverse order
                 auto builder = i == 0 ? builders[j] : builders[4 - j];
