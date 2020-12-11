@@ -1,11 +1,14 @@
 #include "textdisplay.h"
 
+#include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
 using std::make_pair;
 using std::ostream;
 using std::pair;
+using std::shared_ptr;
 using std::string;
 using std::to_string;
 using std::vector;

@@ -54,7 +54,7 @@ int main(int argc, char const *argv[]) {
         }
     }
     cerr << "Settlers of Waterloo By Elijah Lopez and Abdullah Hadi" << endl;
-    Game game = Game();
+    Game game;
     if (!saveFile.empty()) {
         game.loadGame(saveFile);
     } else if (useRandomBoard) {

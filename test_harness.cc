@@ -6,10 +6,10 @@
 using std::cout;
 
 int main(int argc, char const *argv[]) {
-    TextDisplay td = TextDisplay();
+    TextDisplay td;
     cout << td << std::endl;
 
-    Game g = Game();
+    Game g;
     g.test();
 
     cout << "ALL TESTS COMPLETE" << std::endl;
