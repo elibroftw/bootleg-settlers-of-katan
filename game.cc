@@ -157,7 +157,7 @@ void Game::createBoard(string filename) {
             textDisplay.setTileValue(tiles.size(), value);
             tiles.push_back(tile);
         } else {
-            cerr << "ERROR: layout.txt was not formatted correctly" << endl;
+            cout << "ERROR: layout.txt was not formatted correctly" << endl;
         }
     }
 }
@@ -216,7 +216,7 @@ void Game::saveGame(string filename) {
 void Game::loadGame(string filename) {
     ifstream file{filename};
     if (!file) {
-        cerr << "ERROR: Invalid Save File" << endl;
+        cout << "ERROR: Invalid Save File" << endl;
         throw InvalidSaveFile();
     }
     file >> curTurn;
@@ -225,7 +225,7 @@ void Game::loadGame(string filename) {
     for (size_t i = 0; i < 4; i++) {
         // for each builder
         if (!getline(file, line)) {
-            cerr << "ERROR: Invalid Save File" << endl;
+            cout << "ERROR: Invalid Save File" << endl;
             throw InvalidSaveFile();
         }
         auto builder = builders[i];
@@ -242,7 +242,7 @@ void Game::loadGame(string filename) {
                 try {
                     builder.get()->setResource(i, stoi(temp));
                 } catch (invalid_argument &e) {
-                    cerr << "ERROR: Invalid Save File" << endl;
+                    cout << "ERROR: Invalid Save File" << endl;
                     throw InvalidSaveFile();
                 }
             }
@@ -282,7 +282,7 @@ void Game::loadGame(string filename) {
                 textDisplay.updateVertex(vertex, builder);
                 resLocations.push_back(vertexIdx);
             } else {
-                cerr << "ERROR: Invalid Save File" << endl;
+                cout << "ERROR: Invalid Save File" << endl;
                 throw InvalidSaveFile();
             }
         }
@@ -310,8 +310,10 @@ void Game::loadGame(string filename) {
 }
 
 bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
-    int row = vertex.get()->getRow() / 4;
-    int col = vertex.get()->getCol() / 10;
+    int rowTD = vertex.get()->getRow();
+    int row = rowTD / 4;
+    int colTD = vertex.get()->getCol();
+    int col = colTD / 10;
 
     // check if it and adjacent verticies in the map have no owners
     for (int r = row - 1; r < row + 1; r++) {
@@ -342,25 +344,25 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
     if (considerEdges) {
         int edgeR, edgeC;
 
-        if (row + 2 < TD_HEIGHT) {
+        if (rowTD - 2 >= 0) {
             // check if edge above is a road
-            tie(edgeR, edgeC) = Edge::getEdgeFromCoords(row + 2, col);
+            tie(edgeR, edgeC) = Edge::getEdgeFromCoords(rowTD - 2, colTD);
             if (edgesMap[edgeR][edgeC].get()->getOwner() == curTurn) return true;
         }
 
-        if (row - 2 >= 0) {
+        if (rowTD + 2 < TD_HEIGHT) {
             // check if edge below is a road
-            tie(edgeR, edgeC) = Edge::getEdgeFromCoords(row - 2, col);
+            tie(edgeR, edgeC) = Edge::getEdgeFromCoords(rowTD + 2, colTD);
             if (edgesMap[edgeR][edgeC].get()->getOwner() == curTurn) return true;
         }
 
         if (leftIsFlat) {
             // since left is flat, check if edge to the right is flat
-            tie(edgeR, edgeC) = Edge::getEdgeFromCoords(row, col + 5);
+            tie(edgeR, edgeC) = Edge::getEdgeFromCoords(rowTD, colTD + 5);
             if (edgesMap[edgeR][edgeC].get()->getOwner() == curTurn) return true;
         } else {
             // since right is falt, check if edge to the lefet is flat
-            tie(edgeR, edgeC) = Edge::getEdgeFromCoords(row, col - 5);
+            tie(edgeR, edgeC) = Edge::getEdgeFromCoords(rowTD, colTD - 5);
             if (edgesMap[edgeR][edgeC].get()->getOwner() == curTurn) return true;
         }
         return false;
@@ -380,17 +382,19 @@ bool Game::isValidEdge(shared_ptr<Edge> edge) {
     if (edge.get()->getHorizontal()) {
         // check the vertecies left and right of 5 units
         for (int colDelta = -5; colDelta <= 5; colDelta += 10) {
-            tie(vertexR, vertexC) = Vertex::getVertexFromCoords(rowTD, colTD + colDelta);
-            auto vertex = verticesMap[vertexR][vertexC].get();
-            if (vertex->getOwner() == curTurn) return true;
-            else if (vertex->getOwner() == -1) {
-                // check if edges up and below are valid, given vertex is not blocked
-                int c = col + colDelta / 5;
-                for (int r = row - 1; r <= row + 1; r += 2) {
-                    if (r >= 0 && r < EM_HEIGHT) {
-                        if (edgesMap[r][c].get()->getOwner() == curTurn) {
-                            // edge is valid since an adjacent edge is a road
-                            return true;
+            if (colTD + colDelta >= 0 && colTD + colDelta < VM_WIDTH) {
+                tie(vertexR, vertexC) = Vertex::getVertexFromCoords(rowTD, colTD + colDelta);
+                auto vertex = verticesMap[vertexR][vertexC].get();
+                if (vertex->getOwner() == curTurn) return true;
+                else if (vertex->getOwner() == -1) {
+                    // check if edges up and below are valid, given vertex is not blocked
+                    int c = col + colDelta / 5;
+                    for (int r = row - 1; r <= row + 1; r += 2) {
+                        if (r >= 0 && r < EM_HEIGHT) {
+                            if (edgesMap[r][c].get()->getOwner() == curTurn) {
+                                // edge is valid since an adjacent edge is a road
+                                return true;
+                            }
                         }
                     }
                 }
@@ -399,23 +403,25 @@ bool Game::isValidEdge(shared_ptr<Edge> edge) {
     } else {
         // check the vertecies above and below of 2 units
         for (int rowDelta = -2; rowDelta <= 2; rowDelta += 4) {
-            tie(vertexR, vertexC) = Vertex::getVertexFromCoords(rowTD + rowDelta, colTD);
-            auto vertex = verticesMap[vertexR][vertexC].get();
-            if (vertex->getOwner() == curTurn) return true;
-            else if (vertex->getOwner() == -1) {
-                // check if edges above, and right are valid, given vertex is not blocked
-                int r = row + rowDelta;
-                if (r >= 0 && r < EM_HEIGHT) {
-                    if (edgesMap[r][col].get()->getOwner() == curTurn) {
-                        return true;
+            if (rowTD + rowDelta >= 0 && rowTD + rowDelta < VM_HEIGHT) {
+                tie(vertexR, vertexC) = Vertex::getVertexFromCoords(rowTD + rowDelta, colTD);
+                auto vertex = verticesMap[vertexR][vertexC].get();
+                if (vertex->getOwner() == curTurn) return true;
+                else if (vertex->getOwner() == -1) {
+                    // check if edges above, and right are valid, given vertex is not blocked
+                    int r = row + rowDelta;
+                    if (r >= 0 && r < EM_HEIGHT) {
+                        if (edgesMap[r][col].get()->getOwner() == curTurn) {
+                            return true;
+                        }
                     }
-                }
-                r -= rowDelta / 2;
-                if (r >= 0 && r < EM_HEIGHT) {
-                    for (int c = row - 1; c <= row + 1; c += 2) {
-                        if (c >= 0 && c < EM_WIDTH) {
-                            if (edgesMap[r][c].get()->getOwner() == curTurn) {
-                                return true;
+                    r -= rowDelta / 2;
+                    if (r >= 0 && r < EM_HEIGHT) {
+                        for (int c = row - 1; c <= row + 1; c += 2) {
+                            if (c >= 0 && c < EM_WIDTH) {
+                                if (edgesMap[r][c].get()->getOwner() == curTurn) {
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -905,12 +911,13 @@ void Game::test() {
     for (size_t r = 0; r < VM_HEIGHT; r++) {
         for (size_t c = 0; c < VM_WIDTH; c++) {
             auto vertex = verticesMap[r][c];
-            vertex.get()->getNum();
             vertex.get()->getImprovement();
             vertex.get()->getRow();
             vertex.get()->getCol();
             vertex.get()->getOwner();
-            isValidVertex(vertex);
+            if (vertex.get()->getNum() != -1) {
+                isValidVertex(vertex);
+            }
         }
     }
 
@@ -919,7 +926,9 @@ void Game::test() {
         for (size_t c = 0; c < EM_WIDTH; c++) {
             auto edge = edgesMap[r][c];
             edge.get()->getOwner();
-            isValidEdge(edge);
+            if (edge.get()->getNum() != -1) {
+                isValidEdge(edge);
+            }
         }
     }
 
