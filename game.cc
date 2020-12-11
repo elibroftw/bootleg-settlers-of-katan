@@ -692,9 +692,8 @@ bool Game::nextTurn() {
             // TODO test against sample executable
             if (builder->getBuildingPoints()) {
                 cout << builder->getColour() << " has built:" << endl;
-                bool firstPrint = true;
                 for (size_t i = 0; i < resLocations.size(); i++) {
-                    // prints out 
+                    // prints out
                     auto vertex = vertices[resLocations[i]].get();
                     if (vertex->getOwner() == curTurn) {
                         cout << i << ' ' << vertex->getImprovement() << endl;

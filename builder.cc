@@ -100,7 +100,7 @@ bool Builder::isDiceLoaded() {
 void Builder::geeseAttack() {}
 
 int Builder::tryStealing() {
-    
+    return 0; // placeholder
 }
 
 void Builder::reset() {
