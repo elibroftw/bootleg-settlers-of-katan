@@ -19,22 +19,23 @@ else
 
 endif
 
-# First target in the makefile is the default target.
 # Note that the LIBFLAGS must come last in the command
 $(EXEC): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXEC)
 
-${TEST_EXEC} test: ${TEST_OBJECTS} run_test
+${TEST_EXEC}: ${TEST_OBJECTS}
 	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC)
 
-run_test:
-	${TEST_EXE}
 
 %.o: %.cc
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 -include ${DEPENDS}
 
-.PHONY: clean
+.PHONY: clean test
+
 clean:
 	rm -f $(wildcard *.o) $(wildcard *.d) $(RUN_EXE) ${TEST_EXE}
+
+test: ${TEST_EXEC}
+	${TEST_EXE}

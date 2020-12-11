@@ -1,21 +1,21 @@
 #ifndef __TEXT_DISPLAY_H__
 #define __TEXT_DISPLAY_H__
 #include <iostream>
-#include <vector>
 #include <memory>
-#include "vertex.h"
-#include "edge.h"
+#include <vector>
+
 #include "builder.h"
+#include "edge.h"
+#include "vertex.h"
 
 using std::ostream;
 using std::pair;
+using std::shared_ptr;
 using std::string;
 using std::vector;
-using std::shared_ptr;
 
 class TextDisplay {
     vector<vector<char>> board;
-
 
    public:
     // create the outlines of the board

@@ -894,18 +894,18 @@ void Game::test() {
     for (size_t r = 0; r < VM_HEIGHT; r++) {
         for (size_t c = 0; c < VM_WIDTH; c++) {
             auto vertex = verticesMap[r][c];
-            cerr << vertex.get()->getNum() << endl;
-            cerr << vertex.get()->getImprovement() << endl;
-            cerr << vertex.get()->getRow() << endl;
-            cerr << vertex.get()->getCol() << endl;
-            cerr << vertex.get()->getOwner() << endl;
+            vertex.get()->getNum();
+            vertex.get()->getImprovement();
+            vertex.get()->getRow();
+            vertex.get()->getCol();
+            vertex.get()->getOwner();
         }
     }
 
     for (size_t r = 0; r < EM_HEIGHT; r++) {
         for (size_t c = 0; c < EM_WIDTH; c++) {
             auto edge = edgesMap[r][c];
-            cerr << edge.get()->getOwner() << endl;
+            edge.get()->getOwner();
         }
     }
 }
