@@ -428,7 +428,7 @@ bool Game::beginGame() {
             bool validVertex = false;
             while (!validVertex) {
                 // accounts for reverse order
-                auto builder = i == 0 ? builders[j] : builders[4 - j];
+                auto builder = i == 0 ? builders[j] : builders[3 - j];
                 cout << "Builder " << builder.get()->getColour()
                      << ", where do you want to build a basement?" << endl
                      << "> ";
