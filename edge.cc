@@ -2,7 +2,7 @@
 
 #include "edge.h"
 
-Edge::Edge(int number, int row, int col, bool isHorizontal) : 
+Edge::Edge(int number, int row, int col, bool isHorizontal) :
     number{number}, row{row}, col{col}, isHorizontal{isHorizontal} {}
 
 int Edge::getRow() {
@@ -26,7 +26,7 @@ bool Edge::getHorizontal() {
 }
 
 // don't understand how to use checkResources here or in upgradeResidence, will go over it with you Friday
-bool Edge::buildRoad(shared_ptr<Builder> builder, bool checkResource) {
+bool Edge::buildRoad(shared_ptr<Builder> builder, bool useResources) {
     std::string errorMsg = "You do not have enough resources.";
     int numHeat = builder->getResource("heat");
     int numWifi = builder->getResource("wifi");
