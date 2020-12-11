@@ -8,7 +8,7 @@ using std::endl;
 using std::make_pair;
 using std::pair;
 
-Vertex::Vertex(int number) : number{number} {
+Vertex::Vertex(int number) : owner{-1}, number{number} {
     if (number == -1) {
         row = -1;
         col = -1;
