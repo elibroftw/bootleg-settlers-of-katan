@@ -20,7 +20,6 @@ class TextDisplay {
    public:
     // create the outlines of the board
     TextDisplay();
-    ~TextDisplay();
     void setChar(int row, int col, char val);
     void setString(int row, int col, string str);
     void setInt(int row, int col, int num);
