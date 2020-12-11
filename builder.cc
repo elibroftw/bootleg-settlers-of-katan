@@ -99,6 +99,14 @@ bool Builder::isDiceLoaded() {
 
 void Builder::geeseAttack() {}
 
-int Builder::tryStealing() {}
+int Builder::tryStealing() {
+    
+}
 
-void Builder::reset() {}
+void Builder::reset() {
+    buildPoints = 0;
+    diceIsLoaded = true;
+    for (size_t i = 0; i < resources.size(); i++) {
+        resources[i] = 0;
+    }
+}
