@@ -3,7 +3,6 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "builder.h"
@@ -31,7 +30,6 @@ using std::shared_ptr;
 using std::string;
 using std::unordered_map;
 using std::vector;
-using std::make_shared;
 
 class InvalidLayoutFile {};
 
