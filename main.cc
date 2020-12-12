@@ -58,9 +58,9 @@ int main(int argc, char const *argv[]) {
     Game game;
     if (!saveFile.empty()) {
         try {
-            game.loadGame(saveFile);
+            game.load(saveFile);
         } catch (InvalidSaveFile &e) {
-            game.resetGame();
+            game.reset();
             cout << "Starting a new game." << endl;
             game.createBoard(seed);
         }
@@ -85,7 +85,7 @@ int main(int argc, char const *argv[]) {
             string isYes;
             cin >> isYes;
             if (isYes == "yes" || isYes == "y" || isYes == "YES") {
-                game.resetGame();
+                game.reset();
                 // quit if begin game failed
                 if (!game.beginGame()) return 0;
             } else {
@@ -93,7 +93,7 @@ int main(int argc, char const *argv[]) {
             }
         } else if (!game.nextTurn()) {
             // nextTurn was unsuccesful, so save and exit gracefully
-            game.saveGame("backup.sv");
+            game.save("backup.sv");
             return 0;
         }
     }

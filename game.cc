@@ -19,7 +19,7 @@ using std::istringstream;
 using std::make_pair;
 using std::make_shared;
 using std::ofstream;
-using std::random_shuffle;
+using std::shuffle;
 using std::stoi;
 using std::tie;
 using std::tolower;
@@ -89,17 +89,23 @@ void Game::createBoard(unsigned seed) {
         randomValues.push_back(12);
     }
 
-    vector<Resource> randomResources = {Wifi, Wifi, Wifi, Heat, Heat, Heat,
+    vector<Resource> randomResources = {Wifi, Wifi, Wifi,
+                                        Heat, Heat, Heat,
                                         Brick, Brick, Brick, Brick,
                                         Energy, Energy, Energy, Energy,
                                         Glass, Glass, Glass, Glass};
 
     // shuffle here
-    random_shuffle(randomResources.begin(), randomResources.end());
-    random_shuffle(randomValues.begin(), randomValues.end());
+    for (int i = 0; i < 1000; i++) {
+        shuffle(randomResources.begin(), randomResources.end(), rng);
+        shuffle(randomValues.begin(), randomValues.end(), rng);
+    }
 
     // create random index from 0 to 18 to insert Park and value of 7
-    unsigned parkIndex = distribAll(rng);
+    unsigned parkIndex;
+    for (size_t i = 0; i < 1000; i++) {
+        parkIndex = distribAll(rng);
+    }
     randomResources.insert(randomResources.begin() + parkIndex, Park);
     randomValues.insert(randomValues.begin() + parkIndex, 7);
     for (size_t i = 0; i < 19; i++) {
@@ -131,11 +137,13 @@ void Game::createBoard(string filename) {
             createBoard(seed);
         }
     }
+    file.close();
 }
 
-void Game::saveGame(string filename) {
-    ofstream outfile{filename};
-    outfile << curTurn << endl;
+void Game::save(string filename) {
+    cout << "Saving game to " << filename << " ... ";
+    ofstream file{filename};
+    file << curTurn << endl;
 
     unordered_map<int, vector<int>> roads;
     for (auto &&i : roadLocations) {
@@ -158,34 +166,35 @@ void Game::saveGame(string filename) {
     }
 
     for (size_t i = 0; i < NUM_BUILDERS; i++) {
-        builders[i].get()->printResources(outfile);
-        outfile << "r";
+        builders[i].get()->printResources(file);
+        file << "r";
         for (auto &&r : roads[i]) {
-            outfile << ' ' << r;
+            file << ' ' << r;
         }
-        outfile << " h";
+        file << " h";
         for (auto &&v : housing[i]) {
             auto vertex = vertices[v].get();
-            outfile << ' ' << vertex->getNum() << ' ' << vertex->getImprovement();
+            file << ' ' << vertex->getNum() << ' ' << vertex->getImprovement();
         }
-        outfile << endl;
+        file << endl;
     }
 
     for (size_t i = 0; i < tiles.size(); i++) {
         auto tile = tiles[i].get();
         if (i != 0) {
-            outfile << " ";
+            file << " ";
         }
-        outfile << tile->getResource() << " " << tile->getValue();
+        file << tile->getResource() << " " << tile->getValue();
     }
-    outfile << endl;
+    file << endl;
     if (geeseLocation < 19) {
-        outfile << geeseLocation << endl;
+        file << geeseLocation << endl;
     }
-    cout << "Saved game to " << filename << endl;
+    cout << "game saved!" << endl;
+    file.close();
 }
 
-void Game::loadGame(string filename) {
+void Game::load(string filename) {
     ifstream file{filename};
     if (!file) {
         cout << "ERROR: Save File Does Not Exist" << endl;
@@ -298,6 +307,7 @@ void Game::loadGame(string filename) {
             gameOver = true;
         }
     }
+    file.close();
 }
 
 bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
@@ -424,6 +434,7 @@ bool Game::isValidEdge(shared_ptr<Edge> edge) {
 }
 
 bool Game::beginGame() {
+    printBoard();
     int vertexIdx;
     for (int i = 0; i < 2; i++) {
         for (size_t j = 0; j < NUM_BUILDERS; j++) {
@@ -452,7 +463,6 @@ bool Game::beginGame() {
                         }
                     }
                 } else if (cin.eof()) {
-                    saveGame("backup.sv");
                     return false;
                 } else {
                     resetCin();
@@ -655,7 +665,6 @@ bool Game::nextTurn() {
                 return false;
             }
             resetCin();
-
         } else if (temp == "help" || temp == "h") {
             cout << "Valid commands:" << endl;
             cout << "~ board                        : prints the current board" << endl;
@@ -785,7 +794,7 @@ bool Game::nextTurn() {
                 cout << "ERROR: Command enetered incorrectly. Please try again." << endl;
                 resetCin();
             }
-        } else if (temp == "next") {
+        } else if (temp == "next" || temp == "n") {
             break;
         } else if (temp == "save") {
             string filename;
@@ -795,7 +804,7 @@ bool Game::nextTurn() {
                 }
                 resetCin();
             }
-            saveGame(filename);
+            save(filename);
         } else {
             cout << "Invalid command." << endl;
         }
@@ -842,7 +851,7 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
 // TODO: bonus feature
 void Game::marketTrade(Resource resource1, Resource resource2) {}
 
-void Game::resetGame() {
+void Game::reset() {
     if (geeseLocation < 19) {
         textDisplay.removeGeese(geeseLocation);
     }
@@ -853,7 +862,7 @@ void Game::resetGame() {
     for (size_t i = 0; i < vertices.size(); i++) {
         auto vertex = vertices[i].get();
         vertex->reset();
-        textDisplay.setInt(vertex->getCol(), vertex->getRow(), vertex->getNum());
+        textDisplay.setInt(vertex->getRow(), vertex->getCol(), vertex->getNum());
     }
 
     for (size_t i = 0; i < edges.size(); i++) {
@@ -911,11 +920,13 @@ void Game::test() {
     }
     cout << "testing getBuildersFromTile - some builds" << endl;
 
+    curTurn = 0;
     for (size_t i = 0; i < vertices.size(); i += 10) {
         auto vertex = vertices.at(i);
         vertex.get()->upgradeResidence(builders[i % NUM_BUILDERS], false);
         resLocations.push_back(i);
     }
+
     for (size_t i = 0; i < tiles.size(); i++) {
         getBuildersFromTile(i);
     }
@@ -927,4 +938,14 @@ void Game::test() {
     for (auto &&b : builders) {
         b.get()->winGame();
     }
+
+    cout << "testing saveGame" << endl;
+
+    save("backup.sv");
+
+    cout << "testing reset" << endl;
+    reset();
+
+    cout << "testing loadGame" << endl;
+    load("backup.sv");
 }

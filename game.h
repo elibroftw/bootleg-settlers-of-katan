@@ -83,8 +83,8 @@ class Game {
     Game();
     void createBoard(unsigned seed);
     void createBoard(string filename);
-    void saveGame(string filename);
-    void loadGame(string filename);
+    void save(string filename);
+    void load(string filename);
 
     // begins the game by asking for basement locations
     // returns if EOF was not detected
@@ -95,7 +95,7 @@ class Game {
     bool nextTurn();
 
     // resets the game
-    void resetGame();
+    void reset();
 
     // returns whether or not the game is over
     bool isGameOver();
