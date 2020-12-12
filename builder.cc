@@ -3,6 +3,8 @@
 #include <ios>
 #include <iostream>
 #include <string>
+#include <ctime>
+
 
 #include "resource.h"
 
@@ -97,7 +99,25 @@ bool Builder::isDiceLoaded() {
     return diceIsLoaded;
 }
 
-void Builder::geeseAttack() {}
+void Builder::geeseAttack() {
+    int numResources = 0;
+    int resourcesLost = 0;
+    for(std::vector<int>::iterator it = resources.begin(); it != resources.end(); ++it) {
+        numResources += *it;
+    }
+    if (numResources >= 10) {
+        resourcesLost = numResources / 2;
+    }
+    int counter = 0;
+    srand((unsigned int)time(NULL));
+    while (counter < resourcesLost) {
+        int randomIndex = rand() % resources.size();
+        if (resources[randomIndex] != 0) {
+            --resources[randomIndex];
+            ++counter;
+        }
+    }
+}
 
 int Builder::tryStealing() {
     return 0; // placeholder
