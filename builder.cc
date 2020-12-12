@@ -120,35 +120,45 @@ void Builder::geeseAttack() {
     }
 }
 
-int Builder::stealFrom(std::shared_ptr<Builder> builder) {
-    int totalResources = 0;
-    for (auto&& r : builder->resources) totalResources += r;
+void Builder::stealFrom(std::shared_ptr<Builder> builderToStealFrom) {
+    unsigned totalResources = 0;
+    for (auto&& r : builderToStealFrom->resources) totalResources += r;
+    if (!totalResources) totalResources = 1;
+
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     default_random_engine rng{seed};
-    int randomIndex = resourceDistribution(rng);
-    int randResource = builder->resources[randomIndex];
-    int stealProb = randResource / totalResources; 
-    
+
+    unsigned randomIndex = resourceDistribution(rng);
+    unsigned randResource = builderToStealFrom->resources.at(randomIndex);
+
+    uniform_int_distribution<unsigned> prob{1, totalResources};
+    unsigned val = prob(rng);
+    // steal only if val is <= randResource. Allows for 100% probabilities
+    if (val <= randResource) {
+        --builderToStealFrom.get()->resources.at(randomIndex);
+        ++resources.at(randomIndex);
+        cout << "Builder " << colour << " steals " << getResourceName(randomIndex)
+             << " from " << builderToStealFrom.get()->colour << endl;
+    } else {
+        cout << "Builder " << colour << " got caught slacking and could not steal from "
+             << builderToStealFrom.get()->colour << endl;
+    }
 }
 
 void Builder::reset() {
     buildPoints = 0;
     diceIsLoaded = true;
-    for (size_t i = 0; i < resources.size(); i++) {
-        resources[i] = 0;
-    }
+    for (size_t i = 0; i < resources.size(); i++) resources[i] = 0;
 }
 
 void Builder::printStatus() {
-    unsigned padding = 6 - colour.size();
     cout << "Builder " << colour << " ";
-    for (size_t j = 0; j < padding; j++) {
-        cout << " ";
-    }
+
+    // print padding. longest colour string is "yellow"
+    for (size_t j = 0; j < (6 - colour.size()); j++) cout << " ";
+
     cout << "has " << buildPoints << " building points";
-    for (size_t r = 0; r < resources.size(); r++) {
-        cout << ", " << resources[r] << ' ' << getResourceName(r);
-    }
+    for (size_t r = 0; r < resources.size(); r++) cout << ", " << resources[r] << ' ' << getResourceName(r);
     cout << endl;
 }
 

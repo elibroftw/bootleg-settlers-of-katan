@@ -42,11 +42,12 @@ class Builder {
     // automatically lose half their resources. Resources lost
     // are chosen randomly.
     void geeseAttack();
+
     // the current builder (who moved the geese), can steal
     // a random resources from one builder who has a residence
     // on the tile to where the geese are moved.
-    // if not negative, steal was sucessful...
-    int stealFrom(std::shared_ptr<Builder> builder);  // <- this one loses resources
+    // takes care of any IO operations
+    void stealFrom(std::shared_ptr<Builder> builderToStealFrom);  // <- this one loses resources
     // check if builder won the game, which occurs when they
     // have 10 points
     bool hasWon();

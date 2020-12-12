@@ -579,49 +579,35 @@ bool Game::nextTurn() {
 
         auto tile = tiles.at(newGeeseLocation);
         unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
-        bool printMsg = false;
         buildersOnTile.erase(curTurn);
         for (auto const &tuple : buildersOnTile) {
             int b, bp;
             tie(b, bp) = tuple;
-            printMsg = true;
-            cout << "Builder " << builder->getColour() << " can choose to steal from "
-                 << builders.at(b).get()->getColour() << endl;
+            if (bp == 0) {
+                buildersOnTile.erase(b);
+            } else {
+                cout << "Builder " << builder->getColour() << " can choose to steal from "
+                     << builders.at(b).get()->getColour() << endl;
+            }
         }
 
-        if (printMsg) {
-            cout << "Choose a builder to steal from." << endl;
+        if (buildersOnTile.size()) {
             bool askForInput = true;
             while (askForInput) {
-                cout << "> ";
-                string input;
+                cout << "Choose a builder to steal from." << endl
+                     << "> ";
+                Colour input;
                 if (!(cin >> input)) {
                     if (cin.eof()) {
                         return false;
                     }
                     resetCin();
-                }
-                if (!input.empty()) {
-                    input[0] = toupper(input[0]);  // capitalize first letter
-                    for (auto const &tuple : buildersOnTile) {
-                        int b, bp;
-                        tie(b, bp) = tuple;
-                        auto tempBuilder = builders[b];
-                        if (input[0] == tempBuilder.get()->getColour()[0]) {
-                            // TODO: move IO operations to stealFrom
-                            int stolenResource = builder->stealFrom(tempBuilder);
-                            if (stolenResource >= 0) {
-                                cout << "Builder " << builder->getColour() << " steals "
-                                     << getResourceName(stolenResource)
-                                     << " from " << tempBuilder.get()->getColour() << endl;
-                                // builder->setResource(stolenResource, builder->getResource(stolenResource) + 1);
-                            } else {
-                                cout << "Builder " << builder->getColour() << " got caught slacking"
-                                     << " and could not steal from " << tempBuilder->getColour() << endl;
-                            }
-                            askForInput = false;
-                            break;
-                        }
+                } else if (buildersOnTile.count(input)) {
+                    auto builderToStealFrom = builders[input];
+                    if (input == builderToStealFrom.get()->getNum()) {
+                        builder->stealFrom(builderToStealFrom);
+                        askForInput = false;
+                        break;
                     }
                 }
             }
