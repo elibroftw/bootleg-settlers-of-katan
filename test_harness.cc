@@ -15,8 +15,8 @@ int main(int argc, char const *argv[]) {
     Edge e2 = e1;
     Edge e3(5);
     e3 = e1;
-    // Game g;
-    // g.test();
+    Game g;
+    g.test();
     cout << "ALL TESTS COMPLETE" << std::endl;
     return 0;
 }

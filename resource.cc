@@ -10,7 +10,7 @@ using std::cerr;
 using std::endl;
 using std::istream;
 using std::string;
-using std::tolower;
+using std::toupper;
 
 istream& operator>>(istream& in, Resource& x) {
     string val;
