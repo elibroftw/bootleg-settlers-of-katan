@@ -635,9 +635,8 @@ bool Game::nextTurn() {
 
         for (size_t i = 0; i < tiles.size(); i++) {
             auto tile = tiles.at(i);
-            // if tile has the same value as the dice...
-
-            if (tile.get()->getValue() == diceVal) {
+            // if tile has the same value as the dice without any geese on it
+            if (tile.get()->getValue() == diceVal && i != geeseLocation) {
                 int resourceCode = tile.get()->getResource();
                 unordered_map<int, int> buildersOnTile = getBuildersFromTile(i);
                 for (auto const &tuple : buildersOnTile) {

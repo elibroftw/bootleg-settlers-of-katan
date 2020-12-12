@@ -26,6 +26,7 @@ $(EXEC): $(OBJECTS)
 ${TEST_EXEC}: ${TEST_OBJECTS}
 	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC)
 
+all: ${EXEC} ${TEST_EXEC}
 
 %.o: %.cc
 	$(CXX) -c -o $@ $< $(CXXFLAGS)

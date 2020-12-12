@@ -1,5 +1,6 @@
 #include "builder.h"
 
+#include <chrono>
 #include <ctime>
 #include <ios>
 #include <iostream>
@@ -8,6 +9,7 @@
 #include "resource.h"
 
 using std::cout;
+using std::default_random_engine;
 using std::endl;
 using std::istream;
 using std::ostream;
@@ -104,21 +106,21 @@ bool Builder::isDiceLoaded() {
 }
 
 void Builder::geeseAttack() {
-    int numResources = 0;
-    int resourcesLost = 0;
-    for (std::vector<int>::iterator it = resources.begin(); it != resources.end(); ++it) {
-        numResources += *it;
-    }
-    if (numResources >= 10) {
-        resourcesLost = numResources / 2;
-    }
-    int counter = 0;
-    srand((unsigned int)time(NULL));
-    while (counter < resourcesLost) {
-        int randomIndex = rand() % resources.size();
+    int totalResources = 0;
+    int resourceToLose = 0;
+
+    for (auto&& r : resources) totalResources += r;
+
+    if (totalResources >= 10) resourceToLose = totalResources / 2;
+
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    default_random_engine rng{seed};
+
+    while (resourceToLose) {
+        int randomIndex = resourceDistribution(rng);
         if (resources[randomIndex] != 0) {
             --resources[randomIndex];
-            ++counter;
+            --resourceToLose;
         }
     }
 }
