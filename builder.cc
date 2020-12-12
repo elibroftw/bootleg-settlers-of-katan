@@ -125,8 +125,8 @@ void Builder::geeseAttack() {
     }
 }
 
-int Builder::tryStealing() {
-    return 0;  // placeholder
+int Builder::stealFrom(std::shared_ptr<Builder> builder) {
+
 }
 
 void Builder::reset() {
