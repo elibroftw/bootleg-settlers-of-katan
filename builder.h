@@ -75,6 +75,7 @@ class Builder {
         bool isDiceLoaded();
 
         void printStatus();
+        void winGame();
 };
 
 #endif

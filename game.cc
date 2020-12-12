@@ -202,6 +202,7 @@ void Game::saveGame(string filename) {
     if (geeseLocation < 19) {
         outfile << geeseLocation << endl;
     }
+    cout << "Saved game to " << filename << endl;
 }
 
 void Game::loadGame(string filename) {
@@ -311,6 +312,12 @@ void Game::loadGame(string filename) {
     file >> geeseLocation;
     gameStarted = true;
     cout << "GAME LOADED" << endl;
+    for (auto &&b : builders) {
+        if (b.get()->hasWon()) {
+            b.get()->winGame();
+            gameOver = true;
+        }
+    }
 }
 
 bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
@@ -705,80 +712,73 @@ bool Game::nextTurn() {
                 }
             }
         } else if (temp == "build-road" || temp == "brd") {
-            unsigned edgeLocation = 72;
-            while (true) {
-                if (cin >> edgeLocation) {
-                    break;
-                } else if (cin.eof()) {
+            int edgeLocation;
+            if (!(cin >> edgeLocation)) {
+                if (cin.eof()) {
                     return false;
-                } else {
-                    cout << "Enter an integer for Edge #: ";
-                    resetCin();
                 }
-            }
-            //  check if edge is valid, resources, etc...
-            if (edgeLocation <= 71 && isValidEdge(edges.at(edgeLocation))) {
-                if (edges.at(edgeLocation).get()->buildRoad(builderShared)) {
-                    cout << "Builder " << builder->getColour()
-                         << " built a road at " << edgeLocation << endl;
-                    textDisplay.buildRoad(edges.at(edgeLocation), builderShared);
-                } else {
-                    cout << "You do not have enough resources." << endl;
-                }
-            } else {
+                cout << "ERROR: input must be an integer." << endl
+                     << "> ";
+                resetCin();
+            } else if (edgeLocation < 0 || edgeLocation > 71) {
+                cout << "ERROR: integer must be between [0, 71]." << endl;
+            } else if (!isValidEdge(edges.at(edgeLocation))) {
                 cout << "You cannot build here" << endl;
+            } else if (edges.at(edgeLocation).get()->buildRoad(builderShared)) {
+                cout << "Builder " << builder->getColour()
+                     << " built a road at " << edgeLocation << endl;
+                textDisplay.buildRoad(edges.at(edgeLocation), builderShared);
+            } else {
+                cout << "You do not have enough resources." << endl
+                     << "A Road costs 1 HEAT and 1 WIFI.";
             }
         } else if (temp == "build-res" || temp == "brs") {
-            unsigned vertexLocation = 54;
-            while (true) {
-                if (cin >> vertexLocation) {
-                    break;
-                } else if (cin.eof()) {
+            int vertexLocation;
+            if (!(cin >> vertexLocation)) {
+                if (cin.eof()) {
                     return false;
-                } else {
-                    cout << "Enter a positive integer Vertex #: ";
-                    resetCin();
                 }
-            }
-            //  check if vertex is valid, resources, etc...
-            if (vertexLocation <= 53 && isValidVertex(vertices.at(vertexLocation))) {
-                if (vertices.at(vertexLocation).get()->upgradeResidence(builderShared)) {
-                    cout << "Builder " << builder->getColour()
-                         << " built a basement at " << vertexLocation << endl;
-                    textDisplay.updateVertex(vertices.at(vertexLocation), builderShared);
-                } else {
-                    cout << "You do not have enough resources." << endl;
-                }
+                cout << "ERROR: input must be an integer." << endl
+                     << "> build-res ";
+                resetCin();
+            } else if (vertexLocation < 0 || vertexLocation > 53) {
+                cout << "ERROR: integer must be between [0, 53]." << endl;
+            } else if (!isValidVertex(vertices.at(vertexLocation))) {
+                cout << "You cannot build here." << endl;
+            } else if (vertices.at(vertexLocation).get()->upgradeResidence(builderShared)) {
+                cout << "Builder " << builder->getColour()
+                     << " built a basement at " << vertexLocation << endl;
+                textDisplay.updateVertex(vertices.at(vertexLocation), builderShared);
             } else {
-                cout << "You cannot build here" << endl;
+                cout << "You do not have enough resources." << endl
+                     << "A Basement costs 1 BRICK, 1 ENERGY, 1 GLASS, and 1 WIFI." << endl;
             }
         } else if (temp == "improve" || temp == "i") {
             int vertexLocation;
-            while (true) {
-                if (cin >> vertexLocation) {
-                    break;
-                } else if (cin.eof()) {
+            if (!(cin >> vertexLocation)) {
+                if (cin.eof()) {
                     return false;
-                } else {
-                    resetCin();
                 }
-            }
-            if (vertexLocation >= 0 && vertexLocation <= 53) {
-                auto vertex = vertices.at(vertexLocation);
+                cout << "EERROR: input must be an integer." << endl
+                     << "> ";
+                resetCin();
+            } else if (vertexLocation < 0 && vertexLocation > 53) {
+                cout << "ERROR: integer must be between [0, 53]." << endl;
+            } else if (!vertices.at(vertexLocation).get()->canUpgrade(builderShared)) {
                 // if vertex has a different owner or is a tower
-                if (!vertex.get()->canUpgrade(builderShared)) {
-                    cout << "You cannot build here." << endl;
-                } else if (vertex.get()->upgradeResidence(builderShared)) {
-                    cout << "Residence upgrade succesful" << endl;
-                    textDisplay.updateVertex(vertex, builderShared);
-                    if (builder->hasWon()) {
-                        cout << "Builder " << builder->getColour() << " has won the game!!" << endl;
-                    }
-                } else {
-                    cout << "You do not have enough resources." << endl;
+                cout << "You cannot build here." << endl;
+            } else if (vertices.at(vertexLocation).get()->upgradeResidence(builderShared)) {
+                cout << "Residence upgrade succesful" << endl;
+                textDisplay.updateVertex(vertices.at(vertexLocation), builderShared);
+                if (builder->hasWon()) {
+                    builder->winGame();
+                    gameOver = true;
+                    return true;
                 }
             } else {
-                cout << "Invalid Command." << endl;
+                cout << "You do not have enough resources." << endl
+                     << "Improving a Basement to a House costs 2 GLASS and 3 HEAT." << endl
+                     << "Improving a House to a Tower costs 3 BRICK, 2 ENERGY, 2 GLASS, 1 WIFI, and 2 HEAT." << endl;
             }
 
         } else if (temp == "trade") {

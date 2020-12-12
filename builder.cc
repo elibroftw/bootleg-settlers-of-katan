@@ -7,10 +7,10 @@
 
 #include "resource.h"
 
-using std::istream;
-using std::ostream;
 using std::cout;
 using std::endl;
+using std::istream;
+using std::ostream;
 using std::string;
 using std::toupper;
 using std::vector;
@@ -142,4 +142,19 @@ void Builder::printStatus() {
         cout << ", " << resources[r] << ' ' << getResourceName(r);
     }
     cout << endl;
+}
+
+void Builder::winGame() {
+    cout << "Builder " << colour << " has won the game!!!" << endl;
+    // Art by Joan Stark
+    cout << R"(                                   .''.)" << endl;
+    cout << R"(       .''.      .        *''*    :_\/_:     .)" << endl;
+    cout << R"(      :_\/_:   _\(/_  .:.*_\/_*   : /\ :  .'.:.'.)" << endl;
+    cout << R"(  .''.: /\ :   ./)\   ':'* /\ * :  '..'.  -=:o:=-)" << endl;
+    cout << R"( :_\/_:'.:::.    ' *''*    * '.\'/.' _\(/_'.':'.')" << endl;
+    cout << R"( : /\ : :::::     *_\/_*     -= o =-  /)\    '  *)" << endl;
+    cout << R"(  '..'  ':::'     * /\ *     .'/.\'.   ')" << endl;
+    cout << R"(      *            *..*         :)" << endl;
+    cout << R"(        *)" << endl;
+    cout << R"(        *)" << endl;
 }

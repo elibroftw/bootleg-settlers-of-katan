@@ -21,7 +21,7 @@ unsigned Dice::roll(bool loaded) {
 
     int loadedDie = 0;
     while (true) {
-        cout << "Input a roll between 2 and 12: ";
+        cout << "Input a roll between 2 and 12:" << endl << ">";
 
         // EOF detected therefore return an invalid roll
         if (!(cin >> loadedDie)) {
