@@ -163,7 +163,7 @@ void Game::saveGame(string filename) {
         if (roads.count(owner)) {
             roads[owner].push_back(i);
         } else {
-            roads.insert(make_pair(owner, vector<int>{i}));
+            roads[owner] = vector<int>{i};
         }
     }
 
@@ -173,7 +173,7 @@ void Game::saveGame(string filename) {
         if (housing.count(owner)) {
             housing[owner].push_back(i);
         } else {
-            housing.insert(make_pair(owner, vector<int>{i}));
+            housing[owner] = vector<int>{i};
         }
     }
 
@@ -483,9 +483,9 @@ unordered_map<int, int> Game::getBuildersFromTile(int tileNumber) {
             if (vertexOwner >= 0) {
                 int bp = vertex.get()->getBuildingPoints();
                 if (buildersOnTile.count(vertexOwner)) {
-                    buildersOnTile.at(vertexOwner) = bp;
+                    buildersOnTile[vertexOwner] = bp;
                 } else {
-                    buildersOnTile.at(vertexOwner) += bp;
+                    buildersOnTile[vertexOwner] += bp;
                 }
             }
         }
@@ -638,12 +638,14 @@ bool Game::nextTurn() {
         vector<shared_ptr<Tile>> tilesWithValue;
         // keep track of whether or not resources were gained given the dice roll
         bool aBuilderGained = false;
+
         for (size_t i = 0; i < tiles.size(); i++) {
             auto tile = tiles.at(i);
             // if tile has the same value as the dice...
+
             if (tile.get()->getValue() == diceVal) {
                 int resourceCode = tile.get()->getResource();
-                unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
+                unordered_map<int, int> buildersOnTile = getBuildersFromTile(i);
                 for (auto const &tuple : buildersOnTile) {
                     aBuilderGained = true;
                     int b, resourcesGained;
@@ -924,17 +926,18 @@ void Game::test() {
         }
     }
 
-    cerr << "testing getBuildersFromTile" << endl;
+    cerr << "testing getBuildersFromTile - no builds" << endl;
     for (size_t i = 0; i < tiles.size(); i++) {
         getBuildersFromTile(i);
     }
-}
+    cerr << "testing getBuildersFromTile - some builds" << endl;
 
-Game::~Game() {
-    edges.clear();
-    vertices.clear();
-    verticesMap.clear();
-    edgesMap.clear();
-    resLocations.clear();
-    roadLocations.clear();
+    for (size_t i = 0; i < vertices.size(); i += 10) {
+        auto vertex = vertices.at(i);
+        vertex.get()->upgradeResidence(builders[i % 4], false);
+        resLocations.push_back(i);
+    }
+    for (size_t i = 0; i < tiles.size(); i++) {
+        getBuildersFromTile(i);
+    }
 }

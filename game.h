@@ -83,7 +83,6 @@ class Game {
 
    public:
     Game();
-    ~Game();
     void createBoard(unsigned seed);
     void createBoard(string filename);
     void saveGame(string filename);
