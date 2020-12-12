@@ -2,14 +2,11 @@
 
 #include <chrono>
 #include <iostream>
-#include <random>
 #include <string>
 
 using std::cin;
 using std::cout;
-using std::default_random_engine;
 using std::endl;
-using std::uniform_int_distribution;
 
 Dice::Dice() {
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -21,7 +18,8 @@ unsigned Dice::roll(bool loaded) {
 
     int loadedDie = 0;
     while (true) {
-        cout << "Input a roll between 2 and 12:" << endl << ">";
+        cout << "Input a roll between 2 and 12:" << endl
+             << ">";
 
         // EOF detected therefore return an invalid roll
         if (!(cin >> loadedDie)) {

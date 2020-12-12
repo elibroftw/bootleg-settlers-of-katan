@@ -1,21 +1,13 @@
 #include "textdisplay.h"
 
-#include <iostream>
-#include <memory>
 #include <string>
-#include <vector>
 
 #include "resource.h"
 
-using std::make_pair;
-using std::ostream;
-using std::pair;
-using std::shared_ptr;
-using std::string;
-using std::to_string;
-using std::vector;
 using std::cout;
 using std::endl;
+using std::make_pair;
+using std::to_string;
 
 TextDisplay::TextDisplay() : board(41, vector<char>(54, ' ')) {
     // first itialize with nothing
@@ -23,12 +15,12 @@ TextDisplay::TextDisplay() : board(41, vector<char>(54, ' ')) {
     for (size_t i = 0; i < 11; i++) {  // 11 tops
         int top = i * 4;
 
-        for (size_t j = 0; j < 6; j++) { // at most 6 | | per row
+        for (size_t j = 0; j < 6; j++) {  // at most 6 | | per row
             // set vertex pipes given conditions
             if ((i >= 2 && i <= 8) ||
-                 j == 2 ||
-                 j == 3 ||
-                 ((i == 1 || i == 9) && (j == 1 || j == 4))) {
+                j == 2 ||
+                j == 3 ||
+                ((i == 1 || i == 9) && (j == 1 || j == 4))) {
                 board.at(top).at(j * 10) = '|';
                 board.at(top).at(j * 10 + 3) = '|';
 

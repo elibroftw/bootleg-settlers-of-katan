@@ -6,7 +6,6 @@
 using std::cerr;
 using std::endl;
 using std::make_pair;
-using std::pair;
 
 Edge::Edge(int number) : number{number} {
     isRoad = false;
@@ -110,15 +109,15 @@ Edge::Edge(const Edge &e) : number{e.number},
                             isRoad{e.isRoad} {}
 
 void Edge::edge_swap(Edge &e) {
-  std::swap(number, e.number);
-  std::swap(owner, e.owner);
-  std::swap(row, e.row);
-  std::swap(col, e.col);
-  std::swap(isHorizontal, e.isHorizontal);
-  std::swap(isRoad, e.isRoad);
+    std::swap(number, e.number);
+    std::swap(owner, e.owner);
+    std::swap(row, e.row);
+    std::swap(col, e.col);
+    std::swap(isHorizontal, e.isHorizontal);
+    std::swap(isRoad, e.isRoad);
 }
 
-Edge& Edge::operator=(const Edge &v) {
+Edge &Edge::operator=(const Edge &v) {
     Edge temp{v};
     edge_swap(temp);
     return *this;

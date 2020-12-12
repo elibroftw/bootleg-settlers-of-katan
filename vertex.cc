@@ -6,7 +6,6 @@
 using std::cerr;
 using std::endl;
 using std::make_pair;
-using std::pair;
 
 Vertex::Vertex(int number) : number{number} {
     improvement = ' ';
