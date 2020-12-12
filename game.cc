@@ -777,6 +777,8 @@ bool Game::nextTurn() {
                 } else {
                     cout << "You do not have enough resources." << endl;
                 }
+            } else {
+                cout << "Invalid Command." << endl;
             }
 
         } else if (temp == "trade") {
