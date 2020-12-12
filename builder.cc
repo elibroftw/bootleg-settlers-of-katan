@@ -126,6 +126,14 @@ void Builder::geeseAttack() {
 }
 
 int Builder::stealFrom(std::shared_ptr<Builder> builder) {
+    int totalResources = 0;
+    for (auto&& r : builder->resources) totalResources += r;
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    default_random_engine rng{seed};
+    int randomIndex = resourceDistribution(rng);
+    int randResource = builder->resources[randomIndex];
+    int stealProb = randResource / totalResources; 
+    
 }
 
 void Builder::reset() {
