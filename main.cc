@@ -5,9 +5,9 @@
 
 #include "game.h"
 
+using std::cerr;
 using std::cin;
 using std::cout;
-using std::cerr;
 using std::endl;
 using std::istringstream;
 using std::string;
@@ -39,8 +39,8 @@ int main(int argc, char const *argv[]) {
             nextIsSaveFile = false;
             saveFile = argv[i];
         } else if (nextIsLayoutFile) {
-            nextIsLayoutFile = false;
             layoutFile = argv[i];
+            nextIsLayoutFile = false;
             useLayoutFile = true;
             useRandomBoard = false;
         } else if (argv[i] == flagSeed) {
@@ -57,7 +57,13 @@ int main(int argc, char const *argv[]) {
 
     Game game;
     if (!saveFile.empty()) {
-        game.loadGame(saveFile);
+        try {
+            game.loadGame(saveFile);
+        } catch (InvalidSaveFile &e) {
+            game.resetGame();
+            cout << "Starting a new game." << endl;
+            game.createBoard(seed);
+        }
     } else if (useRandomBoard) {
         game.createBoard(seed);
     } else {
@@ -67,7 +73,6 @@ int main(int argc, char const *argv[]) {
     if (!game.hasGameStarted()) {
         // quit if begin game failed
         if (!game.beginGame()) {
-            cerr << "failed to begin game, please try again" << endl;
             return 0;
         }
     }

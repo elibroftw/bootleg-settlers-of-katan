@@ -17,11 +17,12 @@ class Edge {
     bool isHorizontal;
     bool isRoad = false;
     void edge_swap(Edge &e);
+
    public:
     // default ctor for when vector is being resized
     Edge(int number = -1);
     Edge(const Edge &e);
-    Edge& operator=(const Edge &e);
+    Edge &operator=(const Edge &e);
 
     // get row nad column of textDisplay 2D array
     int getRow();

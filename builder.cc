@@ -4,18 +4,13 @@
 #include <ctime>
 #include <ios>
 #include <iostream>
-#include <string>
 
 #include "resource.h"
 
 using std::cout;
 using std::default_random_engine;
 using std::endl;
-using std::istream;
-using std::ostream;
-using std::string;
 using std::toupper;
-using std::vector;
 
 // read string, use only the capitalized first letter to determine the builder
 // if fail, in.setstate(std::ios::failbit);

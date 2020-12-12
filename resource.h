@@ -6,7 +6,12 @@
 using std::istream;
 using std::string;
 
-enum Resource { Brick, Energy, Glass, Heat, Wifi, Park };
+enum Resource { Brick,
+                Energy,
+                Glass,
+                Heat,
+                Wifi,
+                Park };
 
 // reads a string and returns the corresponding Resource
 // if string is invalid, set fail bit

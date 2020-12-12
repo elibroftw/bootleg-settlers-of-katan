@@ -7,12 +7,6 @@
 #include <iostream>
 #include <random>
 #include <sstream>
-#include <string>
-#include <unordered_set>
-
-#include "builder.h"
-#include "edge.h"
-#include "vertex.h"
 
 using std::cerr;
 using std::cin;
@@ -25,15 +19,12 @@ using std::istringstream;
 using std::make_pair;
 using std::make_shared;
 using std::ofstream;
-using std::pair;
 using std::random_shuffle;
 using std::stoi;
-using std::string;
 using std::tie;
+using std::tolower;
 using std::toupper;
 using std::uniform_int_distribution;
-using std::unordered_map;
-using std::unordered_set;
 
 Game::Game() : curTurn{-1},
                geeseLocation{19},
@@ -120,9 +111,9 @@ void Game::createBoard(unsigned seed) {
 
 void Game::createBoard(string filename) {
     ifstream file{filename};
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     if (!file) {
         // if file does not exist or is invalid, create a random board
-        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         createBoard(seed);
         return;
     }
@@ -135,7 +126,9 @@ void Game::createBoard(string filename) {
             textDisplay.setTileValue(tiles.size(), value);
             tiles.push_back(tile);
         } else {
-            cout << "ERROR: layout.txt was not formatted correctly" << endl;
+            cout << "ERROR: layout.txt was not formatted correctly, using random board instead" << endl;
+            tiles.clear();
+            createBoard(seed);
         }
     }
 }
@@ -164,7 +157,7 @@ void Game::saveGame(string filename) {
         }
     }
 
-    for (size_t i = 0; i < 4; i++) {
+    for (size_t i = 0; i < NUM_BUILDERS; i++) {
         builders[i].get()->printResources(outfile);
         outfile << "r";
         for (auto &&r : roads[i]) {
@@ -202,7 +195,7 @@ void Game::loadGame(string filename) {
     file.ignore(1000, ' ');
     string line;
     // read builder data for each buildere
-    for (size_t i = 0; i < 4; i++) {
+    for (size_t i = 0; i < NUM_BUILDERS; i++) {
         // for each builder
         if (!getline(file, line)) {
             cout << "ERROR: Invalid Save File (builder data)" << endl;
@@ -433,7 +426,7 @@ bool Game::isValidEdge(shared_ptr<Edge> edge) {
 bool Game::beginGame() {
     int vertexIdx;
     for (int i = 0; i < 2; i++) {
-        for (size_t j = 0; j < 4; j++) {
+        for (size_t j = 0; j < NUM_BUILDERS; j++) {
             bool validVertex = false;
             while (!validVertex) {
                 // accounts for reverse order
@@ -512,6 +505,7 @@ void Game::resetCin() {
 bool Game::nextTurn() {
     // whenever a builder builds, check if builder has 10+ points
     // if it does set gameEnded to true
+    printBoard();
     cout << "Builder " << builders.at(curTurn).get()->getColour() << "'s turn." << endl;
 
     // rolling the dice
@@ -527,20 +521,24 @@ bool Game::nextTurn() {
             }
             resetCin();
         }
+        if (temp.empty()) {
+            temp = " ";
+        }
+        temp[0] = tolower(temp[0]);
         // TODO: switch to using lowered first letter
-        if (temp == "load" || temp == "l") {
+        if (temp == "load" || temp[0] == 'l') {
             // set dice to laoded
             builder->useLoadedDice();
             cout << "Builder " << builder->getColour() << " now has a loaded Dice." << endl;
-        } else if (temp == "fair" || temp == "f") {
+        } else if (temp == "fair" || temp[0] == 'f') {
             builder->useFairDice();
             cout << "Builder " << builder->getColour() << " now has a fair Dice." << endl;
             // set dice to fair
-        } else if (temp == "roll" || temp == "r") {
+        } else if (temp == "roll" || temp[0] == 'r') {
             rollDice = true;
-        } else if (temp == "status" || temp == "s") {
+        } else if (temp == "status" || temp[0] == 's') {
             printStatus();
-        } else if (temp == "help" || temp == "h") {
+        } else if (temp == "help" || temp[0] == 'h') {
             cout << "~ load : changes current builder's dice type to 'loaded'" << endl;
             cout << "~ fair : changes current builder's dice type to 'fair'" << endl;
             cout << "~ roll : rolls the dice and distributes resources." << endl;
@@ -608,15 +606,18 @@ bool Game::nextTurn() {
                     for (auto const &tuple : buildersOnTile) {
                         int b, bp;
                         tie(b, bp) = tuple;
-                        auto tempBuilder = builders[b].get();
-                        if (input[0] == tempBuilder->getColour()[0]) {
-                            // TODO: check if correct
-                            int stolenResource = tempBuilder->tryStealing();
+                        auto tempBuilder = builders[b];
+                        if (input[0] == tempBuilder.get()->getColour()[0]) {
+                            // TODO: move IO operations to stealFrom
+                            int stolenResource = builder->stealFrom(tempBuilder);
                             if (stolenResource >= 0) {
                                 cout << "Builder " << builder->getColour() << " steals "
                                      << getResourceName(stolenResource)
-                                     << " from " << tempBuilder->getColour() << endl;
-                                builder->setResource(stolenResource, builder->getResource(stolenResource) + 1);
+                                     << " from " << tempBuilder.get()->getColour() << endl;
+                                // builder->setResource(stolenResource, builder->getResource(stolenResource) + 1);
+                            } else {
+                                cout << "Builder " << builder->getColour() << " got caught slacking"
+                                     << " and could not steal from " << tempBuilder->getColour() << endl;
                             }
                             askForInput = false;
                             break;
@@ -781,16 +782,12 @@ bool Game::nextTurn() {
                     colours[builders.at(i).get()->getColour()[0]] = i;
                 }
             }
-            if (!(cin >> colour2)) {
-
-            }
             if ((cin >> colour2) && (cin >> resGive) && (cin >> resTake)) {
-                cout << "jaslkdjasoidjlaksjdkljasjd" << endl;
-                if (colour2 != curTurn) {
-                    cout << "You cannot trade with yourself!" << endl;
+                if (colour2 == curTurn) {
+                    cout << "ERROR: You cannot trade with yourself!" << endl;
                     // if trade function fails, return false
                 } else if (resGive == resTake) {
-                    cout << "You cannot trade the same resource!" << endl;
+                    cout << "ERROR: You cannot trade the same resource!" << endl;
                 } else {
                     if (!tradeWith(builders.at(colour2), resGive, resTake)) {
                         return false;
@@ -799,7 +796,7 @@ bool Game::nextTurn() {
             } else if (cin.eof()) {
                 return false;
             } else {
-                cout << "ERROR: " << endl;
+                cout << "ERROR: Command enetered incorrectly. Please try again." << endl;
                 resetCin();
             }
         } else if (temp == "next") {
@@ -864,7 +861,7 @@ void Game::resetGame() {
         textDisplay.removeGeese(geeseLocation);
     }
 
-    for (size_t i = 0; i < 4; i++) {
+    for (size_t i = 0; i < NUM_BUILDERS; i++) {
         builders[i].get()->reset();
     }
     for (size_t i = 0; i < vertices.size(); i++) {
@@ -930,7 +927,7 @@ void Game::test() {
 
     for (size_t i = 0; i < vertices.size(); i += 10) {
         auto vertex = vertices.at(i);
-        vertex.get()->upgradeResidence(builders[i % 4], false);
+        vertex.get()->upgradeResidence(builders[i % NUM_BUILDERS], false);
         resLocations.push_back(i);
     }
     for (size_t i = 0; i < tiles.size(); i++) {
