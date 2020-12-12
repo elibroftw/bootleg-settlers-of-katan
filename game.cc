@@ -611,15 +611,15 @@ bool Game::nextTurn() {
                     for (auto const &tuple : buildersOnTile) {
                         int b, bp;
                         tie(b, bp) = tuple;
-                        auto tempBuilder = builders[b].get();
-                        if (input[0] == tempBuilder->getColour()[0]) {
-                            // TODO: check if correct
+                        auto tempBuilder = builders[b];
+                        if (input[0] == tempBuilder.get()->getColour()[0]) {
+                            // TODO: move IO operations to stealFrom
                             int stolenResource = builder->stealFrom(tempBuilder);
                             if (stolenResource >= 0) {
                                 cout << "Builder " << builder->getColour() << " steals "
                                      << getResourceName(stolenResource)
-                                     << " from " << tempBuilder->getColour() << endl;
-                                builder->setResource(stolenResource, builder->getResource(stolenResource) + 1);
+                                     << " from " << tempBuilder.get()->getColour() << endl;
+                                // builder->setResource(stolenResource, builder->getResource(stolenResource) + 1);
                             } else {
                                 cout << "Builder " << builder->getColour() << " got caught slacking"
                                      << " and could not steal from " << tempBuilder->getColour() << endl;
