@@ -40,7 +40,6 @@ Game::Game() : curTurn{-1},
                gameOver{false},
                verticesMap(VM_HEIGHT, vector<shared_ptr<Vertex>>(VM_WIDTH, make_shared<Vertex>())),
                edgesMap(EM_HEIGHT, vector<shared_ptr<Edge>>(EM_WIDTH, make_shared<Edge>())) {
-    cout << "Creating Game" << endl;
     // create builders
     builders.push_back(make_shared<Builder>("Blue", 0));
     builders.push_back(make_shared<Builder>("Red", 1));
