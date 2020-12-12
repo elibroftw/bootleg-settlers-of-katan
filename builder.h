@@ -1,5 +1,6 @@
 #ifndef __BUILDER_H__
 #define __BUILDER_H__
+#include <memory>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -41,7 +42,7 @@ class Builder {
         // a random resources from one builder who has a residence
         // on the tile to where the geese are moved.
         // if not negative, steal was sucessful...
-        int tryStealing();
+        int stealFrom(std::shared_ptr<Builder> builder); // <- this one loses resources
         // check if builder won the game, which occurs when they
         // have 10 points
         bool hasWon();
