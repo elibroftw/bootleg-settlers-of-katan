@@ -120,9 +120,9 @@ void Game::createBoard(unsigned seed) {
 
 void Game::createBoard(string filename) {
     ifstream file{filename};
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     if (!file) {
         // if file does not exist or is invalid, create a random board
-        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         createBoard(seed);
         return;
     }
@@ -135,7 +135,9 @@ void Game::createBoard(string filename) {
             textDisplay.setTileValue(tiles.size(), value);
             tiles.push_back(tile);
         } else {
-            cout << "ERROR: layout.txt was not formatted correctly" << endl;
+            cout << "ERROR: layout.txt was not formatted correctly, using random board instead" << endl;
+            tiles.clear();
+            createBoard(seed);
         }
     }
 }
@@ -512,6 +514,7 @@ void Game::resetCin() {
 bool Game::nextTurn() {
     // whenever a builder builds, check if builder has 10+ points
     // if it does set gameEnded to true
+    printBoard();
     cout << "Builder " << builders.at(curTurn).get()->getColour() << "'s turn." << endl;
 
     // rolling the dice
@@ -611,12 +614,15 @@ bool Game::nextTurn() {
                         auto tempBuilder = builders[b].get();
                         if (input[0] == tempBuilder->getColour()[0]) {
                             // TODO: check if correct
-                            int stolenResource = tempBuilder->tryStealing();
+                            int stolenResource = builder->stealFrom(tempBuilder);
                             if (stolenResource >= 0) {
                                 cout << "Builder " << builder->getColour() << " steals "
                                      << getResourceName(stolenResource)
                                      << " from " << tempBuilder->getColour() << endl;
                                 builder->setResource(stolenResource, builder->getResource(stolenResource) + 1);
+                            } else {
+                                cout << "Builder " << builder->getColour() << " got caught slacking"
+                                     << " and could not steal from " << tempBuilder->getColour() << endl;
                             }
                             askForInput = false;
                             break;
@@ -782,7 +788,6 @@ bool Game::nextTurn() {
                 }
             }
             if (!(cin >> colour2)) {
-
             }
             if ((cin >> colour2) && (cin >> resGive) && (cin >> resTake)) {
                 cout << "jaslkdjasoidjlaksjdkljasjd" << endl;

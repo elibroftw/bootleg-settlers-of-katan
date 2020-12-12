@@ -29,14 +29,19 @@ Resource getResourceCode(string resourceName) {
     char r = toupper(resourceName[0]);;
     switch (r) {
         case 'B':
+        case '0':
             return Brick;
         case 'E':
+        case '1':
             return Energy;
         case 'G':
+        case '2':
             return Glass;
         case 'H':
+        case '3':
             return Heat;
         case 'W':
+        case '4':
             return Wifi;
         default:
             return Park;

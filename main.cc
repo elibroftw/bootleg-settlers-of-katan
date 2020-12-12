@@ -5,9 +5,9 @@
 
 #include "game.h"
 
+using std::cerr;
 using std::cin;
 using std::cout;
-using std::cerr;
 using std::endl;
 using std::istringstream;
 using std::string;
@@ -39,8 +39,8 @@ int main(int argc, char const *argv[]) {
             nextIsSaveFile = false;
             saveFile = argv[i];
         } else if (nextIsLayoutFile) {
-            nextIsLayoutFile = false;
             layoutFile = argv[i];
+            nextIsLayoutFile = false;
             useLayoutFile = true;
             useRandomBoard = false;
         } else if (argv[i] == flagSeed) {
