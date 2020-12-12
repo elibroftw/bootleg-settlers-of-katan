@@ -47,10 +47,6 @@ Game::Game() : curTurn{-1},
     builders.push_back(make_shared<Builder>("Orange", 2));
     builders.push_back(make_shared<Builder>("Yellow", 3));
 
-    // initialize maps
-    // verticesMap = vector<vector<shared_ptr<Vertex>>>(VM_HEIGHT, vector<shared_ptr<Vertex>>(VM_WIDTH, make_shared<Vertex>()));
-    // edgesMap = vector<vector<shared_ptr<Edge>>>(EM_HEIGHT, vector<shared_ptr<Edge>>(EM_WIDTH, make_shared<Edge>()));
-
     // create 53 vertices
     for (int i = 0; i <= 53; i++) {
         auto vertex = make_shared<Vertex>(i);
@@ -62,15 +58,6 @@ Game::Game() : curTurn{-1},
         verticesMap.at(vertexR).at(vertexC) = vertex;
         textDisplay.setInt(rowTD, colTD, i);
     }
-
-    // edgesMap.reserve(EM_HEIGHT);
-    // for (size_t r = 0; r < EM_HEIGHT; r++) {
-    //     vector<shared_ptr<Edge>> row;
-    //     for (size_t c = 0; c < EM_WIDTH; c++) {
-    //         row.push_back(make_shared<Edge>());
-    //     }
-    //     edgesMap.push_back(row);
-    // }
 
     // create 71 edges
     // edges can be vertical or horizontal
@@ -895,6 +882,7 @@ void Game::resetGame() {
     gameOver = false;
 }
 
+// testing method
 void Game::test() {
     cout << "creating random board" << endl;
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -945,4 +933,9 @@ void Game::test() {
 
     cout << "testing printStatus" << endl;
     printStatus();
+
+    cout << "testing winGame" << endl;
+    for (auto &&b : builders) {
+        b.get()->winGame();
+    }
 }
