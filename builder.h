@@ -73,6 +73,8 @@ class Builder {
         void useLoadedDice();
         void useFairDice();
         bool isDiceLoaded();
+
+        void printStatus();
 };
 
 #endif

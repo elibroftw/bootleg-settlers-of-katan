@@ -21,6 +21,7 @@ using std::default_random_engine;
 using std::endl;
 using std::ifstream;
 using std::invalid_argument;
+using std::istringstream;
 using std::make_pair;
 using std::make_shared;
 using std::ofstream;
@@ -206,25 +207,29 @@ void Game::saveGame(string filename) {
 void Game::loadGame(string filename) {
     ifstream file{filename};
     if (!file) {
-        cout << "ERROR: Invalid Save File" << endl;
+        cout << "ERROR: Save File Does Not Exist" << endl;
         throw InvalidSaveFile();
     }
     file >> curTurn;
+    file.ignore(1000, ' ');
     string line;
     // read builder data for each buildere
     for (size_t i = 0; i < 4; i++) {
         // for each builder
         if (!getline(file, line)) {
-            cout << "ERROR: Invalid Save File" << endl;
+            cout << "ERROR: Invalid Save File (builder data)" << endl;
             throw InvalidSaveFile();
         }
         auto builder = builders[i];
-        std::istringstream ss1{line};
+        istringstream ss1{line};
         string temp;
         // read resources
         for (size_t i = 0; i < 5; i++) {
             // read from sstream
-            ss1 >> temp;
+            if (!(ss1 >> temp)) {
+                cout << "ERROR: Invalid Save File (builder data - resources empty)" << endl;
+                throw InvalidSaveFile();
+            }
             if (temp == "r") {
                 break;
             } else {
@@ -232,7 +237,7 @@ void Game::loadGame(string filename) {
                 try {
                     builder.get()->setResource(i, stoi(temp));
                 } catch (invalid_argument &e) {
-                    cout << "ERROR: Invalid Save File" << endl;
+                    cout << "ERROR: Invalid Save File (builder data - resources)" << endl;
                     throw InvalidSaveFile();
                 }
             }
@@ -240,15 +245,23 @@ void Game::loadGame(string filename) {
 
         // read roads
         while (true) {
-            ss1 >> temp;
+            if (!(ss1 >> temp)) {
+                cout << "ERROR: Invalid Save File (builder data - roads - empty)" << endl;
+                throw InvalidSaveFile();
+            }
             if (temp == "h") {
                 break;
-            } else {
-                int roadIdx = stoi(temp);
-                auto edge = edges[roadIdx];
-                edge.get()->buildRoad(builder, false);
-                textDisplay.buildRoad(edge, builder);
-                roadLocations.push_back(roadIdx);
+            } else if (temp != "r") {
+                try {
+                    int roadIdx = stoi(temp);
+                    auto edge = edges.at(roadIdx);
+                    edge.get()->buildRoad(builder, false);
+                    textDisplay.buildRoad(edge, builder);
+                    roadLocations.push_back(roadIdx);
+                } catch (invalid_argument &e) {
+                    cout << "ERROR: Invalid Save File (builder data - roads), got " << temp << endl;
+                    throw InvalidSaveFile();
+                }
             }
         }
 
@@ -257,7 +270,7 @@ void Game::loadGame(string filename) {
         while (ss1 >> vertexIdx) {
             if (ss1 >> temp) {
                 // call addHousing to Vertex
-                auto vertex = vertices[vertexIdx];
+                auto vertex = vertices.at(vertexIdx);
                 if (temp == "T") {
                     vertex.get()->upgradeResidence(builder, false);
                     temp = "H";
@@ -272,7 +285,7 @@ void Game::loadGame(string filename) {
                 textDisplay.updateVertex(vertex, builder);
                 resLocations.push_back(vertexIdx);
             } else {
-                cout << "ERROR: Invalid Save File" << endl;
+                cout << "ERROR: Invalid Save File (builder data - housing)" << endl;
                 throw InvalidSaveFile();
             }
         }
@@ -284,7 +297,7 @@ void Game::loadGame(string filename) {
     if (!getline(file, line)) {
         throw InvalidSaveFile();
     }
-    std::istringstream ss2{line};
+    istringstream ss2{line};
     while (ss2 >> resource) {
         if (ss2 >> value) {
             auto tile = std::make_shared<Tile>(tiles.size(), value, resource);
@@ -297,6 +310,7 @@ void Game::loadGame(string filename) {
     // read geese location if present
     file >> geeseLocation;
     gameStarted = true;
+    cout << "GAME LOADED" << endl;
 }
 
 bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
@@ -493,20 +507,7 @@ unordered_map<int, int> Game::getBuildersFromTile(int tileNumber) {
 }
 
 void Game::printStatus() {
-    for (size_t i = 0; i < 4; i++) {
-        auto b = builders.at(i).get();
-        string colour = b->getColour();
-        unsigned padding = 6 - colour.size();
-        cout << "Builder " << colour << " ";
-        for (size_t j = 0; j < padding; j++) {
-            cout << " ";
-        }
-        cout << "has " << b->getBuildingPoints() << " building points";
-        for (size_t r = 0; r < 6; r++) {
-            cout << ", " << b->getResource(r) << ' ' << getResourceName(r);
-        }
-        cout << endl;
-    }
+    for (auto &&b : builders) b.get()->printStatus();
 }
 
 void Game::resetCin() {
@@ -893,14 +894,14 @@ void Game::resetGame() {
 }
 
 void Game::test() {
-    cerr << "creating random board" << endl;
+    cout << "creating random board" << endl;
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     createBoard(seed);
 
-    cerr << "testing print board" << endl;
+    cout << "testing print board" << endl;
     printBoard();
 
-    cerr << "testing Vertex" << endl;
+    cout << "testing Vertex" << endl;
     for (size_t r = 0; r < VM_HEIGHT; r++) {
         for (size_t c = 0; c < VM_WIDTH; c++) {
             auto vertex = verticesMap.at(r).at(c);
@@ -914,7 +915,7 @@ void Game::test() {
         }
     }
 
-    cerr << "testing Edge" << endl;
+    cout << "testing Edge" << endl;
     for (size_t r = 0; r < EM_HEIGHT; r++) {
         for (size_t c = 0; c < EM_WIDTH; c++) {
             auto edge = edgesMap.at(r).at(c);
@@ -925,11 +926,11 @@ void Game::test() {
         }
     }
 
-    cerr << "testing getBuildersFromTile - no builds" << endl;
+    cout << "testing getBuildersFromTile - no builds" << endl;
     for (size_t i = 0; i < tiles.size(); i++) {
         getBuildersFromTile(i);
     }
-    cerr << "testing getBuildersFromTile - some builds" << endl;
+    cout << "testing getBuildersFromTile - some builds" << endl;
 
     for (size_t i = 0; i < vertices.size(); i += 10) {
         auto vertex = vertices.at(i);
@@ -939,4 +940,7 @@ void Game::test() {
     for (size_t i = 0; i < tiles.size(); i++) {
         getBuildersFromTile(i);
     }
+
+    cout << "testing printStatus" << endl;
+    printStatus();
 }

@@ -176,8 +176,8 @@ void TextDisplay::updateVertex(shared_ptr<Vertex> &vertex, shared_ptr<Builder> &
     if (vertex.get()->getOwner() == builder.get()->getNum()) {
         char c1 = builder.get()->getColour()[0];
         char c2 = vertex.get()->getImprovement();
-        setChar(vertex.get()->getCol(), vertex.get()->getRow(), c1);
-        setChar(vertex.get()->getCol() + 1, vertex.get()->getRow(), c2);
+        setChar(vertex.get()->getRow(), vertex.get()->getCol(), c1);
+        setChar(vertex.get()->getRow(), vertex.get()->getCol() + 1, c2);
     }
 }
 

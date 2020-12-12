@@ -57,7 +57,6 @@ int main(int argc, char const *argv[]) {
 
     Game game;
     if (!saveFile.empty()) {
-        cout << "Loading game from " << saveFile << endl;
         game.loadGame(saveFile);
     } else if (useRandomBoard) {
         game.createBoard(seed);
