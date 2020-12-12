@@ -14,18 +14,6 @@
 #include "edge.h"
 #include "vertex.h"
 
-// VM = verticiesMap
-#define VM_HEIGHT 11
-#define VM_WIDTH 6
-// EM = edgesMap
-#define EM_HEIGHT 21
-#define EM_WIDTH 11
-// text display height and width
-#define TD_HEIGHT 41
-#define TD_WIDTH 54
-
-#define NUM_BUILDERS 4
-
 using std::cerr;
 using std::cin;
 using std::cout;
@@ -47,19 +35,12 @@ using std::unordered_map;
 using std::unordered_set;
 
 Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{false} {
+    cout << "Creating Game" << endl;
     // create builders
     builders.push_back(make_shared<Builder>("Blue", 0));
     builders.push_back(make_shared<Builder>("Red", 1));
     builders.push_back(make_shared<Builder>("Orange", 2));
     builders.push_back(make_shared<Builder>("Yellow", 3));
-
-    for (size_t r = 0; r < VM_HEIGHT; r++) {
-        vector<shared_ptr<Vertex>> row;
-        for (size_t c = 0; c < VM_WIDTH; c++) {
-            row.push_back(make_shared<Vertex>());
-        }
-        verticesMap.push_back(row);
-    }
 
     // create 53 vertices
     for (int i = 0; i <= 53; i++) {
@@ -69,10 +50,12 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
         vertices.push_back(vertex);
         int vertexR, vertexC;
         tie(vertexR, vertexC) = Vertex::getVertexFromCoords(rowTD, colTD);
-        verticesMap[vertexR][vertexC] = vertex;
+        verticesMap.at(vertexR).at(vertexC) = vertex;
         textDisplay.setInt(rowTD, colTD, i);
     }
+    cerr << "TEST2" << endl;
 
+    edgesMap.reserve(EM_HEIGHT);
     for (size_t r = 0; r < EM_HEIGHT; r++) {
         vector<shared_ptr<Edge>> row;
         for (size_t c = 0; c < EM_WIDTH; c++) {
@@ -80,6 +63,7 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
         }
         edgesMap.push_back(row);
     }
+    cerr << "TEST3" << endl;
 
     // create 71 edges
     // edges can be vertical or horizontal
@@ -93,6 +77,7 @@ Game::Game() : curTurn{-1}, geeseLocation{19}, gameStarted{false}, gameOver{fals
         edgesMap[edgeR][edgeC] = edge;
         textDisplay.setInt(rowTD, colTD, i);
     }
+    cerr << "TEST3" << endl;
 }
 
 bool Game::hasGameStarted() {
@@ -205,7 +190,7 @@ void Game::saveGame(string filename) {
         if (i != 0) {
             outfile << " ";
         }
-        outfile << getResourceName(tile->getResource()) << " " << tile->getValue();
+        outfile << tile->getResource() << " " << tile->getValue();
     }
     outfile << endl;
     if (geeseLocation < 19) {
@@ -619,7 +604,7 @@ bool Game::nextTurn() {
                     resetCin();
                 }
                 if (!input.empty()) {
-                    toupper(input[0]);  // capitalize first letter
+                    input[0] = toupper(input[0]);  // capitalize first letter
                     for (auto const &tuple : buildersOnTile) {
                         int b, bp;
                         tie(b, bp) = tuple;
@@ -797,7 +782,8 @@ bool Game::nextTurn() {
                     colours[builders[i].get()->getColour()[0]] = i;
                 }
             }
-            if ((cin >> colour2) && (cin >> resGive) && !(cin >> resTake)) {
+            if ((cin >> colour2) && (cin >> resGive) && (cin >> resTake)) {
+                cout << "jaslkdjasoidjlaksjdkljasjd" << endl;
                 if (colour2 != curTurn) {
                     cout << "You cannot trade with yourself!" << endl;
                     // if trade function fails, return false

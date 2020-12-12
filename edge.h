@@ -8,18 +8,20 @@ using std::pair;
 using std::shared_ptr;
 
 class Edge {
-    int owner;
     int number;
+    int owner;
     // the row and col coordinates are for the text display
     int row;
     int col;
 
     bool isHorizontal;
     bool isRoad = false;
-
+    void edge_swap(Edge &e);
    public:
     // default ctor for when vector is being resized
     Edge(int number = -1);
+    Edge(const Edge &e);
+    Edge& operator=(const Edge &e);
 
     // get row nad column of textDisplay 2D array
     int getRow();

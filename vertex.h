@@ -20,11 +20,15 @@ class Vertex {
     // improvement can either be "" for nothing,
     // "B" for basement, "H" for house, or "T" for tower
     char improvement;
+    void vertex_swap(Vertex &v);
 
    public:
     // default ctor for when vector is being resized
     Vertex(int number = -1);
     Vertex(const Vertex &v);
+    Vertex(const Vertex &&v);
+    Vertex &operator=(const Vertex &v);
+    Vertex &operator=(Vertex &&other);
 
     int getCol();
     int getRow();

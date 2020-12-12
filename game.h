@@ -14,11 +14,24 @@
 #include "tile.h"
 #include "vertex.h"
 
+// VM = verticiesMap
+#define VM_HEIGHT 11
+#define VM_WIDTH 6
+// EM = edgesMap
+#define EM_HEIGHT 21
+#define EM_WIDTH 11
+// text display height and width
+#define TD_HEIGHT 41
+#define TD_WIDTH 54
+
+#define NUM_BUILDERS 4
+
 using std::pair;
 using std::shared_ptr;
 using std::string;
 using std::unordered_map;
 using std::vector;
+using std::make_shared;
 
 class InvalidLayoutFile {};
 
@@ -37,7 +50,8 @@ class Game {
     vector<shared_ptr<Builder>> builders;
     vector<shared_ptr<Tile>> tiles;
     vector<shared_ptr<Vertex>> vertices;
-    vector<vector<shared_ptr<Vertex>>> verticesMap;
+    vector<vector<shared_ptr<Vertex>>> verticesMap{VM_HEIGHT, vector<shared_ptr<Vertex>>{VM_WIDTH, make_shared<Vertex>()}};
+    // vector<vector<shared_ptr<Edge>>> edgesMap{EM_HEIGHT, vector<shared_ptr<Edge>>{EM_WIDTH, make_shared<Edge>()}};
     vector<vector<shared_ptr<Edge>>> edgesMap;
     vector<shared_ptr<Edge>> edges;
     vector<int> resLocations;

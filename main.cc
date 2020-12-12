@@ -37,8 +37,7 @@ int main(int argc, char const *argv[]) {
             ss >> seed;
         } else if (nextIsSaveFile) {
             nextIsSaveFile = false;
-            saveFile = argv[i];
-            cout << "f" << endl;
+            // saveFile = argv[i];
         } else if (nextIsLayoutFile) {
             nextIsLayoutFile = false;
             layoutFile = argv[i];
