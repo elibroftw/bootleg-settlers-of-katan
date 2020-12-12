@@ -23,16 +23,20 @@ istream& operator>>(istream& in, Colour& colour) {
         char c = toupper(temp[0]);
         switch (c) {
             case 'B':
+            case '0':
                 colour = Blue;
                 break;
             case 'R':
+            case '1':
                 colour = Red;
                 break;
-            case 'Y':
-                colour = Yellow;
-                break;
-            case 'O':
+            case 'O':  // this is an O not a zero
+            case '2':
                 colour = Orange;
+                break;
+            case 'Y':
+            case '3':
+                colour = Yellow;
                 break;
             default:
                 in.setstate(std::ios::failbit);

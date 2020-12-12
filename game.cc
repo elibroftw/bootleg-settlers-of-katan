@@ -684,9 +684,9 @@ bool Game::nextTurn() {
             cout << "~ help                         : prints out the list of commands." << endl;
         } else if (temp == "board" || temp == "print") {
             printBoard();
-        } else if (temp == "status") {
+        } else if (temp == "status" || temp == "stat") {
             printStatus();
-        } else if (temp == "residences") {
+        } else if (temp == "residences" || temp == "res") {
             // TODO test against sample executable
             if (builder->getBuildingPoints()) {
                 cout << builder->getColour() << " has built:" << endl;
@@ -700,14 +700,15 @@ bool Game::nextTurn() {
             }
         } else if (temp == "build-road" || temp == "brd") {
             int edgeLocation;
-            if (!(cin >> edgeLocation)) {
+            while (!(cin >> edgeLocation)) {
                 if (cin.eof()) {
                     return false;
                 }
                 cout << "ERROR: input must be an integer." << endl
-                     << "> ";
+                     << "> build-road ";
                 resetCin();
-            } else if (edgeLocation < 0 || edgeLocation > 71) {
+            }
+            if (edgeLocation < 0 || edgeLocation > 71) {
                 cout << "ERROR: integer must be between [0, 71]." << endl;
             } else if (!isValidEdge(edges.at(edgeLocation))) {
                 cout << "You cannot build here" << endl;
@@ -721,14 +722,15 @@ bool Game::nextTurn() {
             }
         } else if (temp == "build-res" || temp == "brs") {
             int vertexLocation;
-            if (!(cin >> vertexLocation)) {
+            while (!(cin >> vertexLocation)) {
                 if (cin.eof()) {
                     return false;
                 }
                 cout << "ERROR: input must be an integer." << endl
                      << "> build-res ";
                 resetCin();
-            } else if (vertexLocation < 0 || vertexLocation > 53) {
+            }
+            if (vertexLocation < 0 || vertexLocation > 53) {
                 cout << "ERROR: integer must be between [0, 53]." << endl;
             } else if (!isValidVertex(vertices.at(vertexLocation))) {
                 cout << "You cannot build here." << endl;
@@ -742,14 +744,15 @@ bool Game::nextTurn() {
             }
         } else if (temp == "improve" || temp == "i") {
             int vertexLocation;
-            if (!(cin >> vertexLocation)) {
+            while (!(cin >> vertexLocation)) {
                 if (cin.eof()) {
                     return false;
                 }
-                cout << "EERROR: input must be an integer." << endl
-                     << "> ";
+                cout << "ERROR: input must be an integer." << endl
+                     << "> improve ";
                 resetCin();
-            } else if (vertexLocation < 0 && vertexLocation > 53) {
+            }
+            if (vertexLocation < 0 && vertexLocation > 53) {
                 cout << "ERROR: integer must be between [0, 53]." << endl;
             } else if (!vertices.at(vertexLocation).get()->canUpgrade(builderShared)) {
                 // if vertex has a different owner or is a tower
@@ -779,6 +782,9 @@ bool Game::nextTurn() {
                     colours[builders.at(i).get()->getColour()[0]] = i;
                 }
             }
+            if (!(cin >> colour2)) {
+
+            }
             if ((cin >> colour2) && (cin >> resGive) && (cin >> resTake)) {
                 cout << "jaslkdjasoidjlaksjdkljasjd" << endl;
                 if (colour2 != curTurn) {
@@ -794,6 +800,7 @@ bool Game::nextTurn() {
             } else if (cin.eof()) {
                 return false;
             } else {
+                cout << "ERROR: " << endl;
                 resetCin();
             }
         } else if (temp == "next") {
