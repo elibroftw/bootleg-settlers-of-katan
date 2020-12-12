@@ -57,7 +57,13 @@ int main(int argc, char const *argv[]) {
 
     Game game;
     if (!saveFile.empty()) {
-        game.loadGame(saveFile);
+        try {
+            game.loadGame(saveFile);
+        } catch (InvalidSaveFile &e) {
+            game.resetGame();
+            cout << "Starting a new game." << endl;
+            game.createBoard(seed);
+        }
     } else if (useRandomBoard) {
         game.createBoard(seed);
     } else {
@@ -67,7 +73,6 @@ int main(int argc, char const *argv[]) {
     if (!game.hasGameStarted()) {
         // quit if begin game failed
         if (!game.beginGame()) {
-            cerr << "failed to begin game, please try again" << endl;
             return 0;
         }
     }
