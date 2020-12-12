@@ -50,9 +50,9 @@ class Game {
     vector<shared_ptr<Builder>> builders;
     vector<shared_ptr<Tile>> tiles;
     vector<shared_ptr<Vertex>> vertices;
-    vector<vector<shared_ptr<Vertex>>> verticesMap{VM_HEIGHT, vector<shared_ptr<Vertex>>{VM_WIDTH, make_shared<Vertex>()}};
-    // vector<vector<shared_ptr<Edge>>> edgesMap{EM_HEIGHT, vector<shared_ptr<Edge>>{EM_WIDTH, make_shared<Edge>()}};
+    vector<vector<shared_ptr<Vertex>>> verticesMap;
     vector<vector<shared_ptr<Edge>>> edgesMap;
+    // vector<vector<shared_ptr<Edge>>> edgesMap;
     vector<shared_ptr<Edge>> edges;
     vector<int> resLocations;
     vector<int> roadLocations;

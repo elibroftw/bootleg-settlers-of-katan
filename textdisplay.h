@@ -17,6 +17,7 @@ using std::vector;
 
 class TextDisplay {
     vector<vector<char>> board;
+    // vector<vector<char>> board;
 
    public:
     // create the outlines of the board

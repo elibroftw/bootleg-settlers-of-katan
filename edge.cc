@@ -171,6 +171,5 @@ pair<int, int> Edge::getEdgeFromCoords(int row, int col) {
         cerr << "something went wrong in getEdgeFromCoords "
              << (row % 2 != 0) << ' ' << ((col - 1) % 5 != 0) << endl;
     }
-    // cerr << "get edge from coords, row = " << row << ", " << col << ' ' << endl;
     return make_pair(row / 2, col / 5);
 }

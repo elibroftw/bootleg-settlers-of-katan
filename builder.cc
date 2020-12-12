@@ -1,13 +1,14 @@
 #include "builder.h"
 
+#include <ctime>
 #include <ios>
 #include <iostream>
 #include <string>
-#include <ctime>
-
 
 #include "resource.h"
 
+using std::cout;
+using std::endl;
 using std::istream;
 using std::ostream;
 using std::string;
@@ -22,16 +23,20 @@ istream& operator>>(istream& in, Colour& colour) {
         char c = toupper(temp[0]);
         switch (c) {
             case 'B':
+            case '0':
                 colour = Blue;
                 break;
             case 'R':
+            case '1':
                 colour = Red;
                 break;
-            case 'Y':
-                colour = Yellow;
-                break;
-            case 'O':
+            case 'O':  // this is an O not a zero
+            case '2':
                 colour = Orange;
+                break;
+            case 'Y':
+            case '3':
+                colour = Yellow;
                 break;
             default:
                 in.setstate(std::ios::failbit);
@@ -101,7 +106,7 @@ bool Builder::isDiceLoaded() {
 void Builder::geeseAttack() {
     int numResources = 0;
     int resourcesLost = 0;
-    for(std::vector<int>::iterator it = resources.begin(); it != resources.end(); ++it) {
+    for (std::vector<int>::iterator it = resources.begin(); it != resources.end(); ++it) {
         numResources += *it;
     }
     if (numResources >= 10) {
@@ -121,6 +126,8 @@ void Builder::geeseAttack() {
 int Builder::stealFrom(std::shared_ptr<Builder> builder) {
     
 
+int Builder::tryStealing() {
+    return 0;  // placeholder
 }
 
 void Builder::reset() {
@@ -129,4 +136,32 @@ void Builder::reset() {
     for (size_t i = 0; i < resources.size(); i++) {
         resources[i] = 0;
     }
+}
+
+void Builder::printStatus() {
+    unsigned padding = 6 - colour.size();
+    cout << "Builder " << colour << " ";
+    for (size_t j = 0; j < padding; j++) {
+        cout << " ";
+    }
+    cout << "has " << buildPoints << " building points";
+    for (size_t r = 0; r < resources.size(); r++) {
+        cout << ", " << resources[r] << ' ' << getResourceName(r);
+    }
+    cout << endl;
+}
+
+void Builder::winGame() {
+    cout << "Builder " << colour << " has won the game!!!" << endl;
+    // Art by Joan Stark
+    cout << R"(                                   .''.)" << endl;
+    cout << R"(       .''.      .        *''*    :_\/_:     .)" << endl;
+    cout << R"(      :_\/_:   _\(/_  .:.*_\/_*   : /\ :  .'.:.'.)" << endl;
+    cout << R"(  .''.: /\ :   ./)\   ':'* /\ * :  '..'.  -=:o:=-)" << endl;
+    cout << R"( :_\/_:'.:::.    ' *''*    * '.\'/.' _\(/_'.':'.')" << endl;
+    cout << R"( : /\ : :::::     *_\/_*     -= o =-  /)\    '  *)" << endl;
+    cout << R"(  '..'  ':::'     * /\ *     .'/.\'.   ')" << endl;
+    cout << R"(      *            *..*         :)" << endl;
+    cout << R"(        *)" << endl;
+    cout << R"(        *)" << endl;
 }
