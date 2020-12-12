@@ -19,8 +19,7 @@ using std::vector;
 istream& operator>>(istream& in, Colour& colour) {
     string temp;
     if (in >> temp) {
-        toupper(temp[0]);
-        char c = temp[0];
+        char c = toupper(temp[0]);
         switch (c) {
             case 'B':
                 colour = Blue;

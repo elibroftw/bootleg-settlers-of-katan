@@ -39,6 +39,37 @@ Vertex::Vertex(int number) : number{number} {
     }
 }
 
+Vertex::Vertex(const Vertex &v) : number{v.number},
+                                  owner{v.owner},
+                                  row{v.row},
+                                  col{v.col},
+                                  improvement{v.improvement} {}
+
+Vertex::Vertex(const Vertex &&v) : number{v.number},
+                                   owner{v.owner},
+                                   row{v.row},
+                                   col{v.col},
+                                   improvement{v.improvement} {}
+
+void Vertex::vertex_swap(Vertex &v) {
+    std::swap(number, v.number);
+    std::swap(owner, v.owner);
+    std::swap(row, v.row);
+    std::swap(col, v.col);
+    std::swap(improvement, v.improvement);
+}
+
+Vertex &Vertex::operator=(const Vertex &v) {
+    Vertex temp{v};
+    vertex_swap(temp);
+    return *this;
+}
+
+Vertex &Vertex::operator=(Vertex &&other) {
+    vertex_swap(other);
+    return *this;
+}
+
 int Vertex::getCol() {
     return col;
 }
