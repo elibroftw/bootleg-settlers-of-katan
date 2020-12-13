@@ -16,7 +16,7 @@ Dice::Dice() {
 unsigned Dice::roll(bool loaded) {
     if (!loaded) {
         unsigned val = diceDistribution(rng) + diceDistribution(rng);
-        cout << "You rolled a " << val << "." << endl;
+        cout << "You rolled the number: " << val << "." << endl;
         return val;
     }
 
