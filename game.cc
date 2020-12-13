@@ -801,9 +801,11 @@ bool Game::nextTurn() {
             }
             if (vertexLocation < 0 && vertexLocation >= NUM_VERTICES) {
                 cout << "ERROR: integer must be between [0, 53]." << endl;
-            } else if (!vertices.at(vertexLocation).get()->canUpgrade(builderShared)) {
-                // if vertex has a different owner or is a tower
-                cout << "You cannot build here." << endl;
+            } else if (vertices.at(vertexLocation).get()->getOwner() != builder->getNum()) {
+                // if owner does not own a residence on the vertex
+                cout << "Invalid residence." << endl;
+            } else if (vertices.at(vertexLocation).get()->getImprovement() == 'T') {
+                cout << "You can't improve a tower." << endl;
             } else if (vertices.at(vertexLocation).get()->upgradeResidence(builderShared)) {
                 if (vertices.at(vertexLocation).get()->getImprovement() == 'T') {
                     cout << "Builder " << builder->getColour()
