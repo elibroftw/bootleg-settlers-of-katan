@@ -291,6 +291,10 @@ void Game::load(string filename) {
             tiles.push_back(tile);
         }
     }
+    if (tiles.size() != NUM_TILES) {
+        cout << "ERROR: Invalid Layout ... using random board instead" << endl;
+        createBoard(std::chrono::system_clock::now().time_since_epoch().count());
+    }
 
     // read geese location if present
     file >> geeseLocation;

@@ -14,7 +14,7 @@ enum Resource { Brick,
                 Park };
 
 // reads a string and returns the corresponding Resource
-// if string is invalid, set fail bit
+// if string is invalid or is park, set fail bit
 istream& operator>>(istream& in, Resource& x);
 
 // capitalize resourceName and return the
