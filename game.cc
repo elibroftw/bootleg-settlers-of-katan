@@ -672,11 +672,11 @@ bool Game::nextTurn() {
             cout << "~ board                        : prints the current board" << endl;
             cout << "~ status                       : prints the current status of all builders ini order from builder 0 to 3" << endl;
             cout << "~ residences                   : prints the residences the current buildere has completed" << endl;
-            cout << "~ build-road <road#>           : attempts to build a road at <road#>" << endl;
-            cout << "~ build-res <housing#>         : attempts to build a basement at <housing#>" << endl;
-            cout << "~ improve <housing#>           : attempts to improve the residence at <housing#>" << endl;
-            cout << "~ trade <colour> <give> <take> : attempts to trade with builder <colour> giving one resource of type <give> and receving one resource of type <take>" << endl;
-            cout << "~ next                         : passes control onto the next builder in the game. This ends the \"During the Turn\" phase." << endl;
+            cout << "~ build-road <road#>           : try to build a road at <road#>" << endl;
+            cout << "~ build-res <housing#>         : try to build a basement at <housing#>" << endl;
+            cout << "~ improve <housing#>           : try to improve the residence at <housing#>" << endl;
+            cout << "~ trade <colour> <give> <take> : try to trade one resource of type <give> with builder <colour> for one resource of type <give>" << endl;
+            cout << "~ next                         : end your turn and pass control to builder " << builders[(curTurn + 1)  % 4].get()->getColour() << endl;
             cout << "~ save <file>                  : saves the current game state to <file>" << endl;
             cout << "~ help                         : prints out the list of commands." << endl;
         } else if (temp == "board" || temp == "print") {
@@ -694,6 +694,8 @@ bool Game::nextTurn() {
                         cout << i << ' ' << vertex->getImprovement() << endl;
                     }
                 }
+            } else {
+                cout << builder->getColour() << " has not built anything :(" << endl;
             }
         } else if (temp == "build-road" || temp == "brd") {
             int edgeLocation;
@@ -811,8 +813,7 @@ bool Game::nextTurn() {
             cout << "Invalid command." << endl;
         }
     }
-
-    ++curTurn;
+    curTurn = curTurn == 3 ? 0 : curTurn + 1;
     return true;
 }
 
@@ -830,7 +831,7 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
              << "Does " << otherBuilder->getColour() << " accept this offer?";
         string yesOrNo;
         if (cin >> yesOrNo) {
-            if (yesOrNo[0] == 'y' || yesOrNo[0] == 'Y') {
+            if (yesOrNo.size() && (yesOrNo[0] == 'y' || yesOrNo[0] == 'Y')) {
                 curBuilder->setResource(resTake, curBuilder->getResource(resTake) + 1);
                 curBuilder->setResource(resGive, curBuilder->getResource(resGive) - 1);
 
@@ -850,7 +851,7 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
     return true;
 }
 
-// TODO: bonus feature
+// TODO: bonus feature, move to builder though
 void Game::marketTrade(Resource resource1, Resource resource2) {}
 
 void Game::reset() {
@@ -923,7 +924,7 @@ void Game::test() {
     cout << "testing getBuildersFromTile - some builds" << endl;
 
     curTurn = 0;
-    for (size_t i = 0; i < vertices.size(); i += 10) {
+    for (size_t i = 0; i < vertices.size(); i += 9) {
         auto vertex = vertices.at(i);
         vertex.get()->upgradeResidence(builders[i % NUM_BUILDERS], false);
         resLocations.push_back(i);
