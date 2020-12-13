@@ -14,7 +14,11 @@ Dice::Dice() {
 }
 
 unsigned Dice::roll(bool loaded) {
-    if (!loaded) return diceDistribution(rng) + diceDistribution(rng);
+    if (!loaded) {
+        unsigned val = diceDistribution(rng) + diceDistribution(rng);
+        cout << "You rolled a " << val << "." << endl;
+        return val;
+    }
 
     int loadedDie = 0;
     while (true) {
