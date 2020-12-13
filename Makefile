@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++14 -Wall -O -MMD -g -Werror=vla  # remove -g for PROD
+CXXFLAGS=-std=c++14 -Wall -Os -MMD -Werror=vla  # add -g for DEBUG
 SOURCES=$(filter-out test_harness.cc, $(wildcard *.cc))
 OBJECTS=${SOURCES:.cc=.o}
 DEPENDS=${OBJECTS:.o=.d}
