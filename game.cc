@@ -116,16 +116,15 @@ void Game::createBoard(string filename) {
         createBoard(seed);
         return;
     }
-    Resource resource;
+    unsigned resource;
     unsigned value;
     tiles.clear();
     tiles.reserve(NUM_TILES);
     while (file >> resource) {
         if (file >> value) {
-            auto tile = std::make_shared<Tile>(tiles.size(), value, resource);
-            textDisplay.setTileResource(tiles.size(), getResourceName(resource));
-            textDisplay.setTileValue(tiles.size(), value);
+            auto tile = std::make_shared<Tile>(tiles.size(), value, static_cast<Resource>(resource));
             tiles.push_back(tile);
+            textDisplay.updateTile(tile);
         } else {
             cout << "ERROR: layout.txt was not formatted correctly, using random board instead" << endl;
             tiles.clear();
