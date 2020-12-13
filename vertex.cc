@@ -119,7 +119,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> &builder, const bool useResouc
             case 'B':
                 improvement = 'H';
                 break;
-            case 'T':
+            case 'H':
                 improvement = 'T';
                 break;
             default:

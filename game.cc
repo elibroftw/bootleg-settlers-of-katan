@@ -1033,14 +1033,14 @@ void Game::test() {
         }
     }
 
-    cout << "building all basements without resources" << endl;
+    cout << "building all residences without resources" << endl;
     for (size_t i = 0; i < vertices.size(); ++i) {
         auto vertex = vertices.at(i);
         auto builder = builders.at(i % NUM_BUILDERS);
-        if (vertex.get()->upgradeResidence(builder, false)) {
-            resLocations.push_back(i);
-            textDisplay.updateVertex(vertex, builder);
+        for (size_t x = 0; x < (i % 3) + 1; x++) {
+            vertex.get()->upgradeResidence(builder, false);
         }
+        textDisplay.updateVertex(vertex, builder);
     }
 
     cout << "testing printResidences and printRoads" << endl;
