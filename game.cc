@@ -972,10 +972,13 @@ void Game::test() {
     curTurn = 0;
     for (size_t i = 0; i < vertices.size(); i += 9) {
         auto vertex = vertices.at(i);
-        auto builder = builders[i % NUM_BUILDERS];
+        auto builder = builders.at(i % NUM_BUILDERS);
         if (vertex.get()->upgradeResidence(builder, false)) {
             resLocations.push_back(i);
             textDisplay.updateVertex(vertex, builder);
+        } else {
+            cout << "ERROR: upgradeResidence failed" << endl;
+            return;
         }
     }
 
@@ -1003,14 +1006,16 @@ void Game::test() {
     load("backup.sv");
 
     cout << "testing buildRoad without resources" << endl;
-    for (size_t i = 0; i < edges.size(); i += 30) {
+    for (size_t i = 0; i < edges.size(); i += 15) {
         auto edge = edges.at(i);
         auto builder = builders[i % NUM_BUILDERS];
         if(edge.get()->buildRoad(builder, false)) {
             roadLocations.push_back(i);
             textDisplay.buildRoad(edge, builder);
+        } else {
+            cout << "ERROR: buildRoad failed" << endl;
+            return;
         }
-
     }
 
     cout << "testing printResidences and printRoads" << endl;

@@ -9,7 +9,7 @@ using std::shared_ptr;
 
 class Vertex {
     int number;
-    int owner;
+    int owner = -1;
     // the row and col will be used for text display
     // left side of vertex number starts at col
     // e.g. a number like 12 would overflow

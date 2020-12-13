@@ -9,7 +9,6 @@ using std::make_pair;
 
 Vertex::Vertex(int number) : number{number} {
     improvement = ' ';
-    owner = -1;
     if (number == -1) {
         row = -1;
         col = -1;
@@ -123,6 +122,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool useResouces) {
                 return false;
         }
         builder.get()->addBuildingPoints();
+        return true;
     }
     int numBrick = builder->getResource("brick");
     int numEnergy = builder->getResource("energy");
