@@ -70,9 +70,12 @@ class Builder {
     // prints out resources space separated (ends with a space) e.g. 0 0 3 0 0
     void printResources(ostream& out);
 
-    void setResource(string resourceName, int num);
+    // void setResource(string resourceName, int num);
     void setResource(Resource resource, int num);
     void setResource(int resourceCode, int num);
+
+    // trade 3 give for 1 take
+    void marketTrade(Resource give, Resource take);
 
     int getBuildingPoints();
     void setBuildingPoints(int value);

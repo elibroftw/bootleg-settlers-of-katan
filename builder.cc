@@ -81,9 +81,9 @@ void Builder::setResource(Resource resource, int num) {
     resources[resource] = num;
 }
 
-void Builder::setResource(string resourceName, int num) {
-    resources[getResourceCode(resourceName)] = num;
-}
+// void Builder::setResource(string resourceName, int num) {
+//     resources[getResourceCode(resourceName)] = num;
+// }
 
 int Builder::getBuildingPoints() {
     return buildPoints;
@@ -184,4 +184,17 @@ void Builder::winGame() {
     cout << R"(      *            *..*         :)" << endl;
     cout << R"(        *)" << endl;
     cout << R"(        *)" << endl;
+}
+
+void Builder::marketTrade(Resource give, Resource take) {
+    if (give == take) {
+        cout << "Oh. You want to give up 2 resources? Just kidding." << endl;
+    } else if (resources[give] >= 3) {
+        resources[give] -= 3;
+        resources[take] += 1;
+        cout << "Builder " << colour << "traded away 3" << getResourceName(give)
+             << " for 1 " << getResourceName(take) << "." << endl;
+    } else {
+        cout << "ERROR: You need at least 3 " << getResourceName(give) << endl;
+    }
 }

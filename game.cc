@@ -723,12 +723,12 @@ bool Game::nextTurn() {
             cout << "~ board                        : prints the current board" << endl;
             cout << "~ status                       : prints the current status of all builders ini order from builder 0 to 3" << endl;
             cout << "~ residences                   : prints the residences the current builder has built" << endl;
-            cout << "~ roads                        : (bonus) prints the roads the current builder has completed" << endl;
+            cout << "~ roads                        : prints the roads the current builder has completed" << endl;
             cout << "~ build-road <road#>           : try to build a road at <road#>" << endl;
             cout << "~ build-res <housing#>         : try to build a basement at <housing#>" << endl;
             cout << "~ improve <housing#>           : try to improve the residence at <housing#>" << endl;
             cout << "~ trade <colour> <give> <take> : try to trade one resource of type <give> with builder <colour> for one resource of type <give>" << endl;
-            // cout << "~ market <give> <take>         : (bonus) try to trade 3 resources of type <give> for 1 resource of type <take>" << endl;
+            cout << "~ market <give> <take>         : try to trade 3 resources of type <give> for 1 resource of type <take>" << endl;
             cout << "~ next                         : end your turn and pass control to builder " << builders[(curTurn + 1) % 4].get()->getColour() << endl;
             cout << "~ save <file>                  : saves the current game state to <file>" << endl;
             cout << "~ help                         : prints out the list of commands." << endl;
@@ -838,7 +838,18 @@ bool Game::nextTurn() {
             } else if (cin.eof()) {
                 return false;
             } else {
-                cout << "ERROR: Command enetered incorrectly. Please try again." << endl;
+                cout << "ERROR: Command entered incorrectly. Please try again." << endl;
+                resetCin();
+            }
+        } else if (temp == "market" || temp == "mrk") {
+            Resource resGive;
+            Resource resTake;
+            if ((cin >> resGive) && (cin >> resTake)) {
+                builder->marketTrade(resGive, resTake);
+            } else if (cin.eof()) {
+                return false;
+            } else {
+                cout << "ERROR: Command entered incorrectly. Please try again." << endl;
                 resetCin();
             }
         } else if (temp == "next" || temp == "n") {
@@ -897,9 +908,6 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
     }
     return true;
 }
-
-// TODO: bonus feature, move to builder though
-void Game::marketTrade(Resource resource1, Resource resource2) {}
 
 void Game::reset() {
     // remove geese text
