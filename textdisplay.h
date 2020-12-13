@@ -32,8 +32,7 @@ class TextDisplay {
     void setInt(const int row, const int col, const int num);
 
     // tile helper methods
-    // returns the row, col location of the top left "|" of a the tile
-    //  based on the tileNumber
+    // returns the row, col of the top left vertex in tile # tileNumber
     pair<int, int> getTopLeftCoord(const int tileNumber);
 
     // update a tile, calls the next three methods

@@ -481,7 +481,7 @@ unordered_map<int, int> Game::getBuildersFromTile(int tileNumber) {
     for (size_t r = 0; r <= 8; r += 4) {
         for (size_t c = 0; c <= 10; c += 10) {
             int vertexR, vertexC;
-            tie(vertexR, vertexC) = Vertex::getVertexFromCoords(row + r, col + 1 + c);
+            tie(vertexR, vertexC) = Vertex::getVertexFromCoords(row + r, col + c);
             auto vertex = verticesMap.at(vertexR).at(vertexC);
             int vertexOwner = vertex.get()->getOwner();
             if (vertexOwner >= 0) {
@@ -770,7 +770,7 @@ bool Game::nextTurn() {
                 cout << "You cannot build here." << endl;
             } else if (vertices.at(vertexLocation).get()->upgradeResidence(builderShared)) {
                 cout << "Builder " << builder->getColour()
-                     << " built a basement at " << vertexLocation << endl;
+                     << " built a basement at " << vertexLocation << "." << endl;
                 if (builder->hasWon()) {
                     builder->winGame();
                     gameOver = true;
@@ -798,8 +798,13 @@ bool Game::nextTurn() {
                 // if vertex has a different owner or is a tower
                 cout << "You cannot build here." << endl;
             } else if (vertices.at(vertexLocation).get()->upgradeResidence(builderShared)) {
-                // TODO: improve message
-                cout << "Residence upgrade succesful" << endl;
+                if (vertices.at(vertexLocation).get()->getImprovement() == 'T') {
+                    cout << "Builder " << builder->getColour()
+                         << " built a tower at " << vertexLocation << "." << endl;
+                } else {
+                    cout << "Builder " << builder->getColour()
+                         << " built a house at " << vertexLocation << "." << endl;
+                }
                 textDisplay.updateVertex(vertices.at(vertexLocation), builderShared);
                 if (builder->hasWon()) {
                     builder->winGame();

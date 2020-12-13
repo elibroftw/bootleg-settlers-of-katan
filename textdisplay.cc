@@ -73,7 +73,6 @@ void TextDisplay::setInt(int row, int col, int num) {
 }
 
 // TODO: return top left Vertex Coord
-// TODO: return pair<unsigned, unsigned>
 pair<int, int> TextDisplay::getTopLeftCoord(int tileNumber) {
     // returns the location of the top left "|" of the tileNumber
     int row;
@@ -99,15 +98,15 @@ pair<int, int> TextDisplay::getTopLeftCoord(int tileNumber) {
     }
     // yCoord
     if (tileNumber == 0 || tileNumber == 4 || tileNumber == 9 || tileNumber == 14 || tileNumber == 18) {
-        col = 20;
+        col = 21;
     } else if (tileNumber == 1 || tileNumber == 6 || tileNumber == 11 || tileNumber == 16) {
-        col = 10;
+        col = 11;
     } else if (tileNumber == 2 || tileNumber == 7 || tileNumber == 12 || tileNumber == 17) {
-        col = 30;
+        col = 31;
     } else if (tileNumber == 3 || tileNumber == 8 || tileNumber == 13) {
-        col = 0;
+        col = 1;
     } else {  // tileNumber == 5 || tileNumber == 10 || tileNumber == 15
-        col = 40;
+        col = 41;
     }
 
     return make_pair(row, col);
@@ -122,7 +121,7 @@ void TextDisplay::updateTile(const shared_ptr<Tile> &tile) {
 void TextDisplay::setTileResource(const int tileNumber, const string resource) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int row = tileCoords.first + 3;
-    int col = tileCoords.second + 5;
+    int col = tileCoords.second + 4;
     for (size_t i = 0; i < resource.size(); i++) {
         board.at(row).at(col + i) = resource.at(i);
     }
@@ -131,7 +130,7 @@ void TextDisplay::setTileResource(const int tileNumber, const string resource) {
 void TextDisplay::setTileNumber(const int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int row = tileCoords.first + 2;
-    int col = tileCoords.second + 6;
+    int col = tileCoords.second + 5;
     setInt(row, col, tileNumber);
 }
 
@@ -139,7 +138,7 @@ void TextDisplay::setTileValue(const int tileNumber, const int tileValue) {
     if (tileValue != 7) {
         auto tileCoords = getTopLeftCoord(tileNumber);
         int row = tileCoords.first + 4;
-        int col = tileCoords.second + 6;
+        int col = tileCoords.second + 5;
         setInt(row, col, tileValue);
     }
 }
@@ -147,7 +146,7 @@ void TextDisplay::setTileValue(const int tileNumber, const int tileValue) {
 void TextDisplay::setGeese(const int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int row = tileCoords.first + 3;
-    int col = tileCoords.second + 6;
+    int col = tileCoords.second + 5;
     string geese = "GEESE";
     for (size_t i = 0; i < geese.size(); i++) {
         board.at(row).at(col + i) = geese[i];
@@ -157,7 +156,7 @@ void TextDisplay::setGeese(const int tileNumber) {
 void TextDisplay::removeGeese(const int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int row = tileCoords.first + 3;
-    int col = tileCoords.second + 3;
+    int col = tileCoords.second + 2;
     string geese = "GEESE";
     for (size_t i = 0; i < geese.size(); i++) {
         board.at(row).at(col + i) = ' ';
