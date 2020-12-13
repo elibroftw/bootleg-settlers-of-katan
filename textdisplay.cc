@@ -176,7 +176,7 @@ void TextDisplay::updateVertex(shared_ptr<Vertex> &vertex, shared_ptr<Builder> &
 void TextDisplay::buildRoad(shared_ptr<Edge> &edge, shared_ptr<Builder> &builder) {
     char colour = builder.get()->getColour()[0];
     setChar(edge.get()->getRow(), edge.get()->getCol(), colour);
-    setChar(edge.get()->getRow() + 1, edge.get()->getCol(), 'R');
+    setChar(edge.get()->getRow(), edge.get()->getCol() + 1, 'R');
 }
 
 ostream &operator<<(ostream &out, const TextDisplay &td) {

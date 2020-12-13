@@ -106,6 +106,10 @@ bool Vertex::canUpgrade(shared_ptr<Builder> builder) {
 }
 
 bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool useResouces) {
+    if (owner != -1 && owner != builder.get()->getNum()) {
+        return false;
+    }
+
     if (!useResouces && (owner == -1 || owner == builder.get()->getNum())) {
         owner = builder.get()->getNum();
         switch (improvement) {

@@ -541,7 +541,7 @@ void Game::printRoads() {
                     cout << ", " << i;
                 } else {
                     builtRoads = true;
-                    cout << builder->getColour() << " has built:" << i;
+                    cout << builder->getColour() << " has built road on edges: " << i;
                 }
             }
         }
@@ -1006,7 +1006,7 @@ void Game::test() {
     load("backup.sv");
 
     cout << "testing buildRoad without resources" << endl;
-    for (size_t i = 0; i < edges.size(); i += 15) {
+    for (size_t i = 0; i < edges.size(); i++) {
         auto edge = edges.at(i);
         auto builder = builders[i % NUM_BUILDERS];
         if(edge.get()->buildRoad(builder, false)) {
@@ -1015,6 +1015,16 @@ void Game::test() {
         } else {
             cout << "ERROR: buildRoad failed" << endl;
             return;
+        }
+    }
+
+    cout << "building all basements without resources" << endl;
+    for (size_t i = 0; i < vertices.size(); ++i) {
+        auto vertex = vertices.at(i);
+        auto builder = builders.at(i % NUM_BUILDERS);
+        if (vertex.get()->upgradeResidence(builder, false)) {
+            resLocations.push_back(i);
+            textDisplay.updateVertex(vertex, builder);
         }
     }
 
