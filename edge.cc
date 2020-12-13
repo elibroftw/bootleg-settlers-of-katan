@@ -146,9 +146,11 @@ bool Edge::buildRoad(shared_ptr<Builder> builder, bool useResources) {
     int numWifi = builder->getResource(Wifi);
     if (!useResources) {
         isRoad = true;
+        owner = builder.get()->getNum();
         return true;
     } else if (numHeat >= 1 && numWifi >= 1) {
         isRoad = true;
+        owner = builder.get()->getNum();
         builder->setResource(Heat, numHeat - 1);
         builder->setResource(Wifi, numWifi - 1);
         return true;
