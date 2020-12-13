@@ -11,10 +11,10 @@ TEST_DEPENDS=${TEST_OBJECTS:.o=.d}
 TEST_EXEC=tconstructor
 
 ifeq ($(OS),Windows_NT)
-	RUN_EXE := ${EXEC}.exe
+	EXE := ${EXEC}.exe
     TEST_EXE := ${TEST_EXEC}.exe
 else
-	RUN_EXE := ./${EXEC}
+	EXE := ./${EXEC}
     TEST_EXE := ./$(TEST_EXEC)
 
 endif
@@ -33,13 +33,14 @@ all: ${EXEC} ${TEST_EXEC}
 
 -include ${DEPENDS}
 
-.PHONY: clean test
+.PHONY: clean test vg
 
 clean:
-	rm -f $(wildcard *.o) $(wildcard *.d) $(RUN_EXE) ${TEST_EXE}
+	rm -f $(wildcard *.o) $(wildcard *.d) $(EXE) ${TEST_EXE}
 
 test: all
 	${TEST_EXE}
 
-vg: ${EXEC}
-	valgrind --leak-check=full -v --track-origins=yes --log-file=vg.log ./${EXEC}
+vg: all  # valgrind
+	valgrind --leak-check=full -v --track-origins=yes --log-file=vg_test.log ${TEST_EXE}
+	valgrind --leak-check=full -v --track-origins=yes --log-file=vg.log ${EXE}
