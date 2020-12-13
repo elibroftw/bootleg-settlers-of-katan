@@ -4,12 +4,14 @@
 #include <random>
 #include <string>
 #include <vector>
+#include "resource.h"
 
 using std::istream;
 using std::ostream;
 using std::string;
 using std::uniform_int_distribution;
 using std::vector;
+using std::shared_ptr;
 
 enum Colour { Blue,
               Red,
@@ -47,7 +49,7 @@ class Builder {
     // a random resources from one builder who has a residence
     // on the tile to where the geese are moved.
     // takes care of any IO operations
-    void stealFrom(std::shared_ptr<Builder> builderToStealFrom);  // <- this one loses resources
+    void stealFrom(shared_ptr<Builder> builderToStealFrom);  // <- this one loses resources
     // check if builder won the game, which occurs when they
     // have 10 points
     bool hasWon();
@@ -61,13 +63,15 @@ class Builder {
 
     // returns the number of resource of the specified string or int
     // if string, first toLower the string
-    int getResource(std::string resourceName);
+    int getResource(string resourceName);
     int getResource(int resourceCode);
+    int getResource(Resource resource);
 
     // prints out resources space separated (ends with a space) e.g. 0 0 3 0 0
     void printResources(ostream& out);
 
-    void setResource(std::string resourceName, int num);
+    void setResource(string resourceName, int num);
+    void setResource(Resource resource, int num);
     void setResource(int resourceCode, int num);
 
     int getBuildingPoints();

@@ -10,6 +10,7 @@
 using std::cout;
 using std::default_random_engine;
 using std::endl;
+using std::shared_ptr;
 using std::toupper;
 
 // read string, use only the capitalized first letter to determine the builder
@@ -64,12 +65,20 @@ int Builder::getResource(int resourceCode) {
     return resources[resourceCode];
 }
 
+int Builder::getResource(Resource resource) {
+    return resources[resource];
+}
+
 int Builder::getResource(string resourceName) {
     return resources[getResourceCode(resourceName)];
 }
 
 void Builder::setResource(int resourceCode, int num) {
     resources[resourceCode] = num;
+}
+
+void Builder::setResource(Resource resource, int num) {
+    resources[resource] = num;
 }
 
 void Builder::setResource(string resourceName, int num) {
@@ -120,7 +129,7 @@ void Builder::geeseAttack() {
     }
 }
 
-void Builder::stealFrom(std::shared_ptr<Builder> builderToStealFrom) {
+void Builder::stealFrom(shared_ptr<Builder> builderToStealFrom) {
     unsigned totalResources = 0;
     for (auto&& r : builderToStealFrom->resources) totalResources += r;
     if (!totalResources) totalResources = 1;

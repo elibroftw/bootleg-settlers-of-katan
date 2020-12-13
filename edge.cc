@@ -142,22 +142,21 @@ bool Edge::getHorizontal() {
 }
 
 bool Edge::buildRoad(shared_ptr<Builder> builder, bool useResources) {
-    int numHeat = builder->getResource("heat");
-    int numWifi = builder->getResource("wifi");
-    if (numHeat >= 1 && numWifi >= 1 && useResources == true) {
-        builder->setResource("energy", numHeat - 1);
-        builder->setResource("glass", numWifi - 1);
+    int numHeat = builder->getResource(Heat);
+    int numWifi = builder->getResource(Wifi);
+    if (!useResources) {
         return true;
-    } else if (useResources == false) {
+    } else if (numHeat >= 1 && numWifi >= 1) {
+        builder->setResource(Heat, numHeat - 1);
+        builder->setResource(Wifi, numWifi - 1);
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 void Edge::reset() {
     owner = -1;
-    // not sure why we set improvement to ""
+    isRoad = false;
 }
 
 bool Edge::realEdge() {

@@ -110,6 +110,7 @@ void Game::createBoard(unsigned seed) {
     }
     randomResources.insert(randomResources.begin() + parkIndex, Park);
     randomValues.insert(randomValues.begin() + parkIndex, 7);
+    tiles.reserve(19);
     for (size_t i = 0; i < 19; i++) {
         auto tile = std::make_shared<Tile>(i, randomValues[i], randomResources[i]);
         tiles.push_back(tile);
@@ -290,6 +291,7 @@ void Game::load(string filename) {
         throw InvalidSaveFile();
     }
     istringstream ss2{line};
+    tiles.clear(); // clear tiles to add new tiles
     while (ss2 >> resource) {
         if (ss2 >> value) {
             auto tile = std::make_shared<Tile>(tiles.size(), value, resource);
@@ -1006,7 +1008,7 @@ void Game::test() {
         auto builder = builders[i % NUM_BUILDERS];
         if(edge.get()->buildRoad(builder, false)) {
             roadLocations.push_back(i);
-            textDisplay.buildRoad(edge, );
+            textDisplay.buildRoad(edge, builder);
         }
 
     }
