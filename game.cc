@@ -39,6 +39,7 @@ Game::Game() : curTurn{-1},
     builders.push_back(make_shared<Builder>("Yellow", 3));
 
     // create 53 vertices
+    vertices.reserve(53);
     for (int i = 0; i <= 53; i++) {
         auto vertex = make_shared<Vertex>(i);
         int rowTD = vertex.get()->getRow();
@@ -52,6 +53,7 @@ Game::Game() : curTurn{-1},
 
     // create 71 edges
     // edges can be vertical or horizontal
+    edges.reserve(71);
     for (int i = 0; i <= 71; i++) {
         auto edge = make_shared<Edge>(i);
         int rowTD = edge.get()->getRow();
@@ -713,7 +715,7 @@ bool Game::nextTurn() {
                 textDisplay.buildRoad(edges.at(edgeLocation), builderShared);
             } else {
                 cout << "You do not have enough resources." << endl
-                     << "A Road costs 1 HEAT and 1 WIFI.";
+                     << "A Road costs 1 HEAT and 1 WIFI." << endl;
             }
         } else if (temp == "build-res" || temp == "brs") {
             int vertexLocation;
@@ -821,7 +823,7 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
         cout << "You do not have "
              << "(" << getResourceName(resGive) << ")" << endl;
     } else if (!otherBuilder->getResource(resTake)) {
-        cout << otherBuilder->getColour() << "does not have " << getResourceName(resTake) << endl;
+        cout << otherBuilder->getColour() << " does not have " << getResourceName(resTake) << endl;
     } else {
         cout << curBuilder->getColour() << "offers" << otherBuilder->getColour() << " one " << getResourceName(resGive)
              << " for one " << getResourceName(resTake) << "." << endl

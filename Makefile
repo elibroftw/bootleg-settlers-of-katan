@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++14 -Wall -O -MMD -Werror=vla  # add -g for DEBUG stuff
+CXXFLAGS=-std=c++14 -Wall -O -MMD -g -Werror=vla  # remove -g for PROD
 SOURCES=$(filter-out test_harness.cc, $(wildcard *.cc))
 OBJECTS=${SOURCES:.cc=.o}
 DEPENDS=${OBJECTS:.o=.d}
@@ -38,5 +38,8 @@ all: ${EXEC} ${TEST_EXEC}
 clean:
 	rm -f $(wildcard *.o) $(wildcard *.d) $(RUN_EXE) ${TEST_EXE}
 
-test: ${TEST_EXEC}
+test: ${TEST_EXEC} ${EXEC}
 	${TEST_EXE}
+
+vg: ${EXEC}
+	valgrind --leak-check=full -v --track-origins=yes --log-file=vg.log ./{EXEC}
