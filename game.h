@@ -67,6 +67,12 @@ class Game {
     // prints the current status of all builders in order from builder 0 to 3
     void printStatus();
 
+    // prints the residences the current builder has built
+    void printResidences();
+
+    // prints the roads the current builder has built
+    void printRoads();
+
     // prints the board
     void printBoard();
 
