@@ -507,11 +507,10 @@ void Game::printResidences() {
         auto builder = builders.at(curTurn).get();
         if (builder->getBuildingPoints()) {
             cout << builder->getColour() << " has built:" << endl;
-            for (size_t i = 0; i < resLocations.size(); i++) {
-                // prints out
-                auto vertex = vertices.at(resLocations.at(i)).get();
+            for (auto &&vertexIdx : resLocations) {
+                auto vertex = vertices.at(vertexIdx).get();
                 if (vertex->getOwner() == curTurn) {
-                    cout << i << ' ' << vertex->getImprovement() << endl;
+                    cout << vertexIdx << ' ' << vertex->getImprovement() << endl;
                 }
             }
         } else {
@@ -524,15 +523,15 @@ void Game::printRoads() {
     if (curTurn != -1) {
         auto builder = builders.at(curTurn).get();
         bool builtRoads = false;
-        for (size_t i = 0; i < roadLocations.size(); i++) {
+        for (auto &&edgeIdx : roadLocations) {
             // prints out
-            auto edge = edges.at(roadLocations.at(i)).get();
+            auto edge = edges.at(edgeIdx).get();
             if (edge->getOwner() == curTurn) {
                 if (builtRoads) {
-                    cout << ", " << i;
+                    cout << ", " << edgeIdx;
                 } else {
                     builtRoads = true;
-                    cout << builder->getColour() << " has built road on edges: " << i;
+                    cout << builder->getColour() << " has built road on edges: " << edgeIdx;
                 }
             }
         }
@@ -1040,6 +1039,7 @@ void Game::test() {
         for (size_t x = 0; x < (i % 3) + 1; x++) {
             vertex.get()->upgradeResidence(builder, false);
         }
+        resLocations.push_back(i);
         textDisplay.updateVertex(vertex, builder);
     }
 
@@ -1049,5 +1049,6 @@ void Game::test() {
         printResidences();
         printRoads();
     }
+    printStatus();
     printBoard();
 }
