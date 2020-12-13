@@ -38,8 +38,8 @@ all: ${EXEC} ${TEST_EXEC}
 clean:
 	rm -f $(wildcard *.o) $(wildcard *.d) $(RUN_EXE) ${TEST_EXE}
 
-test: ${TEST_EXEC} ${EXEC}
+test: all
 	${TEST_EXE}
 
 vg: ${EXEC}
-	valgrind --leak-check=full -v --track-origins=yes --log-file=vg.log ./{EXEC}
+	valgrind --leak-check=full -v --track-origins=yes --log-file=vg.log ./${EXEC}
