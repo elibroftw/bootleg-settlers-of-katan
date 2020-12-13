@@ -15,7 +15,10 @@ Dice::Dice() {
 
 unsigned Dice::roll(bool loaded) {
     if (!loaded) {
-        unsigned val = diceDistribution(rng) + diceDistribution(rng);
+        unsigned val;
+        for (size_t i = 0; i < 1000; i++) {
+            val = diceDistribution(rng) + diceDistribution(rng);
+        }
         cout << "You rolled the number: " << val << "." << endl;
         return val;
     }

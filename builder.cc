@@ -150,7 +150,7 @@ void Builder::stealFrom(shared_ptr<Builder> builderToStealFrom) {
              << " from " << builderToStealFrom.get()->colour << endl;
     } else {
         cout << "Builder " << colour << " got caught slacking and could not steal from "
-             << builderToStealFrom.get()->colour << endl;
+             << builderToStealFrom.get()->colour << "." << endl;
     }
 }
 

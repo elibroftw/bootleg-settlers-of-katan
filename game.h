@@ -24,7 +24,9 @@
 #define TD_WIDTH 54
 
 #define NUM_BUILDERS 4
+#define NUM_TILES 19
 
+using std::make_shared;
 using std::pair;
 using std::shared_ptr;
 using std::string;
@@ -35,8 +37,6 @@ class InvalidLayoutFile {};
 
 class InvalidSaveFile {};
 
-class InvalidArgument {};
-
 class Game {
     int curTurn;
     unsigned geeseLocation;
@@ -45,7 +45,10 @@ class Game {
     bool gameOver;
     Dice dice;
     TextDisplay textDisplay;
-    vector<shared_ptr<Builder>> builders;
+    vector<shared_ptr<Builder>> builders{make_shared<Builder>("Blue", 0),
+                                         make_shared<Builder>("Red", 1),
+                                         make_shared<Builder>("Orange", 2),
+                                         make_shared<Builder>("Yellow", 3)};
     vector<shared_ptr<Tile>> tiles;
     vector<shared_ptr<Vertex>> vertices;
     vector<vector<shared_ptr<Vertex>>> verticesMap;

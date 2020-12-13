@@ -27,17 +27,11 @@ using std::toupper;
 using std::uniform_int_distribution;
 
 Game::Game() : curTurn{-1},
-               geeseLocation{19},
+               geeseLocation{NUM_TILES},
                gameStarted{false},
                gameOver{false},
                verticesMap(VM_HEIGHT, vector<shared_ptr<Vertex>>(VM_WIDTH, make_shared<Vertex>())),
                edgesMap(EM_HEIGHT, vector<shared_ptr<Edge>>(EM_WIDTH, make_shared<Edge>())) {
-    // create builders
-    builders.push_back(make_shared<Builder>("Blue", 0));
-    builders.push_back(make_shared<Builder>("Red", 1));
-    builders.push_back(make_shared<Builder>("Orange", 2));
-    builders.push_back(make_shared<Builder>("Yellow", 3));
-
     // create 53 vertices
     vertices.reserve(53);
     for (int i = 0; i <= 53; i++) {
@@ -110,8 +104,9 @@ void Game::createBoard(unsigned seed) {
     }
     randomResources.insert(randomResources.begin() + parkIndex, Park);
     randomValues.insert(randomValues.begin() + parkIndex, 7);
-    tiles.reserve(19);
-    for (size_t i = 0; i < 19; i++) {
+    tiles.clear();
+    tiles.reserve(NUM_TILES);
+    for (size_t i = 0; i < NUM_TILES; i++) {
         auto tile = std::make_shared<Tile>(i, randomValues[i], randomResources[i]);
         tiles.push_back(tile);
         textDisplay.updateTile(tile);
@@ -128,6 +123,8 @@ void Game::createBoard(string filename) {
     }
     unsigned resource;
     unsigned value;
+    tiles.clear();
+    tiles.reserve(NUM_TILES);
     while (file >> resource) {
         if (file >> value) {
             auto tile = std::make_shared<Tile>(tiles.size(), value, resource);
@@ -190,7 +187,7 @@ void Game::save(string filename) {
         file << tile->getResource() << " " << tile->getValue();
     }
     file << endl;
-    if (geeseLocation < 19) {
+    if (geeseLocation < NUM_TILES) {
         file << geeseLocation << endl;
     }
     cout << "game saved!" << endl;
@@ -291,7 +288,7 @@ void Game::load(string filename) {
         throw InvalidSaveFile();
     }
     istringstream ss2{line};
-    tiles.clear(); // clear tiles to add new tiles
+    tiles.clear();  // clear tiles to add new tiles
     while (ss2 >> resource) {
         if (ss2 >> value) {
             auto tile = std::make_shared<Tile>(tiles.size(), value, resource);
@@ -474,7 +471,7 @@ bool Game::beginGame() {
             }
         }
     }
-    //
+
     gameStarted = true;
     // set curBuilder to Blue after "beginning of game"
     curTurn = 0;
@@ -589,14 +586,14 @@ bool Game::nextTurn() {
             builder->useFairDice();
             cout << "Builder " << builder->getColour() << " now has a fair Dice." << endl;
             // set dice to fair
-        } else if (temp == "roll" || temp[0] == 'r') {
-            rollDice = true;
-        } else if (temp == "status" || temp[0] == 's') {
-            printStatus();
         } else if (temp == "residences" || temp == "res") {
             printResidences();
         } else if (temp == "roads" || temp == "rds") {
             printRoads();
+        } else if (temp == "roll" || temp[0] == 'r') {
+            rollDice = true;
+        } else if (temp == "status" || temp[0] == 's') {
+            printStatus();
         } else if (temp == "help" || temp[0] == 'h') {
             cout << "~ load         : changes current builder's dice type to 'loaded'" << endl;
             cout << "~ fair         : changes current builder's dice type to 'fair'" << endl;
@@ -621,16 +618,21 @@ bool Game::nextTurn() {
         for (size_t i = 0; i < NUM_BUILDERS; i++) {
             builders.at(i).get()->geeseAttack();
         }
-        cout << "Choose where to place the GEESE." << endl;
         unsigned newGeeseLocation = geeseLocation;
         while (newGeeseLocation == geeseLocation || newGeeseLocation > 18) {
             // if EOF detected, return false
+            cout << "Choose where to place the GEESE. [0, 18]" << endl;
             cout << "> ";
             if (!(cin >> newGeeseLocation)) {
                 if (cin.eof()) {
                     return false;
                 }
+                cout << "ERROR: Input Invalid." << endl;
                 resetCin();
+            } else if (newGeeseLocation > 18) {
+                cout << "ERROR: Invalid Integer." << endl;
+            } else if (newGeeseLocation == geeseLocation) {
+                cout << "ERROR: New location was same as old location (" << geeseLocation << ")" << endl;
             }
         }
         // update textdisplay
@@ -900,28 +902,31 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
 void Game::marketTrade(Resource resource1, Resource resource2) {}
 
 void Game::reset() {
-    if (geeseLocation < 19) {
-        textDisplay.removeGeese(geeseLocation);
-    }
+    // remove geese text
+    if (geeseLocation < NUM_TILES) textDisplay.removeGeese(geeseLocation);
 
-    for (size_t i = 0; i < NUM_BUILDERS; i++) {
-        builders[i].get()->reset();
-    }
+    // reset each builder
+    for (size_t i = 0; i < NUM_BUILDERS; i++) builders[i].get()->reset();
+
+    // reset each vertex
     for (size_t i = 0; i < vertices.size(); i++) {
         auto vertex = vertices[i].get();
         vertex->reset();
         textDisplay.setInt(vertex->getRow(), vertex->getCol(), vertex->getNum());
     }
 
+    // reset each edge
     for (size_t i = 0; i < edges.size(); i++) {
         auto edge = edges[i].get();
         edge->reset();
         textDisplay.setInt(edge->getRow(), edge->getCol(), edge->getNum());
     }
 
+    // clear caches for built roads and residences
     resLocations.clear();
     roadLocations.clear();
 
+    // reset all variables to those in ctor
     curTurn = -1;
     geeseLocation = -1;
     gameStarted = false;
@@ -967,7 +972,6 @@ void Game::test() {
         getBuildersFromTile(i);
     }
 
-
     cout << "testing upgradeResidence without resources" << endl;
     curTurn = 0;
     for (size_t i = 0; i < vertices.size(); i += 9) {
@@ -1009,7 +1013,7 @@ void Game::test() {
     for (size_t i = 0; i < edges.size(); i++) {
         auto edge = edges.at(i);
         auto builder = builders[i % NUM_BUILDERS];
-        if(edge.get()->buildRoad(builder, false)) {
+        if (edge.get()->buildRoad(builder, false)) {
             roadLocations.push_back(i);
             textDisplay.buildRoad(edge, builder);
         } else {
