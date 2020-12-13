@@ -111,7 +111,6 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> &builder, const bool useResouc
     }
 
     if (!useResouces && (owner == -1 || owner == builder.get()->getNum())) {
-        owner = builder.get()->getNum();
         switch (improvement) {
             case ' ':
                 improvement = 'B';
@@ -125,6 +124,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> &builder, const bool useResouc
             default:
                 return false;
         }
+        owner = builder.get()->getNum();
         builder.get()->addBuildingPoints();
         return true;
     }
@@ -143,6 +143,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> &builder, const bool useResouc
                 builder->setResource(Glass, numGlass - 1);
                 builder->setResource(Wifi, numWifi - 1);
                 improvement = 'B';
+                owner = builder.get()->getNum();
                 return true;
             }
             return false;
@@ -151,6 +152,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> &builder, const bool useResouc
                 builder->addBuildingPoints();
                 builder->setResource(Glass, numGlass - 2);
                 builder->setResource(Heat, numHeat - 1);
+                improvement = 'H';
                 return true;
             }
             return false;
@@ -162,6 +164,7 @@ bool Vertex::upgradeResidence(shared_ptr<Builder> &builder, const bool useResouc
                 builder->setResource(Glass, numGlass - 2);
                 builder->setResource(Wifi, numWifi - 2);
                 builder->setResource(Heat, numHeat - 2);
+                improvement = 'T';
                 return true;
             }
             return false;

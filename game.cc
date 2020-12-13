@@ -776,6 +776,7 @@ bool Game::nextTurn() {
                     gameOver = true;
                     return true;
                 }
+                resLocations.push_back(vertexLocation);
                 textDisplay.updateVertex(vertices.at(vertexLocation), builderShared);
             } else {
                 cout << "You do not have enough resources." << endl
@@ -806,9 +807,12 @@ bool Game::nextTurn() {
                     return true;
                 }
             } else {
-                cout << "You do not have enough resources." << endl
-                     << "Improving a Basement to a House costs 2 GLASS and 3 HEAT." << endl
-                     << "Improving a House to a Tower costs 3 BRICK, 2 ENERGY, 2 GLASS, 1 WIFI, and 2 HEAT." << endl;
+                cout << "You do not have enough resources." << endl;
+                if (vertices.at(vertexLocation).get()->getImprovement() == 'B') {
+                    cout << "Improving a Basement to a House costs 2 GLASS and 3 HEAT." << endl;
+                } else {
+                    cout << "Improving a House to a Tower costs 3 BRICK, 2 ENERGY, 2 GLASS, 1 WIFI, and 2 HEAT." << endl;
+                }
             }
 
         } else if (temp == "trade") {
