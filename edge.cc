@@ -143,11 +143,18 @@ bool Edge::getHorizontal() {
     return isHorizontal;
 }
 
-// don't understand how to use checkResources here or in upgradeResidence, will go over it with you Friday
 bool Edge::buildRoad(shared_ptr<Builder> builder, bool useResources) {
     int numHeat = builder->getResource("heat");
     int numWifi = builder->getResource("wifi");
-    return numHeat >= 1 && numWifi >= 1 ? true : false;
+    if (numHeat >= 1 && numWifi >= 1 && useResources == true) {
+        builder->setResource("energy", numHeat - 1);
+        builder->setResource("glass", numWifi - 1);
+        return true;
+    } else if (useResources == false) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void Edge::reset() {
