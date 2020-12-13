@@ -676,6 +676,7 @@ bool Game::nextTurn() {
             cout << "~ build-res <housing#>         : try to build a basement at <housing#>" << endl;
             cout << "~ improve <housing#>           : try to improve the residence at <housing#>" << endl;
             cout << "~ trade <colour> <give> <take> : try to trade one resource of type <give> with builder <colour> for one resource of type <give>" << endl;
+            // cout << "~ market <give> <take>         : (bonus) try to trade 3 resources of type <give> for 1 resource of type <take>" << endl;
             cout << "~ next                         : end your turn and pass control to builder " << builders[(curTurn + 1)  % 4].get()->getColour() << endl;
             cout << "~ save <file>                  : saves the current game state to <file>" << endl;
             cout << "~ help                         : prints out the list of commands." << endl;
