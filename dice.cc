@@ -14,12 +14,16 @@ Dice::Dice() {
 }
 
 unsigned Dice::roll(bool loaded) {
-    if (!loaded) return diceDistribution(rng) + diceDistribution(rng);
+    if (!loaded) {
+        unsigned val = diceDistribution(rng) + diceDistribution(rng);
+        cout << "You rolled the number: " << val << "." << endl;
+        return val;
+    }
 
     int loadedDie = 0;
     while (true) {
         cout << "Input a roll between 2 and 12:" << endl
-             << ">";
+             << "> ";
 
         // EOF detected therefore return an invalid roll
         if (!(cin >> loadedDie)) {

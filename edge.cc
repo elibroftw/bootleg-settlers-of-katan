@@ -8,8 +8,6 @@ using std::endl;
 using std::make_pair;
 
 Edge::Edge(int number) : number{number} {
-    isRoad = false;
-    owner = -1;
     if (number == -1) {
         row = -1;
         col = -1;

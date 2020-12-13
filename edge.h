@@ -9,12 +9,12 @@ using std::shared_ptr;
 
 class Edge {
     int number;
-    int owner;
+    int owner = -1;
     // the row and col coordinates are for the text display
     int row;
     int col;
 
-    bool isHorizontal;
+    bool isHorizontal = false;
     bool isRoad = false;
     void edge_swap(Edge &e);
 

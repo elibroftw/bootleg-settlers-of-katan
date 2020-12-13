@@ -39,6 +39,7 @@ Game::Game() : curTurn{-1},
     builders.push_back(make_shared<Builder>("Yellow", 3));
 
     // create 53 vertices
+    vertices.reserve(53);
     for (int i = 0; i <= 53; i++) {
         auto vertex = make_shared<Vertex>(i);
         int rowTD = vertex.get()->getRow();
@@ -52,6 +53,7 @@ Game::Game() : curTurn{-1},
 
     // create 71 edges
     // edges can be vertical or horizontal
+    edges.reserve(71);
     for (int i = 0; i <= 71; i++) {
         auto edge = make_shared<Edge>(i);
         int rowTD = edge.get()->getRow();
@@ -507,6 +509,48 @@ void Game::printStatus() {
     for (auto &&b : builders) b.get()->printStatus();
 }
 
+void Game::printResidences() {
+    if (curTurn != -1) {
+        auto builder = builders.at(curTurn).get();
+        if (builder->getBuildingPoints()) {
+            cout << builder->getColour() << " has built:" << endl;
+            for (size_t i = 0; i < resLocations.size(); i++) {
+                // prints out
+                auto vertex = vertices.at(resLocations.at(i)).get();
+                if (vertex->getOwner() == curTurn) {
+                    cout << i << ' ' << vertex->getImprovement() << endl;
+                }
+            }
+        } else {
+            cout << builder->getColour() << " has not built any residences:(" << endl;
+        }
+    }
+}
+
+void Game::printRoads() {
+    if (curTurn != -1) {
+        auto builder = builders.at(curTurn).get();
+        bool builtRoads = false;
+        for (size_t i = 0; i < roadLocations.size(); i++) {
+            // prints out
+            auto edge = edges.at(roadLocations.at(i)).get();
+            if (edge->getOwner() == curTurn) {
+                if (builtRoads) {
+                    cout << ", " << i;
+                } else {
+                    builtRoads = true;
+                    cout << builder->getColour() << " has built:" << i;
+                }
+            }
+        }
+        if (builtRoads) {
+            cout << endl;
+        } else {
+            cout << builder->getColour() << " has not built any roads :(" << endl;
+        }
+    }
+}
+
 void Game::resetCin() {
     cin.clear();
     cin.ignore(1000, '\n');
@@ -535,7 +579,6 @@ bool Game::nextTurn() {
             temp = " ";
         }
         temp[0] = tolower(temp[0]);
-        // TODO: switch to using lowered first letter
         if (temp == "load" || temp[0] == 'l') {
             // set dice to laoded
             builder->useLoadedDice();
@@ -548,11 +591,17 @@ bool Game::nextTurn() {
             rollDice = true;
         } else if (temp == "status" || temp[0] == 's') {
             printStatus();
+        } else if (temp == "residences" || temp == "res") {
+            printResidences();
+        } else if (temp == "roads" || temp == "rds") {
+            printRoads();
         } else if (temp == "help" || temp[0] == 'h') {
-            cout << "~ load : changes current builder's dice type to 'loaded'" << endl;
-            cout << "~ fair : changes current builder's dice type to 'fair'" << endl;
-            cout << "~ roll : rolls the dice and distributes resources." << endl;
-            cout << "~ status : prints the current status of all builders in order from builder 0 to 3." << endl;
+            cout << "~ load         : changes current builder's dice type to 'loaded'" << endl;
+            cout << "~ fair         : changes current builder's dice type to 'fair'" << endl;
+            cout << "~ roll         : rolls the dice and distributes resources." << endl;
+            cout << "~ status       : prints the current status of all builders in order from builder 0 to 3." << endl;
+            cout << "~ residences   : prints the residences the current builder has built" << endl;
+            cout << "~ roads        : prints the roads the current builder has completed" << endl;
             cout << "~ help : prints out the list of commands." << endl;
         } else {
             cout << "Invalid Command." << endl;
@@ -669,12 +718,14 @@ bool Game::nextTurn() {
             cout << "Valid commands:" << endl;
             cout << "~ board                        : prints the current board" << endl;
             cout << "~ status                       : prints the current status of all builders ini order from builder 0 to 3" << endl;
-            cout << "~ residences                   : prints the residences the current buildere has completed" << endl;
-            cout << "~ build-road <road#>           : attempts to build a road at <road#>" << endl;
-            cout << "~ build-res <housing#>         : attempts to build a basement at <housing#>" << endl;
-            cout << "~ improve <housing#>           : attempts to improve the residence at <housing#>" << endl;
-            cout << "~ trade <colour> <give> <take> : attempts to trade with builder <colour> giving one resource of type <give> and receving one resource of type <take>" << endl;
-            cout << "~ next                         : passes control onto the next builder in the game. This ends the \"During the Turn\" phase." << endl;
+            cout << "~ residences                   : prints the residences the current builder has built" << endl;
+            cout << "~ roads                        : (bonus) prints the roads the current builder has completed" << endl;
+            cout << "~ build-road <road#>           : try to build a road at <road#>" << endl;
+            cout << "~ build-res <housing#>         : try to build a basement at <housing#>" << endl;
+            cout << "~ improve <housing#>           : try to improve the residence at <housing#>" << endl;
+            cout << "~ trade <colour> <give> <take> : try to trade one resource of type <give> with builder <colour> for one resource of type <give>" << endl;
+            // cout << "~ market <give> <take>         : (bonus) try to trade 3 resources of type <give> for 1 resource of type <take>" << endl;
+            cout << "~ next                         : end your turn and pass control to builder " << builders[(curTurn + 1) % 4].get()->getColour() << endl;
             cout << "~ save <file>                  : saves the current game state to <file>" << endl;
             cout << "~ help                         : prints out the list of commands." << endl;
         } else if (temp == "board" || temp == "print") {
@@ -682,17 +733,9 @@ bool Game::nextTurn() {
         } else if (temp == "status" || temp == "stat") {
             printStatus();
         } else if (temp == "residences" || temp == "res") {
-            // TODO test against sample executable
-            if (builder->getBuildingPoints()) {
-                cout << builder->getColour() << " has built:" << endl;
-                for (size_t i = 0; i < resLocations.size(); i++) {
-                    // prints out
-                    auto vertex = vertices.at(resLocations.at(i)).get();
-                    if (vertex->getOwner() == curTurn) {
-                        cout << i << ' ' << vertex->getImprovement() << endl;
-                    }
-                }
-            }
+            printResidences();
+        } else if (temp == "roads" || temp == "rds") {
+            printRoads();
         } else if (temp == "build-road" || temp == "brd") {
             int edgeLocation;
             while (!(cin >> edgeLocation)) {
@@ -713,7 +756,7 @@ bool Game::nextTurn() {
                 textDisplay.buildRoad(edges.at(edgeLocation), builderShared);
             } else {
                 cout << "You do not have enough resources." << endl
-                     << "A Road costs 1 HEAT and 1 WIFI.";
+                     << "A Road costs 1 HEAT and 1 WIFI." << endl;
             }
         } else if (temp == "build-res" || temp == "brs") {
             int vertexLocation;
@@ -809,35 +852,38 @@ bool Game::nextTurn() {
             cout << "Invalid command." << endl;
         }
     }
-
-    ++curTurn;
+    curTurn = curTurn == 3 ? 0 : curTurn + 1;
     return true;
 }
 
 bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource resTake) {
     auto curBuilder = builders.at(curTurn).get();
     auto otherBuilder = builder.get();
-    if (curBuilder->getResource(resGive)) {
-        cout << "You do not have "
-             << "(" << getResourceName(resGive) << ")" << endl;
+    if (!curBuilder->getResource(resGive)) {
+        cout << "ERROR: You (" << curBuilder->getColour() << ") don't any "
+             << getResourceName(resGive) << endl;
     } else if (!otherBuilder->getResource(resTake)) {
-        cout << otherBuilder->getColour() << "does not have " << getResourceName(resTake) << endl;
+        cout << "ERROR: " << otherBuilder->getColour() << " doesn't have any " << getResourceName(resTake) << endl;
     } else {
-        cout << curBuilder->getColour() << "offers" << otherBuilder->getColour() << " one " << getResourceName(resGive)
+        cout << curBuilder->getColour() << " offers " << otherBuilder->getColour() << " one " << getResourceName(resGive)
              << " for one " << getResourceName(resTake) << "." << endl
-             << "Does " << otherBuilder->getColour() << " accept this offer?";
+             << "Does " << otherBuilder->getColour() << " accept this offer? [y/N] " << endl
+             << "> ";
         string yesOrNo;
         if (cin >> yesOrNo) {
-            if (yesOrNo[0] == 'y' || yesOrNo[0] == 'Y') {
+            if (yesOrNo.size() && (yesOrNo[0] == 'y' || yesOrNo[0] == 'Y')) {
                 curBuilder->setResource(resTake, curBuilder->getResource(resTake) + 1);
                 curBuilder->setResource(resGive, curBuilder->getResource(resGive) - 1);
 
                 otherBuilder->setResource(resTake, otherBuilder->getResource(resTake) - 1);
                 otherBuilder->setResource(resGive, otherBuilder->getResource(resGive) + 1);
-                // TODO: maybe make more informative
-                cout << "Trade successful." << endl;
+
+                cout << curBuilder->getColour() << " gains one " << getResourceName(resTake)
+                     << " and loses one " << getResourceName(resGive) << "." << endl
+                     << otherBuilder->getColour() << " gains one " << getResourceName(resGive)
+                     << " and loses one " << getResourceName(resTake) << "." << endl;
             } else {
-                cout << "Trade offer was declined." << endl;
+                cout << otherBuilder->getColour() << " declined the trade offer." << endl;
             }
         } else if (cin.eof()) {
             return false;
@@ -848,7 +894,7 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
     return true;
 }
 
-// TODO: bonus feature
+// TODO: bonus feature, move to builder though
 void Game::marketTrade(Resource resource1, Resource resource2) {}
 
 void Game::reset() {
@@ -918,15 +964,20 @@ void Game::test() {
     for (size_t i = 0; i < tiles.size(); i++) {
         getBuildersFromTile(i);
     }
-    cout << "testing getBuildersFromTile - some builds" << endl;
 
+
+    cout << "testing upgradeResidence without resources" << endl;
     curTurn = 0;
-    for (size_t i = 0; i < vertices.size(); i += 10) {
+    for (size_t i = 0; i < vertices.size(); i += 9) {
         auto vertex = vertices.at(i);
-        vertex.get()->upgradeResidence(builders[i % NUM_BUILDERS], false);
-        resLocations.push_back(i);
+        auto builder = builders[i % NUM_BUILDERS];
+        if (vertex.get()->upgradeResidence(builder, false)) {
+            resLocations.push_back(i);
+            textDisplay.updateVertex(vertex, builder);
+        }
     }
 
+    cout << "testing getBuildersFromTile - some builds" << endl;
     for (size_t i = 0; i < tiles.size(); i++) {
         getBuildersFromTile(i);
     }
@@ -948,4 +999,24 @@ void Game::test() {
 
     cout << "testing loadGame" << endl;
     load("backup.sv");
+
+    cout << "testing buildRoad without resources" << endl;
+    for (size_t i = 0; i < edges.size(); i += 30) {
+        auto edge = edges.at(i);
+        auto builder = builders[i % NUM_BUILDERS];
+        if(edge.get()->buildRoad(builder, false)) {
+            roadLocations.push_back(i);
+            textDisplay.buildRoad(edge, );
+        }
+
+    }
+
+    cout << "testing printResidences and printRoads" << endl;
+    for (size_t i = 0; i < NUM_BUILDERS; i++) {
+        curTurn = i;
+        printResidences();
+        printRoads();
+    }
+
+    printBoard();
 }

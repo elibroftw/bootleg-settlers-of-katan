@@ -32,3 +32,5 @@
 *.app
 .vscode/settings.json
 backup.sv
+vg.log
+vg_test.log

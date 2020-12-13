@@ -15,16 +15,22 @@ using std::string;
 int main(int argc, char const *argv[]) {
     /* command line parsing */
 
-    const string flagSeed = "-seed";
-    const string flagLoad = "-load";
-    const string flagBoard = "-board";
-    const string randomBoard = "-random-board";
-
+    const string flagSeedLong = "-seed";
+    const string flagSeedShort = "-s";
     bool nextIsSeed = false;
+
+    const string flagLoadLong = "-load";
+    const string flagLoadShort = "-l";
     bool nextIsSaveFile = false;
+
+    const string flagBoardLong = "-board";
+    const string flagBoardShort = "-b";
     bool nextIsLayoutFile = false;
-    bool useRandomBoard = false;
     bool useLayoutFile = false;
+
+    const string flagRandomLong = "-random-board";
+    const string flagRandomShort = "-r";
+    bool useRandomBoard = false;
 
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     string saveFile = "";
@@ -43,13 +49,13 @@ int main(int argc, char const *argv[]) {
             nextIsLayoutFile = false;
             useLayoutFile = true;
             useRandomBoard = false;
-        } else if (argv[i] == flagSeed) {
+        } else if (argv[i] == flagSeedLong || argv[i] == flagSeedShort) {
             nextIsSeed = true;
-        } else if (argv[i] == flagLoad) {
+        } else if (argv[i] == flagLoadLong || argv[i] == flagLoadShort) {
             nextIsSaveFile = true;
-        } else if (argv[i] == flagBoard) {
+        } else if (argv[i] == flagBoardLong || argv[i] == flagBoardShort) {
             nextIsLayoutFile = true;
-        } else if (argv[i] == randomBoard) {
+        } else if (argv[i] == flagRandomLong || argv[i] == flagRandomShort) {
             useRandomBoard = useLayoutFile == false;
         }
     }

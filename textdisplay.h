@@ -35,8 +35,9 @@ class TextDisplay {
     void setGeese(int tileNumber);
     void removeGeese(int tileNumber);
     void updateVertex(shared_ptr<Vertex> &vertex, shared_ptr<Builder> &builder);
-    // void updateEdge(shared_ptr<Edge> &edge);
+
     void buildRoad(shared_ptr<Edge> &edge, shared_ptr<Builder> &builder);
+
 
     friend ostream &operator<<(ostream &out, const TextDisplay &td);
 };
