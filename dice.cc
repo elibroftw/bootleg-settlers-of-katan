@@ -13,7 +13,7 @@ Dice::Dice() {
     rng = default_random_engine{seed};
 }
 
-unsigned Dice::roll(bool loaded) {
+unsigned Dice::roll(const bool loaded) {
     if (!loaded) {
         unsigned val;
         for (size_t i = 0; i < 1000; i++) {

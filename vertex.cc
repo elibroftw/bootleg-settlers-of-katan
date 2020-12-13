@@ -7,7 +7,7 @@ using std::cerr;
 using std::endl;
 using std::make_pair;
 
-Vertex::Vertex(int number) : number{number} {
+Vertex::Vertex(const int number) : number{number} {
     improvement = ' ';
     if (number == -1) {
         row = -1;
@@ -101,11 +101,11 @@ int Vertex::getBuildingPoints() {
     }
 }
 
-bool Vertex::canUpgrade(shared_ptr<Builder> builder) {
+bool Vertex::canUpgrade(const shared_ptr<Builder> &builder) {
     return improvement != 'T' && builder.get()->getNum() == owner;
 }
 
-bool Vertex::upgradeResidence(shared_ptr<Builder> builder, bool useResouces) {
+bool Vertex::upgradeResidence(shared_ptr<Builder> &builder, const bool useResouces) {
     if (owner != -1 && owner != builder.get()->getNum()) {
         return false;
     }
@@ -182,7 +182,7 @@ bool Vertex::realVertex() {
     return false;
 }
 
-pair<int, int> Vertex::getVertexFromCoords(int row, int col) {
+pair<int, int> Vertex::getVertexFromCoords(const int row, const int col) {
     if (row % 4 != 0 || (col - 1) % 10 != 0) {
         // DEBUG STATEMENT; SHOULD NEVER BE RUN
         cerr << "something went wrong in getVertexFromCoords "

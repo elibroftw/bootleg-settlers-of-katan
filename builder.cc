@@ -121,7 +121,7 @@ void Builder::geeseAttack() {
     }
 }
 
-void Builder::stealFrom(shared_ptr<Builder> builderToStealFrom) {
+void Builder::stealFrom(shared_ptr<Builder>& builderToStealFrom) {
     unsigned totalResources = 0;
     for (auto&& r : builderToStealFrom->resources) totalResources += r;
     if (!totalResources) totalResources = 1;

@@ -7,7 +7,7 @@ using std::cerr;
 using std::endl;
 using std::make_pair;
 
-Edge::Edge(int number) : number{number} {
+Edge::Edge(const int number) : number{number} {
     if (number == -1) {
         row = -1;
         col = -1;
@@ -141,7 +141,7 @@ bool Edge::getHorizontal() {
     return isHorizontal;
 }
 
-bool Edge::buildRoad(shared_ptr<Builder> builder, bool useResources) {
+bool Edge::buildRoad(const shared_ptr<Builder> &builder, const bool useResources) {
     int numHeat = builder->getResource(Heat);
     int numWifi = builder->getResource(Wifi);
     if (!useResources) {
@@ -170,7 +170,7 @@ bool Edge::realEdge() {
     return false;
 }
 
-pair<int, int> Edge::getEdgeFromCoords(int row, int col) {
+pair<int, int> Edge::getEdgeFromCoords(const int row, const int col) {
     // 12 16
 
     if (row % 2 != 0 || (col - 1) % 5 != 0) {

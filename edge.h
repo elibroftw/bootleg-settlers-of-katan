@@ -20,7 +20,7 @@ class Edge {
 
    public:
     // default ctor for when vector is being resized
-    Edge(int number = -1);
+    Edge(const int number = -1);
     Edge(const Edge &e);
     Edge &operator=(const Edge &e);
 
@@ -35,7 +35,7 @@ class Edge {
     // to one road, and costs the builder one heat and wifi resource.
     // A road can be built by a builder if an adjacent road or
     // residence has been built by the same builder.
-    bool buildRoad(shared_ptr<Builder> builder, bool useResources = true);
+    bool buildRoad(const shared_ptr<Builder> &builder, const bool useResources = true);
 
     // resets owner to -1 and improvement to ""
     void reset();
@@ -45,7 +45,7 @@ class Edge {
 
     // given the row, column coordinates of the edge in the textDisplay,
     // return the row, column indices for the edges maps
-    pair<int, int> static getEdgeFromCoords(int row, int col);
+    pair<int, int> static getEdgeFromCoords(const int row, const int col);
 };
 
 #endif

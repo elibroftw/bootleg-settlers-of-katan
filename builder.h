@@ -4,14 +4,15 @@
 #include <random>
 #include <string>
 #include <vector>
+
 #include "resource.h"
 
 using std::istream;
 using std::ostream;
+using std::shared_ptr;
 using std::string;
 using std::uniform_int_distribution;
 using std::vector;
-using std::shared_ptr;
 
 enum Colour { Blue,
               Red,
@@ -49,7 +50,7 @@ class Builder {
     // a random resources from one builder who has a residence
     // on the tile to where the geese are moved.
     // takes care of any IO operations
-    void stealFrom(shared_ptr<Builder> builderToStealFrom);
+    void stealFrom(shared_ptr<Builder>& builderToStealFrom);
 
     // check if builder won the game,
     //  occurs when they have 10 points
@@ -82,7 +83,7 @@ class Builder {
     bool isDiceLoaded();
 
     // trade 3 give for 1 take
-    void marketTrade(const Resource give, const  Resource take);
+    void marketTrade(const Resource give, const Resource take);
 
     // prints out resources space separated (ends with a space) e.g. 0 0 3 0 0
     void printResources(ostream& out);

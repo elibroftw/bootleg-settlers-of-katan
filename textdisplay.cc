@@ -113,13 +113,13 @@ pair<int, int> TextDisplay::getTopLeftCoord(int tileNumber) {
     return make_pair(row, col);
 }
 
-void TextDisplay::updateTile(shared_ptr<Tile> tile) {
+void TextDisplay::updateTile(const shared_ptr<Tile> &tile) {
     setTileNumber(tile.get()->getNumber());
     setTileResource(tile.get()->getNumber(), getResourceName(tile.get()->getResource()));
     setTileValue(tile.get()->getNumber(), tile.get()->getValue());
 }
 
-void TextDisplay::setTileResource(int tileNumber, string resource) {
+void TextDisplay::setTileResource(const int tileNumber, const string resource) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int row = tileCoords.first + 3;
     int col = tileCoords.second + 5;
@@ -128,14 +128,14 @@ void TextDisplay::setTileResource(int tileNumber, string resource) {
     }
 }
 
-void TextDisplay::setTileNumber(int tileNumber) {
+void TextDisplay::setTileNumber(const int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int row = tileCoords.first + 2;
     int col = tileCoords.second + 6;
     setInt(row, col, tileNumber);
 }
 
-void TextDisplay::setTileValue(int tileNumber, int tileValue) {
+void TextDisplay::setTileValue(const int tileNumber, const int tileValue) {
     if (tileValue != 7) {
         auto tileCoords = getTopLeftCoord(tileNumber);
         int row = tileCoords.first + 4;
@@ -144,7 +144,7 @@ void TextDisplay::setTileValue(int tileNumber, int tileValue) {
     }
 }
 
-void TextDisplay::setGeese(int tileNumber) {
+void TextDisplay::setGeese(const int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int row = tileCoords.first + 3;
     int col = tileCoords.second + 6;
@@ -154,7 +154,7 @@ void TextDisplay::setGeese(int tileNumber) {
     }
 }
 
-void TextDisplay::removeGeese(int tileNumber) {
+void TextDisplay::removeGeese(const int tileNumber) {
     auto tileCoords = getTopLeftCoord(tileNumber);
     int row = tileCoords.first + 3;
     int col = tileCoords.second + 3;
@@ -164,7 +164,7 @@ void TextDisplay::removeGeese(int tileNumber) {
     }
 }
 
-void TextDisplay::updateVertex(shared_ptr<Vertex> &vertex, shared_ptr<Builder> &builder) {
+void TextDisplay::updateVertex(const shared_ptr<Vertex> &vertex, const shared_ptr<Builder> &builder) {
     if (vertex.get()->getOwner() == builder.get()->getNum()) {
         char c1 = builder.get()->getColour()[0];
         char c2 = vertex.get()->getImprovement();
@@ -173,7 +173,7 @@ void TextDisplay::updateVertex(shared_ptr<Vertex> &vertex, shared_ptr<Builder> &
     }
 }
 
-void TextDisplay::buildRoad(shared_ptr<Edge> &edge, shared_ptr<Builder> &builder) {
+void TextDisplay::buildRoad(const shared_ptr<Edge> &edge, const shared_ptr<Builder> &builder) {
     char colour = builder.get()->getColour()[0];
     setChar(edge.get()->getRow(), edge.get()->getCol(), colour);
     setChar(edge.get()->getRow(), edge.get()->getCol() + 1, 'R');

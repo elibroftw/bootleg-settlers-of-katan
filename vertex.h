@@ -35,15 +35,16 @@ class Vertex {
     int getNum();
     int getOwner();
     char getImprovement();
+
+    // whether or not the builder is allowed to upgrade the residence
+    bool canUpgrade(const shared_ptr<Builder> &builder);
+
     // If the current residence is a basement, can upgrade to a house.
     // If the current residence is a house, can upgrade to a tower.
     // Otherwise cannot upgrade the residence (must at least be a basement
     // and at most a tower).
     // Increases building point by one each time it is called.
-    bool upgradeResidence(shared_ptr<Builder> builder, bool useResouces = true);
-
-    // whether or not the builder is allowed to upgrade the residence
-    bool canUpgrade(shared_ptr<Builder> builder);
+    bool upgradeResidence(shared_ptr<Builder> &builder, const bool useResouces = true);
 
     // resets owner to -1 and improvement to ""
     void reset();
@@ -55,7 +56,7 @@ class Vertex {
 
     // given the row, column coordinates of the vertex in the textDisplay,
     // return the row, column indices for the vertices maps
-    pair<int, int> static getVertexFromCoords(int row, int col);
+    pair<int, int> static getVertexFromCoords(const int row, const int col);
 };
 
 #endif

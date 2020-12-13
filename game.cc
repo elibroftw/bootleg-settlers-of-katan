@@ -306,7 +306,7 @@ void Game::load(string filename) {
     file.close();
 }
 
-bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
+bool Game::isValidVertex(shared_ptr<Vertex> &vertex, bool considerEdges) {
     int rowTD = vertex.get()->getRow();
     int row = rowTD / 4;
     int colTD = vertex.get()->getCol();
@@ -367,7 +367,7 @@ bool Game::isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges) {
     return true;
 }
 
-bool Game::isValidEdge(shared_ptr<Edge> edge) {
+bool Game::isValidEdge(shared_ptr<Edge> &edge) {
     int rowTD = edge.get()->getRow();
     int row = rowTD / 10;
     int colTD = edge.get()->getCol();
@@ -1006,7 +1006,7 @@ void Game::test() {
             }
         }
     }
-    
+
     cout << "testing printStatus" << endl;
     printStatus();
 

@@ -62,9 +62,9 @@ class Game {
     vector<int> resLocations;
     vector<int> roadLocations;
 
-    bool isValidVertex(shared_ptr<Vertex> vertex, bool considerEdges = true);
+    bool isValidVertex(shared_ptr<Vertex> &vertex, bool considerEdges = true);
     // checks if edge is valid to build a road on for curTurn builder
-    bool isValidEdge(shared_ptr<Edge> edge);
+    bool isValidEdge(shared_ptr<Edge> &edge);
     // to be used in conjunction with geese stealing and resource distribution
     unordered_map<int, int> getBuildersFromTile(int tileNumber);
 
