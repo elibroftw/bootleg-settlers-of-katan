@@ -103,20 +103,31 @@ bool Builder::isDiceLoaded() {
 
 void Builder::geeseAttack() {
     int totalResources = 0;
-    int resourceToLose = 0;
+    int resLost = 0;
 
     for (auto&& r : resources) totalResources += r;
 
-    if (totalResources >= 10) resourceToLose = totalResources / 2;
+    if (totalResources >= 10) resLost = totalResources / 2;
 
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     default_random_engine rng{seed};
+    if (resLost) {
+        cout << "Builder " << colour << " loses " << resLost << " to the geese. They lose:" << endl;
+    }
+    vector<int> resourcesLost{0, 0, 0, 0, 0};
+    while (resLost) {
+        int randomIndex;
+        for (size_t i = 0; i < 100; i++) randomIndex = resourceDistribution(rng);
 
-    while (resourceToLose) {
-        int randomIndex = resourceDistribution(rng);
         if (resources[randomIndex] != 0) {
             --resources[randomIndex];
-            --resourceToLose;
+            --resLost;
+            ++resourcesLost[randomIndex];
+        }
+    }
+    for (size_t r = 0; r < resources.size(); r++) {
+        if (resourcesLost[r]) {
+            cout << resourcesLost[r] << ' ' << getResourceName(static_cast<Resource>(r)) << endl;
         }
     }
 }

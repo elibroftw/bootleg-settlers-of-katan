@@ -109,8 +109,7 @@ int main(int argc, char const *argv[]) {
                 cout << "Thanks for playing " << gameName << endl;
                 return 0;
             }
-        } else if (!game.nextTurn()) {
-            // nextTurn was unsuccesful, so save and exit gracefully
+        } else if (!game.nextTurn()) {  // EOF detected
             game.save("backup.sv");
             return 0;
         }
