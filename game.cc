@@ -16,7 +16,6 @@ using std::endl;
 using std::ifstream;
 using std::invalid_argument;
 using std::istringstream;
-using std::make_pair;
 using std::make_shared;
 using std::ofstream;
 using std::shuffle;
@@ -26,15 +25,11 @@ using std::tolower;
 using std::toupper;
 using std::uniform_int_distribution;
 
-Game::Game() : curTurn{-1},
-               geeseLocation{NUM_TILES},
-               gameStarted{false},
-               gameOver{false},
-               verticesMap(VM_HEIGHT, vector<shared_ptr<Vertex>>(VM_WIDTH, make_shared<Vertex>())),
+Game::Game() : verticesMap(VM_HEIGHT, vector<shared_ptr<Vertex>>(VM_WIDTH, make_shared<Vertex>())),
                edgesMap(EM_HEIGHT, vector<shared_ptr<Edge>>(EM_WIDTH, make_shared<Edge>())) {
-    // create 53 vertices
-    vertices.reserve(53);
-    for (int i = 0; i <= 53; i++) {
+    // create vertices
+    vertices.reserve(NUM_VERTICES);
+    for (int i = 0; i < NUM_VERTICES; i++) {
         auto vertex = make_shared<Vertex>(i);
         int rowTD = vertex.get()->getRow();
         int colTD = vertex.get()->getCol();
@@ -45,10 +40,10 @@ Game::Game() : curTurn{-1},
         textDisplay.setInt(rowTD, colTD, i);
     }
 
-    // create 71 edges
+    // create edges
     // edges can be vertical or horizontal
-    edges.reserve(71);
-    for (int i = 0; i <= 71; i++) {
+    edges.reserve(NUM_EDGES);
+    for (int i = 0; i < NUM_EDGES; i++) {
         auto edge = make_shared<Edge>(i);
         int rowTD = edge.get()->getRow();
         int colTD = edge.get()->getCol();
@@ -147,7 +142,7 @@ void Game::save(string filename) {
 
     unordered_map<int, vector<int>> roads;
     for (auto &&i : roadLocations) {
-        int owner = edges[i].get()->getOwner();
+        int owner = edges.at(i).get()->getOwner();
         if (roads.count(owner)) {
             roads[owner].push_back(i);
         } else {
@@ -157,7 +152,7 @@ void Game::save(string filename) {
 
     unordered_map<int, vector<int>> housing;
     for (auto &&i : resLocations) {
-        int owner = vertices[i].get()->getOwner();
+        int owner = vertices.at(i).get()->getOwner();
         if (housing.count(owner)) {
             housing[owner].push_back(i);
         } else {
@@ -201,7 +196,7 @@ void Game::load(string filename) {
         throw InvalidSaveFile();
     }
     file >> curTurn;
-    file.ignore(1000, ' ');
+    file.ignore();
     string line;
     // read builder data for each buildere
     for (size_t i = 0; i < NUM_BUILDERS; i++) {
@@ -447,7 +442,7 @@ bool Game::beginGame() {
                      << ", where do you want to build a basement?" << endl
                      << "> ";
                 if (cin >> vertexIdx) {
-                    if (vertexIdx >= 0 && vertexIdx <= 53) {
+                    if (vertexIdx >= 0 && vertexIdx < NUM_VERTICES) {
                         auto vertex = vertices.at(vertexIdx);
                         // build the basement
                         validVertex = isValidVertex(vertex, false);
@@ -750,7 +745,7 @@ bool Game::nextTurn() {
                      << "> build-road ";
                 resetCin();
             }
-            if (edgeLocation < 0 || edgeLocation > 71) {
+            if (edgeLocation < 0 || edgeLocation >= NUM_EDGES) {
                 cout << "ERROR: integer must be between [0, 71]." << endl;
             } else if (!isValidEdge(edges.at(edgeLocation))) {
                 cout << "You cannot build here" << endl;
@@ -772,7 +767,7 @@ bool Game::nextTurn() {
                      << "> build-res ";
                 resetCin();
             }
-            if (vertexLocation < 0 || vertexLocation > 53) {
+            if (vertexLocation < 0 || vertexLocation >= NUM_VERTICES) {
                 cout << "ERROR: integer must be between [0, 53]." << endl;
             } else if (!isValidVertex(vertices.at(vertexLocation))) {
                 cout << "You cannot build here." << endl;
@@ -794,7 +789,7 @@ bool Game::nextTurn() {
                      << "> improve ";
                 resetCin();
             }
-            if (vertexLocation < 0 && vertexLocation > 53) {
+            if (vertexLocation < 0 && vertexLocation >= NUM_VERTICES) {
                 cout << "ERROR: integer must be between [0, 53]." << endl;
             } else if (!vertices.at(vertexLocation).get()->canUpgrade(builderShared)) {
                 // if vertex has a different owner or is a tower
@@ -918,14 +913,14 @@ void Game::reset() {
 
     // reset each vertex
     for (size_t i = 0; i < vertices.size(); i++) {
-        auto vertex = vertices[i].get();
+        auto vertex = vertices.at(i).get();
         vertex->reset();
         textDisplay.setInt(vertex->getRow(), vertex->getCol(), vertex->getNum());
     }
 
     // reset each edge
     for (size_t i = 0; i < edges.size(); i++) {
-        auto edge = edges[i].get();
+        auto edge = edges.at(i).get();
         edge->reset();
         textDisplay.setInt(edge->getRow(), edge->getCol(), edge->getNum());
     }
@@ -999,23 +994,32 @@ void Game::test() {
         getBuildersFromTile(i);
     }
 
-    cout << "testing printStatus" << endl;
-    printStatus();
-
     cout << "testing winGame" << endl;
     for (auto &&b : builders) {
         b.get()->winGame();
+        // set a lot of resources for each builder
+        for (size_t r = 0; r < 5; r++) {
+            b.get()->setResource(r, 5);
+            if (b.get()->getResource(r) != 5) {
+                cout << "ERROR: set and get resource failed" << endl;
+                return;
+            }
+        }
+
     }
+    cout << "testing printStatus" << endl;
+    printStatus();
 
-    cout << "testing saveGame" << endl;
-
+    cout << "testing save" << endl;
     save("backup.sv");
 
     cout << "testing reset" << endl;
     reset();
 
-    cout << "testing loadGame" << endl;
+    cout << "testing load" << endl;
     load("backup.sv");
+
+    printStatus();
 
     cout << "testing buildRoad without resources" << endl;
     for (size_t i = 0; i < edges.size(); i++) {
@@ -1046,6 +1050,5 @@ void Game::test() {
         printResidences();
         printRoads();
     }
-
     printBoard();
 }

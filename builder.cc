@@ -69,10 +69,6 @@ int Builder::getResource(Resource resource) {
     return resources[resource];
 }
 
-int Builder::getResource(string resourceName) {
-    return resources[getResourceCode(resourceName)];
-}
-
 void Builder::setResource(int resourceCode, int num) {
     resources[resourceCode] = num;
 }
@@ -80,10 +76,6 @@ void Builder::setResource(int resourceCode, int num) {
 void Builder::setResource(Resource resource, int num) {
     resources[resource] = num;
 }
-
-// void Builder::setResource(string resourceName, int num) {
-//     resources[getResourceCode(resourceName)] = num;
-// }
 
 int Builder::getBuildingPoints() {
     return buildPoints;

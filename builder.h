@@ -49,45 +49,48 @@ class Builder {
     // a random resources from one builder who has a residence
     // on the tile to where the geese are moved.
     // takes care of any IO operations
-    void stealFrom(shared_ptr<Builder> builderToStealFrom);  // <- this one loses resources
-    // check if builder won the game, which occurs when they
-    // have 10 points
+    void stealFrom(shared_ptr<Builder> builderToStealFrom);
+
+    // check if builder won the game,
+    //  occurs when they have 10 points
     bool hasWon();
 
     // resets builder resources, buildPoints to 0
     //  and clears vertices and edges
     void reset();
 
+    // getters
+
     string getColour();
     int getNum();
 
-    // returns the number of resource of the specified string or int
-    // if string, first toLower the string
-    int getResource(string resourceName);
+    // returns the number of resource of the specified int or Resource
     int getResource(int resourceCode);
     int getResource(Resource resource);
 
-    // prints out resources space separated (ends with a space) e.g. 0 0 3 0 0
-    void printResources(ostream& out);
-
-    // void setResource(string resourceName, int num);
     void setResource(Resource resource, int num);
     void setResource(int resourceCode, int num);
 
-    // trade 3 give for 1 take
-    void marketTrade(Resource give, Resource take);
-
     int getBuildingPoints();
     void setBuildingPoints(int value);
-
     // increments the builder's building points
     void addBuildingPoints(int points = 1);
 
+    // dice settings
     void useLoadedDice();
     void useFairDice();
     bool isDiceLoaded();
 
+    // trade 3 give for 1 take
+    void marketTrade(Resource give, Resource take);
+
+    // prints out resources space separated (ends with a space) e.g. 0 0 3 0 0
+    void printResources(ostream& out);
+
+    // prints out status for the builder
     void printStatus();
+
+    // prints out win message for the builder. Includes fireworks.
     void winGame();
 };
 

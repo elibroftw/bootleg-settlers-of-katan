@@ -9,6 +9,8 @@ class Tile {
    public:
     Tile(unsigned number, unsigned value, unsigned resourceCode);
 
+    // getters
+
     unsigned getNumber();
 
     unsigned getValue();
