@@ -21,7 +21,7 @@ istream& operator>>(istream& in, Resource& x) {
     return in;
 }
 
-Resource getResourceCode(string resourceName) {
+Resource getResourceCode(const string resourceName) {
     char r = toupper(resourceName[0]);
 
     switch (r) {
@@ -46,19 +46,19 @@ Resource getResourceCode(string resourceName) {
     return Park;
 }
 
-string getResourceName(int resourceCode) {
+string getResourceName(const Resource resourceCode) {
     switch (resourceCode) {
-        case 0:
+        case Brick:
             return "BRICK";
-        case 1:
+        case Energy:
             return "ENERGY";
-        case 2:
+        case Glass:
             return "GLASS";
-        case 3:
+        case Heat:
             return "HEAT";
-        case 4:
+        case Wifi:
             return "WIFI";
-        case 5:
+        case Park:
             return "PARK";
         default:
             cerr << "ERROR getting resource name " << resourceCode << endl;

@@ -38,7 +38,7 @@ class Builder {
     uniform_int_distribution<unsigned> resourceDistribution{0, 4};
 
    public:
-    Builder(string colour, int num);
+    Builder(const string colour, const int num);
     // When a seven is rolled, current builder moves the geese
     // to any tile. Any builder with 10 or more resources will
     // automatically lose half their resources. Resources lost
@@ -65,14 +65,14 @@ class Builder {
     int getNum();
 
     // returns the number of resource of the specified int or Resource
-    int getResource(int resourceCode);
-    int getResource(Resource resource);
+    int getResource(const int resourceCode);
+    int getResource(const Resource resource);
 
-    void setResource(Resource resource, int num);
-    void setResource(int resourceCode, int num);
+    void setResource(const Resource resource, const int num);
+    void setResource(const int resourceCode, const int num);
 
     int getBuildingPoints();
-    void setBuildingPoints(int value);
+    void setBuildingPoints(const int value);
     // increments the builder's building points
     void addBuildingPoints(int points = 1);
 
@@ -82,7 +82,7 @@ class Builder {
     bool isDiceLoaded();
 
     // trade 3 give for 1 take
-    void marketTrade(Resource give, Resource take);
+    void marketTrade(const Resource give, const  Resource take);
 
     // prints out resources space separated (ends with a space) e.g. 0 0 3 0 0
     void printResources(ostream& out);

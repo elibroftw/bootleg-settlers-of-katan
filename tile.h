@@ -1,13 +1,14 @@
 #ifndef __TILE_H__
 #define __TILE_H__
+#include "resource.h"
 
 class Tile {
     unsigned number;
     unsigned value;
-    unsigned resource;
+    Resource resource;
 
    public:
-    Tile(unsigned number, unsigned value, unsigned resourceCode);
+    Tile(const unsigned number, const unsigned value, const Resource resourceCode);
 
     // getters
 
@@ -15,7 +16,7 @@ class Tile {
 
     unsigned getValue();
 
-    unsigned getResource();
+    Resource getResource();
 };
 
 #endif

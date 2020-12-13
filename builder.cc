@@ -43,7 +43,7 @@ istream& operator>>(istream& in, Colour& colour) {
     return in;
 }
 
-Builder::Builder(string colour, int num) : colour{colour}, num{num} {}
+Builder::Builder(const string colour, const int num) : colour{colour}, num{num} {}
 
 bool Builder::hasWon() {
     return buildPoints >= 10;
@@ -61,19 +61,19 @@ void Builder::printResources(ostream& out) {
     }
 }
 
-int Builder::getResource(int resourceCode) {
-    return resources[resourceCode];
-}
+// int Builder::getResource(const int resourceCode) {
+//     return resources[resourceCode];
+// }
 
-int Builder::getResource(Resource resource) {
+int Builder::getResource(const Resource resource) {
     return resources[resource];
 }
 
-void Builder::setResource(int resourceCode, int num) {
+void Builder::setResource(const int resourceCode, const int num) {
     resources[resourceCode] = num;
 }
 
-void Builder::setResource(Resource resource, int num) {
+void Builder::setResource(const Resource resource, const int num) {
     resources[resource] = num;
 }
 
@@ -81,11 +81,11 @@ int Builder::getBuildingPoints() {
     return buildPoints;
 }
 
-void Builder::setBuildingPoints(int value) {
+void Builder::setBuildingPoints(const int value) {
     buildPoints = value;
 }
 
-void Builder::addBuildingPoints(int points) {
+void Builder::addBuildingPoints(const int points) {
     buildPoints += points;
 }
 
@@ -138,7 +138,7 @@ void Builder::stealFrom(shared_ptr<Builder> builderToStealFrom) {
     if (val <= randResource) {
         --builderToStealFrom.get()->resources.at(randomIndex);
         ++resources.at(randomIndex);
-        cout << "Builder " << colour << " steals " << getResourceName(randomIndex)
+        cout << "Builder " << colour << " steals " << getResourceName(static_cast<Resource>(randomIndex))
              << " from " << builderToStealFrom.get()->colour << endl;
     } else {
         cout << "Builder " << colour << " got caught slacking and could not steal from "
@@ -159,7 +159,7 @@ void Builder::printStatus() {
     for (size_t j = 0; j < (6 - colour.size()); j++) cout << " ";
 
     cout << "has " << buildPoints << " building points";
-    for (size_t r = 0; r < resources.size(); r++) cout << ", " << resources[r] << ' ' << getResourceName(r);
+    for (size_t r = 0; r < resources.size(); r += 1) cout << ", " << resources[r] << ' ' << getResourceName(static_cast<Resource>(r));
     cout << endl;
 }
 
@@ -178,7 +178,7 @@ void Builder::winGame() {
     cout << R"(        *)" << endl;
 }
 
-void Builder::marketTrade(Resource give, Resource take) {
+void Builder::marketTrade(const Resource give, const Resource take) {
     if (give == take) {
         cout << "Oh. You want to give up 2 resources? Just kidding." << endl;
     } else if (resources[give] >= 3) {

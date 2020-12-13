@@ -116,7 +116,7 @@ void Game::createBoard(string filename) {
         createBoard(seed);
         return;
     }
-    unsigned resource;
+    Resource resource;
     unsigned value;
     tiles.clear();
     tiles.reserve(NUM_TILES);
@@ -277,7 +277,7 @@ void Game::load(string filename) {
     }
 
     // read board
-    int resource;
+    Resource resource;
     int value;
     if (!getline(file, line)) {
         throw InvalidSaveFile();
@@ -682,7 +682,7 @@ bool Game::nextTurn() {
             auto tile = tiles.at(i);
             // if tile has the same value as the dice without any geese on it
             if (tile.get()->getValue() == diceVal && i != geeseLocation) {
-                int resourceCode = tile.get()->getResource();
+                Resource resourceCode = tile.get()->getResource();
                 unordered_map<int, int> buildersOnTile = getBuildersFromTile(i);
                 for (auto const &tuple : buildersOnTile) {
                     aBuilderGained = true;
@@ -998,15 +998,15 @@ void Game::test() {
     for (auto &&b : builders) {
         b.get()->winGame();
         // set a lot of resources for each builder
-        for (size_t r = 0; r < 5; r++) {
+        for (size_t r = Brick; r < 5; r++) {
             b.get()->setResource(r, 5);
-            if (b.get()->getResource(r) != 5) {
+            if (b.get()->getResource(static_cast<Resource>(r)) != 5) {
                 cout << "ERROR: set and get resource failed" << endl;
                 return;
             }
         }
-
     }
+    
     cout << "testing printStatus" << endl;
     printStatus();
 

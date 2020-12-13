@@ -20,8 +20,9 @@ istream& operator>>(istream& in, Resource& x);
 // capitalize resourceName and return the
 //  corresponding resource code
 //  default is Park
-Resource getResourceCode(string resourceName);
+Resource getResourceCode(const string resourceName);
 
-string getResourceName(int resourceCode);
+// return the resource name depending on the resourceCode
+string getResourceName(const Resource resourceCode);
 
 #endif
