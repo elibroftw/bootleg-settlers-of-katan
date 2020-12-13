@@ -275,7 +275,7 @@ void Game::load(string filename) {
     }
 
     // read board
-    Resource resource;
+    unsigned resource;
     int value;
     if (!getline(file, line)) {
         throw InvalidSaveFile();
@@ -284,8 +284,9 @@ void Game::load(string filename) {
     tiles.clear();  // clear tiles to add new tiles
     while (ss2 >> resource) {
         if (ss2 >> value) {
-            auto tile = std::make_shared<Tile>(tiles.size(), value, resource);
-            textDisplay.setTileResource(tiles.size(), getResourceName(resource));
+            Resource res = static_cast<Resource>(resource);
+            auto tile = std::make_shared<Tile>(tiles.size(), value, res);
+            textDisplay.setTileResource(tiles.size(), getResourceName(res));
             textDisplay.setTileValue(tiles.size(), value);
             tiles.push_back(tile);
         }
@@ -306,9 +307,9 @@ void Game::load(string filename) {
 
 bool Game::isValidVertex(shared_ptr<Vertex> &vertex, bool considerEdges) {
     int rowTD = vertex.get()->getRow();
-    int row = rowTD / 4;
     int colTD = vertex.get()->getCol();
-    int col = colTD / 10;
+    int row, col;
+    tie(row, col) = Vertex::getVertexFromCoords(rowTD, colTD);
 
     // check if it and adjacent verticies in the map have no owners
     for (int r = row - 1; r < row + 1; r++) {
@@ -367,17 +368,17 @@ bool Game::isValidVertex(shared_ptr<Vertex> &vertex, bool considerEdges) {
 
 bool Game::isValidEdge(shared_ptr<Edge> &edge) {
     int rowTD = edge.get()->getRow();
-    int row = rowTD / 10;
     int colTD = edge.get()->getCol();
-    int col = colTD / 4;
+    int row, col;
+    tie(row, col) = Edge::getEdgeFromCoords(rowTD, colTD);
     // can't build on a road
     if (edge.get()->getOwner() != -1) return false;
 
     int vertexR, vertexC;
     if (edge.get()->getHorizontal()) {
-        // check the vertecies left and right of 5 units
+        // check the vertecies left and right by 5 columns
         for (int colDelta = -5; colDelta <= 5; colDelta += 10) {
-            if (colTD + colDelta >= 0 && colTD + colDelta < VM_WIDTH) {
+            if (colTD + colDelta >= 0 && colTD + colDelta < TD_WIDTH) {
                 tie(vertexR, vertexC) = Vertex::getVertexFromCoords(rowTD, colTD + colDelta);
                 auto vertex = verticesMap.at(vertexR).at(vertexC).get();
                 if (vertex->getOwner() == curTurn) return true;
@@ -398,26 +399,27 @@ bool Game::isValidEdge(shared_ptr<Edge> &edge) {
     } else {
         // check the vertecies above and below of 2 units
         for (int rowDelta = -2; rowDelta <= 2; rowDelta += 4) {
-            if (rowTD + rowDelta >= 0 && rowTD + rowDelta < VM_HEIGHT) {
+            if (rowTD + rowDelta >= 0 && rowTD + rowDelta < TD_HEIGHT) {
                 tie(vertexR, vertexC) = Vertex::getVertexFromCoords(rowTD + rowDelta, colTD);
                 auto vertex = verticesMap.at(vertexR).at(vertexC).get();
                 if (vertex->getOwner() == curTurn) return true;
                 else if (vertex->getOwner() == -1) {
-                    // check if edges above, and right are valid, given vertex is not blocked
-                    int r = row + rowDelta;
+                    // check if edges above/below by one row and to the left and right by one col
+                    //  are roads
+                    int r = row + rowDelta / 2;
+                    for (int colDelta = -1; colDelta <= 1; colDelta += 2) {
+                        if (col + colDelta >= 0 && col + colDelta < EM_WIDTH) {
+                            if (edgesMap.at(r).at(col + colDelta).get()->getOwner() == curTurn) {
+                                return true;
+                            }
+                        }
+                    }
+
+                    // check if edges above/below by 2 rows are roads
+                    r += rowDelta / 2;
                     if (r >= 0 && r < EM_HEIGHT) {
                         if (edgesMap.at(r).at(col).get()->getOwner() == curTurn) {
                             return true;
-                        }
-                    }
-                    r -= rowDelta / 2;
-                    if (r >= 0 && r < EM_HEIGHT) {
-                        for (int c = row - 1; c <= row + 1; c += 2) {
-                            if (c >= 0 && c < EM_WIDTH) {
-                                if (edgesMap.at(r).at(c).get()->getOwner() == curTurn) {
-                                    return true;
-                                }
-                            }
                         }
                     }
                 }
@@ -631,8 +633,8 @@ bool Game::nextTurn() {
         textDisplay.removeGeese(geeseLocation);
         textDisplay.setGeese(newGeeseLocation);
         geeseLocation = newGeeseLocation;
-
         auto tile = tiles.at(newGeeseLocation);
+
         unordered_map<int, int> buildersOnTile = getBuildersFromTile(tile.get()->getNumber());
         buildersOnTile.erase(curTurn);
         for (auto const &tuple : buildersOnTile) {
@@ -749,6 +751,7 @@ bool Game::nextTurn() {
             } else if (edges.at(edgeLocation).get()->buildRoad(builderShared)) {
                 cout << "Builder " << builder->getColour()
                      << " built a road at " << edgeLocation << endl;
+                roadLocations.push_back(edgeLocation);
                 textDisplay.buildRoad(edges.at(edgeLocation), builderShared);
             } else {
                 cout << "You do not have enough resources." << endl
