@@ -8,7 +8,6 @@
 #include <random>
 #include <sstream>
 
-using std::cerr;
 using std::cin;
 using std::cout;
 using std::default_random_engine;
@@ -772,6 +771,11 @@ bool Game::nextTurn() {
             } else if (vertices.at(vertexLocation).get()->upgradeResidence(builderShared)) {
                 cout << "Builder " << builder->getColour()
                      << " built a basement at " << vertexLocation << endl;
+                if (builder->hasWon()) {
+                    builder->winGame();
+                    gameOver = true;
+                    return true;
+                }
                 textDisplay.updateVertex(vertices.at(vertexLocation), builderShared);
             } else {
                 cout << "You do not have enough resources." << endl
@@ -793,6 +797,7 @@ bool Game::nextTurn() {
                 // if vertex has a different owner or is a tower
                 cout << "You cannot build here." << endl;
             } else if (vertices.at(vertexLocation).get()->upgradeResidence(builderShared)) {
+                // TODO: improve message
                 cout << "Residence upgrade succesful" << endl;
                 textDisplay.updateVertex(vertices.at(vertexLocation), builderShared);
                 if (builder->hasWon()) {

@@ -5,16 +5,18 @@
 
 #include "game.h"
 
-using std::cerr;
 using std::cin;
 using std::cout;
 using std::endl;
 using std::istringstream;
-using std::string;
 
 int main(int argc, char const *argv[]) {
-    /* command line parsing */
+    // print out game info
+    const string gameName = "Settlers of Waterloo";
+    const string authors = "Elijah Lopez and Abdullah Hadi";
+    cout << gameName << " By " << authors << endl;
 
+    // command line parsing
     const string flagSeedLong = "-seed";
     const string flagSeedShort = "-s";
     bool nextIsSeed = false;
@@ -30,6 +32,9 @@ int main(int argc, char const *argv[]) {
 
     const string flagRandomLong = "-random-board";
     const string flagRandomShort = "-r";
+
+    const string flagHelpLong = "-help";
+    const string flagHelpShort = "-h";
     bool useRandomBoard = false;
 
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -57,9 +62,14 @@ int main(int argc, char const *argv[]) {
             nextIsLayoutFile = true;
         } else if (argv[i] == flagRandomLong || argv[i] == flagRandomShort) {
             useRandomBoard = useLayoutFile == false;
+        } else if (argv[i] == flagHelpLong || argv[i] == flagHelpShort) {
+            cout << "-load <savefile>   : load game from a save file" << endl;
+            cout << "-board <layout>    : start game using board from a layout file" << endl;
+            cout << "-seed <seed>       : seed to be used when creating a random board" << endl;
+            cout << "-random-board      : start game using a random board" << endl;
+            return 0;
         }
     }
-    cout << "Settlers of Waterloo By Elijah Lopez and Abdullah Hadi" << endl;
 
     Game game;
     if (!saveFile.empty()) {
@@ -87,7 +97,8 @@ int main(int argc, char const *argv[]) {
         // should game print stuff out???
         if (game.isGameOver()) {
             // prompt user to play again
-            cout << "Would you like to play again?" << std::endl;
+            cout << "Would you like to play again?" << endl
+                 << "> ";
             string isYes;
             cin >> isYes;
             if (isYes == "yes" || isYes == "y" || isYes == "YES") {
@@ -95,6 +106,7 @@ int main(int argc, char const *argv[]) {
                 // quit if begin game failed
                 if (!game.beginGame()) return 0;
             } else {
+                cout << "Thanks for playing " << gameName << endl;
                 return 0;
             }
         } else if (!game.nextTurn()) {
