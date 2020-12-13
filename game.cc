@@ -677,7 +677,7 @@ bool Game::nextTurn() {
             cout << "~ improve <housing#>           : try to improve the residence at <housing#>" << endl;
             cout << "~ trade <colour> <give> <take> : try to trade one resource of type <give> with builder <colour> for one resource of type <give>" << endl;
             // cout << "~ market <give> <take>         : (bonus) try to trade 3 resources of type <give> for 1 resource of type <take>" << endl;
-            cout << "~ next                         : end your turn and pass control to builder " << builders[(curTurn + 1)  % 4].get()->getColour() << endl;
+            cout << "~ next                         : end your turn and pass control to builder " << builders[(curTurn + 1) % 4].get()->getColour() << endl;
             cout << "~ save <file>                  : saves the current game state to <file>" << endl;
             cout << "~ help                         : prints out the list of commands." << endl;
         } else if (temp == "board" || temp == "print") {
@@ -821,15 +821,16 @@ bool Game::nextTurn() {
 bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource resTake) {
     auto curBuilder = builders.at(curTurn).get();
     auto otherBuilder = builder.get();
-    if (curBuilder->getResource(resGive)) {
-        cout << "You do not have "
-             << "(" << getResourceName(resGive) << ")" << endl;
+    if (!curBuilder->getResource(resGive)) {
+        cout << "ERROR: You (" << curBuilder->getColour() << ") don't any "
+             << getResourceName(resGive) << endl;
     } else if (!otherBuilder->getResource(resTake)) {
-        cout << otherBuilder->getColour() << " does not have " << getResourceName(resTake) << endl;
+        cout << "ERROR: " << otherBuilder->getColour() << " doesn't have any " << getResourceName(resTake) << endl;
     } else {
-        cout << curBuilder->getColour() << "offers" << otherBuilder->getColour() << " one " << getResourceName(resGive)
+        cout << curBuilder->getColour() << " offers " << otherBuilder->getColour() << " one " << getResourceName(resGive)
              << " for one " << getResourceName(resTake) << "." << endl
-             << "Does " << otherBuilder->getColour() << " accept this offer?";
+             << "Does " << otherBuilder->getColour() << " accept this offer? [y/N] " << endl
+             << "> ";
         string yesOrNo;
         if (cin >> yesOrNo) {
             if (yesOrNo.size() && (yesOrNo[0] == 'y' || yesOrNo[0] == 'Y')) {
@@ -838,10 +839,13 @@ bool Game::tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource re
 
                 otherBuilder->setResource(resTake, otherBuilder->getResource(resTake) - 1);
                 otherBuilder->setResource(resGive, otherBuilder->getResource(resGive) + 1);
-                // TODO: maybe make more informative
-                cout << "Trade successful." << endl;
+
+                cout << curBuilder->getColour() << " gains one " << getResourceName(resTake)
+                     << " and loses one " << getResourceName(resGive) << "." << endl
+                     << otherBuilder->getColour() << " gains one " << getResourceName(resGive)
+                     << " and loses one " << getResourceName(resTake) << "." << endl;
             } else {
-                cout << "Trade offer was declined." << endl;
+                cout << otherBuilder->getColour() << " declined the trade offer." << endl;
             }
         } else if (cin.eof()) {
             return false;
