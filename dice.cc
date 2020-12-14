@@ -1,6 +1,5 @@
 #include "dice.h"
 
-#include <chrono>
 #include <iostream>
 #include <string>
 
@@ -8,12 +7,7 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-Dice::Dice() {
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    rng = default_random_engine{seed};
-}
-
-unsigned Dice::roll(const bool loaded) {
+unsigned Dice::roll(default_random_engine &rng, const bool loaded) {
     if (!loaded) {
         unsigned val;
         for (size_t i = 0; i < 1000; i++) {

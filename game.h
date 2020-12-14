@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <random>
 
 #include "builder.h"
 #include "dice.h"
@@ -33,12 +34,14 @@ using std::shared_ptr;
 using std::string;
 using std::unordered_map;
 using std::vector;
+using std::default_random_engine;
 
 class InvalidLayoutFile {};
 
 class InvalidSaveFile {};
 
 class Game {
+    default_random_engine rng;
     // keep track of verticies in a grid
     vector<vector<shared_ptr<Vertex>>> verticesMap;
     // keep track of edges in a grid
@@ -87,12 +90,12 @@ class Game {
     //  returns: whether or not any cin was sucessful
     bool tradeWith(shared_ptr<Builder> &builder, Resource resGive, Resource resTake);
    public:
-    Game();
-    // creates the board with the given seed
-    void createBoard(unsigned seed);
+    Game(unsigned seed);
+    // creates the board using rng
+    void createBoard();
 
     // create board from a layout file.
-    //  if file is invalid, use a seed
+    //  if file is invalid, call createBoard()
     void createBoard(string filename);
 
     // save the game to filename

@@ -71,17 +71,17 @@ int main(int argc, char const *argv[]) {
         }
     }
 
-    Game game;
+    Game game(seed);
     if (!saveFile.empty()) {
         try {
             game.load(saveFile);
         } catch (InvalidSaveFile &e) {
             game.reset();
             cout << "Starting a new game." << endl;
-            game.createBoard(seed);
+            game.createBoard();
         }
     } else if (useRandomBoard) {
-        game.createBoard(seed);
+        game.createBoard();
     } else {
         game.createBoard(layoutFile);
     }

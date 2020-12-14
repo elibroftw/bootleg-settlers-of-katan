@@ -24,8 +24,8 @@ using std::tolower;
 using std::toupper;
 using std::uniform_int_distribution;
 
-Game::Game() : verticesMap(VM_HEIGHT, vector<shared_ptr<Vertex>>(VM_WIDTH, make_shared<Vertex>())),
-               edgesMap(EM_HEIGHT, vector<shared_ptr<Edge>>(EM_WIDTH, make_shared<Edge>())) {
+Game::Game(unsigned seed) : rng(seed), verticesMap(VM_HEIGHT, vector<shared_ptr<Vertex>>(VM_WIDTH, make_shared<Vertex>())),
+                            edgesMap(EM_HEIGHT, vector<shared_ptr<Edge>>(EM_WIDTH, make_shared<Edge>())) {
     // create vertices
     vertices.reserve(NUM_VERTICES);
     for (int i = 0; i < NUM_VERTICES; i++) {
@@ -62,9 +62,7 @@ bool Game::isGameOver() {
     return gameOver;
 }
 
-void Game::createBoard(unsigned seed) {
-    // use a time-based seed for the default seed value
-    default_random_engine rng{seed};
+void Game::createBoard() {
     uniform_int_distribution<unsigned> distribAll{0, 18};
     uniform_int_distribution<unsigned> distrib1{3, 6};
     uniform_int_distribution<unsigned> distrib2{8, 11};
@@ -109,10 +107,9 @@ void Game::createBoard(unsigned seed) {
 
 void Game::createBoard(string filename) {
     ifstream file{filename};
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     if (!file) {
         // if file does not exist or is invalid, create a random board
-        createBoard(seed);
+        createBoard();
         return;
     }
     unsigned resource;
@@ -127,7 +124,7 @@ void Game::createBoard(string filename) {
         } else {
             cout << "ERROR: layout.txt was not formatted correctly, using random board instead" << endl;
             tiles.clear();
-            createBoard(seed);
+            createBoard();
         }
     }
     file.close();
@@ -293,7 +290,7 @@ void Game::load(string filename) {
     }
     if (tiles.size() != NUM_TILES) {
         cout << "ERROR: Invalid Layout ... using random board instead" << endl;
-        createBoard(std::chrono::system_clock::now().time_since_epoch().count());
+        createBoard();
     }
 
     // read geese location if present
@@ -605,7 +602,7 @@ bool Game::nextTurn() {
             cout << "Please enter 'help' for a list of valid commands." << endl;
         }
     }
-    unsigned diceVal = dice.roll(builder->isDiceLoaded());
+    unsigned diceVal = dice.roll(rng, builder->isDiceLoaded());
     // if EOF detected
     if (diceVal < 2 || diceVal > 12) {
         return false;
@@ -614,7 +611,7 @@ bool Game::nextTurn() {
     // geese
     if (diceVal == 7) {
         for (size_t i = 0; i < NUM_BUILDERS; i++) {
-            builders.at(i).get()->geeseAttack();
+            builders.at(i).get()->geeseAttack(rng);
         }
         unsigned newGeeseLocation = geeseLocation;
         while (newGeeseLocation == geeseLocation || newGeeseLocation > 18) {
@@ -666,7 +663,7 @@ bool Game::nextTurn() {
                 } else if (buildersOnTile.count(input)) {
                     auto builderToStealFrom = builders[input];
                     if (input == builderToStealFrom.get()->getNum()) {
-                        builder->stealFrom(builderToStealFrom);
+                        builder->stealFrom(rng, builderToStealFrom);
                         askForInput = false;
                         break;
                     }
@@ -960,8 +957,7 @@ void Game::reset() {
 // testing method
 void Game::test() {
     cout << "creating random board" << endl;
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    createBoard(seed);
+    createBoard();
 
     cout << "testing print board" << endl;
     printBoard();

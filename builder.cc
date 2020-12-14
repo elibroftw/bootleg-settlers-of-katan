@@ -101,7 +101,7 @@ bool Builder::isDiceLoaded() {
     return diceIsLoaded;
 }
 
-void Builder::geeseAttack() {
+void Builder::geeseAttack(default_random_engine& rng) {
     int totalResources = 0;
     int resLost = 0;
 
@@ -109,8 +109,6 @@ void Builder::geeseAttack() {
 
     if (totalResources >= 10) resLost = totalResources / 2;
 
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    default_random_engine rng{seed};
     if (resLost) {
         cout << "Builder " << colour << " loses " << resLost << " to the geese. They lose:" << endl;
     }
@@ -132,13 +130,10 @@ void Builder::geeseAttack() {
     }
 }
 
-void Builder::stealFrom(shared_ptr<Builder>& builderToStealFrom) {
+void Builder::stealFrom(default_random_engine& rng, shared_ptr<Builder>& builderToStealFrom) {
     unsigned totalResources = 0;
     for (auto&& r : builderToStealFrom->resources) totalResources += r;
     if (!totalResources) totalResources = 1;
-
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    default_random_engine rng{seed};
 
     unsigned randomIndex = resourceDistribution(rng);
     unsigned randResource = builderToStealFrom->resources.at(randomIndex);

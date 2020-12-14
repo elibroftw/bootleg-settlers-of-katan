@@ -12,6 +12,7 @@ using std::ostream;
 using std::shared_ptr;
 using std::string;
 using std::uniform_int_distribution;
+using std::default_random_engine;
 using std::vector;
 
 enum Colour { Blue,
@@ -44,13 +45,13 @@ class Builder {
     // to any tile. Any builder with 10 or more resources will
     // automatically lose half their resources. Resources lost
     // are chosen randomly.
-    void geeseAttack();
+    void geeseAttack(default_random_engine &rng);
 
     // the current builder (who moved the geese), can steal
     // a random resources from one builder who has a residence
     // on the tile to where the geese are moved.
     // takes care of any IO operations
-    void stealFrom(shared_ptr<Builder>& builderToStealFrom);
+    void stealFrom(default_random_engine &rng, shared_ptr<Builder>& builderToStealFrom);
 
     // check if builder won the game,
     //  occurs when they have 10 points
