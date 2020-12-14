@@ -34,6 +34,6 @@
 # Project files to ignore
 *.zip
 *.log
-*.sv
+backup.sv
 .vscode/settings.json
 .vs
