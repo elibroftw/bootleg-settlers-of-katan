@@ -450,7 +450,7 @@ bool Game::beginGame() {
                         if (validVertex) {
                             vertex.get()->upgradeResidence(builder, false);
                             resLocations.push_back(vertexIdx);
-                            textDisplay.updateVertex(vertex);
+                            textDisplay.updateVertex(vertex, builder);
                         } else {
                             cout << "You cannot build here." << endl;
                             cout << "Basements already exist as locations: ";
