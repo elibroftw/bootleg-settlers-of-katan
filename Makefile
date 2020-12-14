@@ -35,13 +35,16 @@ all: ${EXEC} ${TEST_EXEC}
 
 -include ${DEPENDS}
 
-.PHONY: clean test vg
+.PHONY: clean test vg zip
 
 clean:
 	rm -f $(wildcard *.o) $(wildcard *.d) $(EXE) ${TEST_EXE}
 
 test: all
 	${TEST_EXE}
+
+zip:
+	rm -f *.zip && zip constructor.zip Makefile *.cc *.h
 
 vg: all  # valgrind
 	valgrind --leak-check=full -v --track-origins=yes --log-file=vg_test.log ${TEST_EXE}

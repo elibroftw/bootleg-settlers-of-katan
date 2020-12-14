@@ -1,2 +1,0 @@
-make && rm -f *.zip && zip constructor.zip Makefile *.cc *.h
-# use command `marmoset_submit CS246_PROJECT DD2-constructor constructor.zip`
