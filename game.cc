@@ -313,7 +313,7 @@ bool Game::isValidVertex(shared_ptr<Vertex> &vertex, bool considerEdges) {
     tie(row, col) = Vertex::getVertexFromCoords(rowTD, colTD);
 
     // check if it and adjacent verticies in the map have no owners
-    for (int r = row - 1; r < row + 1; r++) {
+    for (int r = row - 1; r <= row + 1; r++) {
         if (r >= 0 && r < VM_HEIGHT && verticesMap.at(r).at(col).get()->getOwner() != -1) {
             // vertex is invalid since the vertex above, below or itself has an owner
             return false;
