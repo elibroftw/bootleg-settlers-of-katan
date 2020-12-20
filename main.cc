@@ -12,7 +12,7 @@ using std::istringstream;
 
 int main(int argc, char const *argv[]) {
     // print out game info
-    const string gameName = "Settlers of Waterloo";
+    const string gameName = "Settlers of Katan - Bootleg Edition";
     const string authors = "Elijah Lopez and Abdullah Hadi";
     cout << gameName << " By " << authors << endl;
 
