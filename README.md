@@ -1,5 +1,8 @@
 # Settlers of Katan - Bootleg Terminal Editon
-By Elijah Lopez and Abdullah Hadi
+
+(Spelled with k on purpose)
+
+Authors: [Elijah Lopez](https://github.com/elibroftw) and [Abdullah Hadi](AbdullahHadi1)
 
 # Rules
 
