@@ -12,8 +12,7 @@ Authors: [Elijah Lopez](https://github.com/elibroftw) and [Abdullah Hadi](Abdull
 Just run `make` in the directory.
 
 ## Windows
-- g++ compiler in %PATH%
-  - We used [MinGW64](http://winlibs.com/#download-release/)
+- [Clang](https://releases.llvm.org/download.html) in %PATH%
 - [GNU Make](http://www.gnu.org/software/make/) in %PATH%
 - `rm` unix tool in %PATH% in order to run `make clean`
 - Now run `make` in the directory
