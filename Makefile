@@ -12,7 +12,7 @@ TEST_EXEC=tconstructor
 ifeq ($(OS),Windows_NT)
 	EXE := ${EXEC}.exe
     TEST_EXE := ${TEST_EXEC}.exe
-	CXXFLAGS=-Wall -lstdc++ -Os -MMD -Werror=vla -static-libstdc++
+	CXXFLAGS=-Wall -lstdc++ -Os -MMD -Werror=vla -static
 else
 	EXE := ./${EXEC}
     TEST_EXE := ./$(TEST_EXEC)
