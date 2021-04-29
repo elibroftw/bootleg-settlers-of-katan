@@ -1,5 +1,4 @@
-CXX=clang++
-CXXFLAGS=-std=c++14 -Wall -O2 -MMD -Werror=vla
+CXX=g++
 SOURCES=$(filter-out test_harness.cc, $(wildcard *.cc))
 OBJECTS=${SOURCES:.cc=.o}
 DEPENDS=${OBJECTS:.o=.d}
@@ -13,18 +12,19 @@ TEST_EXEC=tconstructor
 ifeq ($(OS),Windows_NT)
 	EXE := ${EXEC}.exe
     TEST_EXE := ${TEST_EXEC}.exe
+	CXXFLAGS=-Wall -lstdc++ -Os -MMD -Werror=vla -static-libstdc++
 else
 	EXE := ./${EXEC}
     TEST_EXE := ./$(TEST_EXEC)
-
+	CXXFLAGS=-Wall -lstdc++ -Os -MMD -Werror=vla
 endif
 
 # Note that the LIBFLAGS must come last in the command
 $(EXEC): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXEC)
+	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXE)
 
 ${TEST_EXEC}: ${TEST_OBJECTS}
-	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXEC)
+	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_EXE)
 
 all: ${EXEC} ${TEST_EXEC}
 

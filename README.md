@@ -12,7 +12,7 @@ Authors: [Elijah Lopez](https://github.com/elibroftw) and [Abdullah Hadi](Abdull
 Just run `make` in the directory.
 
 ## Windows
-- [Clang](https://releases.llvm.org/download.html) in %PATH%
+- [MinGW](http://winlibs.com/#download-release/) in %PATH%
 - [GNU Make](http://www.gnu.org/software/make/) in %PATH%
 - `rm` unix tool in %PATH% in order to run `make clean`
 - Now run `make` in the directory
